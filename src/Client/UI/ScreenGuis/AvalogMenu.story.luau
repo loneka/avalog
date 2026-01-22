@@ -4,6 +4,8 @@ local OnyxUI = require(Avalog.Parent.OnyxUI)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local StateExtensions = require(Avalog.SourceCode.Client.UI.StateExtensions)
 local DarkTheme = require(Avalog.SourceCode.Client.UI.Themes.Dark)
+local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
+local LocalAvatar = require(Avalog.SourceCode.Client.Avatar.LocalAvatar)
 
 local AvalogMenu = require(script.Parent.AvalogMenu)
 
@@ -14,6 +16,10 @@ return function(Target: Instance)
 	local Theme = OnyxUI.Themer.Theme:now()
 
 	StateExtensions:Initialize()
+
+	ServiceProvider:Setup({
+		AvatarManager = LocalAvatar,
+	})
 
 	States.Open:set(true)
 
@@ -40,6 +46,6 @@ return function(Target: Instance)
 
 	return function()
 		Scope:doCleanup()
-		StateExtensions:Stop()
+		StateExtensions:Destroy()
 	end
 end
