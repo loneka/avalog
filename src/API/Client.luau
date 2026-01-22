@@ -6,6 +6,8 @@ local States = require(SOURCE.Client.UI.States)
 local Fusion = require(PACKAGES.Fusion)
 local Bootloader = require(PACKAGES.Bootloader)
 local Config = require(script.Parent.Config)
+local ServiceProvider = require(CLIENT.ServiceProvider)
+local LocalAvatar = require(CLIENT.Avatar.LocalAvatar)
 
 local function GetModules()
 	local Modules = {}
@@ -28,6 +30,7 @@ local AvalogClient = {
 	Config = Config,
 	Started = false,
 	_Bootloader = Bootloader(GetModules()),
+	_ServiceProvider = ServiceProvider,
 }
 
 --[=[
@@ -36,6 +39,10 @@ local AvalogClient = {
 function AvalogClient:Start()
 	assert(not self.Started, "Avalog already started.")
 	self.Started = true
+
+	AvalogClient._ServiceProvider:Setup({
+		AvatarManager = LocalAvatar,
+	})
 
 	AvalogClient._Bootloader:Initialize()
 	AvalogClient._Bootloader:Start()

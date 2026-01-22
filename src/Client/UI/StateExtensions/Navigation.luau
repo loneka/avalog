@@ -2,15 +2,14 @@ local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local States = require(script.Parent.Parent.States)
 local Categories = require(Avalog.SourceCode.Shared.Categories)
 local Fusion = require(Avalog.Parent.Fusion)
-
-local MODES = { "Marketplace", "Inventory", "Customize" }
+local Config = require(Avalog.Config)
 
 local Navigation = {}
 
 local Scope = Fusion.scoped(Fusion)
 
 Navigation.Mode = Scope:Computed(function(Use)
-	return MODES[Use(States.Catalog.Mode)]
+	return Config:Get().EditModes[Use(States.Catalog.Mode)]
 end)
 Navigation.Category = Scope:Computed(function(Use)
 	local ActiveModeValue = Use(Navigation.Mode)

@@ -1,5 +1,5 @@
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
-local LocalAvatar = require(Avalog.SourceCode.Client.Avatar.LocalAvatar)
+local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
 
@@ -15,6 +15,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components, {
 		SliderSetting = SliderSetting,
 	})
+	local AvatarManager = ServiceProvider:GetAvatarManager()
 
 	local Shown = OnyxUI.Util.Fallback(Props.Shown, false)
 
@@ -27,7 +28,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		local SaturationValue = Fusion.peek(Saturation)
 		local BrightnessValue = Fusion.peek(Brightness)
 
-		LocalAvatar:SetColor(Color3.fromHSV(HueValue, SaturationValue, BrightnessValue))
+		AvatarManager:SetColor(Color3.fromHSV(HueValue, SaturationValue, BrightnessValue))
 	end
 	Scope:Observer(Hue):onChange(function()
 		UpdateColor()

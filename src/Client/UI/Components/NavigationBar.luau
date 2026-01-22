@@ -1,14 +1,15 @@
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
+local Config = require(Avalog.Config)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local Navigation = require(Avalog.SourceCode.Client.UI.StateExtensions.Navigation)
 
 local Children = Fusion.Children
 
-local MODES = { "Marketplace", "Inventory", "Customize" }
-
-export type Props = { [string]: any } & {}
+export type Props = { [string]: any } & {
+	OnExit: () -> (),
+}
 
 return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components, {
@@ -16,6 +17,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		CategoryBar = require(script.Parent.CategoryBar),
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
+	local Modes = Config:Get().EditModes
 
 	local SearchBarText = Scope:Value("")
 
@@ -56,13 +58,11 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 							return UDim.new(0, Use(Theme.Spacing["1"]))
 						end),
 
-						OnActivated = function()
-							States.Open:set(false)
-						end,
+						OnActivated = Props.OnExit,
 					},
 					Scope:SwapInput {
 						Name = "ModeSwapper",
-						Options = MODES,
+						Options = Modes,
 						Selection = States.Catalog.Mode,
 						Visible = Scope:Computed(function(Use)
 							return not Use(States.Catalog.Searching)

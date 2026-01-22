@@ -5,7 +5,7 @@ local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
 local States = require(Avalog.SourceCode.Client.UI.States)
-local LocalAvatar = require(Avalog.SourceCode.Client.Avatar.LocalAvatar)
+local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 local Navigation = require(Avalog.SourceCode.Client.UI.StateExtensions.Navigation)
 
 local Children = Fusion.Children
@@ -15,6 +15,7 @@ export type Props = {}
 return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components)
 	local Theme = OnyxUI.Themer.Theme:now()
+	local AvatarManager = ServiceProvider:GetAvatarManager()
 
 	local ViewportCamera = Scope:New "Camera" {
 		CFrame = CFrame.lookAt(Vector3.new(4, 0, -8), Vector3.new(0, 0, 0)),
@@ -143,11 +144,11 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 										OnActivated = function()
 											States.Checkout.Loading:set(true)
-											local UnownedItems = LocalAvatar:GetUnownedItems()
+											local UnownedItems = AvatarManager:GetUnownedItems()
 											States.Checkout.Loading:set(false)
 
 											if #UnownedItems > 0 then
-												local Success = LocalAvatar:PromptCheckout(UnownedItems)
+												local Success = AvatarManager:PromptCheckout(UnownedItems)
 												if Success then
 													MarketplaceService.PromptBulkPurchaseFinished:Once(
 														function(_, Status)
@@ -156,13 +157,13 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 																== Enum.MarketplaceBulkPurchasePromptStatus.Completed
 															then
 																task.wait(0.5)
-																LocalAvatar:SaveAvatar()
+																AvatarManager:SaveAvatar()
 															end
 														end
 													)
 												end
 											else
-												LocalAvatar:SaveAvatar()
+												AvatarManager:SaveAvatar()
 											end
 										end,
 									},
@@ -173,7 +174,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 										SizeVariant = "Large",
 
 										OnActivated = function()
-											LocalAvatar:UpdateServer(Fusion.peek(States.Avatar.Data))
+											AvatarManager:UpdateServer(Fusion.peek(States.Avatar.Data))
 
 											States.Open:set(false)
 										end,
@@ -208,7 +209,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 										end),
 
 										OnActivated = function()
-											LocalAvatar:Undo()
+											AvatarManager:Undo()
 										end,
 									},
 									Scope:Button {
@@ -217,7 +218,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 										Color = Theme.Colors.Error.Main,
 
 										OnActivated = function()
-											LocalAvatar:Reset()
+											AvatarManager:Reset()
 										end,
 									},
 									Scope:Button {
@@ -230,7 +231,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 										end),
 
 										OnActivated = function()
-											LocalAvatar:Redo()
+											AvatarManager:Redo()
 										end,
 									},
 								},

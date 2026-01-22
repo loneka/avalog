@@ -71,7 +71,11 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				Interactable = States.Open,
 
 				[Children] = {
-					Scope:CatalogMenu {},
+					Scope:CatalogMenu {
+						OnExit = function()
+							States.Open:set(false)
+						end,
+					},
 					Scope:AvatarViewport {},
 				},
 			},

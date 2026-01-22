@@ -11,6 +11,7 @@ local States = require(Avalog.SourceCode.Client.UI.States)
 local ScaleLimits = require(Avalog.SourceCode.Shared.ScaleLimits)
 local SquashNumber = require(Avalog.SourceCode.Shared.Utils.SquashNumber)
 local CatalogItems = require(Avalog.SourceCode.Client.UI.StateExtensions.CatalogItems)
+local AvatarManager = require(Avalog.SourceCode.Client.Avatar.AvatarManager)
 local Zap = require(Avalog.SourceCode.Shared.Zap.client)
 local EnumSerDes = require(Avalog.Parent.EnumSerDes)
 local Sift = require(Avalog.Parent.Sift)
@@ -53,7 +54,7 @@ function LocalAvatar:Redo()
 	local LastDataEntry = UndoHistoryValue[#UndoHistoryValue]
 
 	if LastDataEntry then
-		self.HumanoidDescriber:UpdateData(function()
+		LocalAvatar.HumanoidDescriber:UpdateData(function()
 			return LastDataEntry
 		end)
 
@@ -66,14 +67,14 @@ function LocalAvatar:Redo()
 end
 
 function LocalAvatar:Undo()
-	local Data = self.HumanoidDescriber:GetData()
+	local Data = LocalAvatar.HumanoidDescriber:GetData()
 	local HistoryDataValue = Fusion.peek(States.Avatar.DataHistory)
 	local LastDataEntry = HistoryDataValue[#HistoryDataValue - 1]
 
 	if LastDataEntry then
 		local UndoHistoryValue = Fusion.peek(States.Avatar.UndoHistory)
 
-		self.HumanoidDescriber:UpdateData(function()
+		LocalAvatar.HumanoidDescriber:UpdateData(function()
 			return LastDataEntry
 		end)
 
@@ -100,7 +101,7 @@ function LocalAvatar:UpdateScale(Property: string, Value: number)
 		Value = SquashNumber(Value, Clamp.Min, Clamp.Max)
 	end
 
-	self.HumanoidDescriber:UpdateData(function(Data)
+	LocalAvatar.HumanoidDescriber:UpdateData(function(Data)
 		if Data.Scale[Property] ~= nil then
 			Data.Scale[Property] = Value
 		end
@@ -112,7 +113,7 @@ function LocalAvatar:UpdateScale(Property: string, Value: number)
 end
 
 function LocalAvatar:SetColor(Color: Color3)
-	self.HumanoidDescriber:UpdateData(function(Data)
+	LocalAvatar.HumanoidDescriber:UpdateData(function(Data)
 		for PartName, _ in pairs(Data.BodyPartColors) do
 			Data.BodyPartColors[PartName] = Color
 		end
@@ -195,17 +196,20 @@ function LocalAvatar:ToggleCatalogItem(CatalogItem: CatalogItem)
 					local BundleData = BundleDescriber:GetData()
 
 					if BundleDetails.BundleType == "BodyParts" then
-						self.HumanoidDescriber:UpdateData(function(Data)
+						LocalAvatar.HumanoidDescriber:UpdateData(function(Data)
 							Data.BodyParts = BundleData.BodyParts
 							return Data
 						end)
 					elseif BundleDetails.BundleType == "AvatarAnimations" then
-						self.HumanoidDescriber:UpdateData(function(Data)
+						LocalAvatar.HumanoidDescriber:UpdateData(function(Data)
 							Data.Animations = BundleData.Animations
 							return Data
 						end)
 					elseif BundleDetails.BundleType == "DynamicHead" then
-						self.HumanoidDescriber:EquipAsset(BundleData.BodyParts.Head, Enum.AvatarAssetType.DynamicHead)
+						LocalAvatar.HumanoidDescriber:EquipAsset(
+							BundleData.BodyParts.Head,
+							Enum.AvatarAssetType.DynamicHead
+						)
 					end
 
 					BundleDescriber:Destroy()
@@ -214,11 +218,11 @@ function LocalAvatar:ToggleCatalogItem(CatalogItem: CatalogItem)
 			end
 		end
 	elseif CatalogItem.Type == Enum.AvatarItemType.Asset then
-		local Equipped = self.HumanoidDescriber:IsAssetEquipped(CatalogItem.Id, CatalogItem.AssetType)
-		self.HumanoidDescriber:SetAssetEquipped(CatalogItem.Id, CatalogItem.AssetType, not Equipped)
+		local Equipped = LocalAvatar.HumanoidDescriber:IsAssetEquipped(CatalogItem.Id, CatalogItem.AssetType)
+		LocalAvatar.HumanoidDescriber:SetAssetEquipped(CatalogItem.Id, CatalogItem.AssetType, not Equipped)
 	end
 
-	LocalAvatar:ApplyLimits()
+	self:ApplyLimits()
 
 	self:Apply()
 end
@@ -254,16 +258,16 @@ function LocalAvatar:SetCharacter(Character: Model)
 			local HumanoidDescription = Humanoid:FindFirstChildOfClass("HumanoidDescription")
 			local HumanoidDescriberObject = HumanoidDescriber(HumanoidDescription)
 
-			self.Character = Character
-			self.Humanoid = Humanoid
-			self.HumanoidDescriber = HumanoidDescriberObject
+			LocalAvatar.Character = Character
+			LocalAvatar.Humanoid = Humanoid
+			LocalAvatar.HumanoidDescriber = HumanoidDescriberObject
 
 			OriginalCharacter.Humanoid.ApplyDescriptionFinished:Connect(function()
 				HumanoidDescriberObject:ReadFromDescription(OriginalHumanoid:GetAppliedDescription())
-				LocalAvatar:Apply()
+				self:Apply()
 			end)
 
-			self.Updated:Fire()
+			LocalAvatar.Updated:Fire()
 		end
 	end
 end
@@ -291,4 +295,12 @@ if RunService:IsRunning() then
 	end)
 end
 
-return LocalAvatar
+function LocalAvatar:Clear()
+	LocalAvatar.Character = nil
+	LocalAvatar.Humanoid = nil
+	LocalAvatar.HumanoidDescriber = nil
+
+	LocalAvatar.Updated:Fire()
+end
+
+return LocalAvatar :: AvatarManager.AvatarManager

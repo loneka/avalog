@@ -4,7 +4,9 @@ local Fusion = require(Avalog.Parent.Fusion)
 
 local Children = Fusion.Children
 
-export type Props = {}
+export type Props = {
+	OnExit: () -> (),
+}
 
 return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components, {
@@ -25,7 +27,9 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		end),
 
 		[Children] = {
-			Scope:NavigationBar {},
+			Scope:NavigationBar {
+				OnExit = Props.OnExit,
+			},
 			Scope:CategoryBar {},
 			Scope:TabDisplay {},
 		},

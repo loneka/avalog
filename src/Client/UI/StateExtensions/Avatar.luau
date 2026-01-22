@@ -1,10 +1,10 @@
 local Players = game:GetService("Players")
 
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
-local LocalAvatar = require(Avalog.SourceCode.Client.Avatar.LocalAvatar)
 local States = require(script.Parent.Parent.States)
 local Fusion = require(Avalog.Parent.Fusion)
 local CatalogItems = require(Avalog.SourceCode.Client.UI.StateExtensions.CatalogItems)
+local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 local HumanoidDescriber = require(Avalog.Parent.HumanoidDescriber)
 local DeepEquals = require(Avalog.SourceCode.Shared.Utils.DeepEquals)
 
@@ -46,6 +46,7 @@ function Avatar:_UpdateEquippedBundles()
 end
 
 function Avatar:_UpdateEquippedAssetIds()
+	local AvatarManager = ServiceProvider:GetAvatarManager()
 	local AssetIdsValue = Fusion.peek(States.Avatar.AssetIds)
 	local UnequippedAssetIds = {}
 
@@ -54,7 +55,7 @@ function Avatar:_UpdateEquippedAssetIds()
 	for _, AssetId in ipairs(AssetIdsValue) do
 		local CatalogInfo = CatalogItems:GetItem(AssetId, Enum.InfoType.Asset)
 		if CatalogInfo and (CatalogInfo.AssetType == Enum.AvatarAssetType.EmoteAnimation) then
-			if LocalAvatar.HumanoidDescriber:GetEquippedEmote(CatalogInfo.Name) == nil then
+			if AvatarManager.HumanoidDescriber:GetEquippedEmote(CatalogInfo.Name) == nil then
 				table.insert(UnequippedAssetIds, AssetId)
 			end
 		end
@@ -71,28 +72,39 @@ function Avatar:_UpdateEquippedAssetIds()
 end
 
 function Avatar:_HandleAvatar()
-	if (LocalAvatar.Character == nil) or (Players:FindFirstChild(LocalAvatar.Character.Name) == nil) then
+	local AvatarManager = ServiceProvider:GetAvatarManager()
+
+	if AvatarManager.Character == nil then
+		-- Reset all states
+		States.Avatar.Character:set(nil)
+		States.Avatar.Loaded:set(false)
+		States.Avatar.Data:set(nil)
+		States.Avatar.DataHistory:set({})
+		States.Avatar.UndoHistory:set({})
+		States.Avatar.AssetIds:set({})
+		States.Avatar.EquippedAssetIds:set({})
+		States.Avatar.EquippedBundleIds:set({})
 		return
 	end
 
 	States.Avatar.Loaded:set(false)
 
-	local Data = LocalAvatar.HumanoidDescriber:GetData()
+	local Data = AvatarManager.HumanoidDescriber:GetData()
 
 	local function Update(NewData)
 		States.Avatar.Data:set(NewData)
 		self:_LogHistoryEntry(NewData)
 
-		States.Avatar.AssetIds:set(LocalAvatar.HumanoidDescriber:GetAssets())
+		States.Avatar.AssetIds:set(AvatarManager.HumanoidDescriber:GetAssets())
 		self:_UpdateEquippedAssetIds()
 		self:_UpdateEquippedBundles()
 
-		LocalAvatar:GetUnownedItems()
+		AvatarManager:GetUnownedItems()
 	end
 
-	States.Avatar.Character:set(LocalAvatar.Character)
+	States.Avatar.Character:set(AvatarManager.Character)
 
-	LocalAvatar.HumanoidDescriber.Updated:Connect(function(_, NewData)
+	AvatarManager.HumanoidDescriber.Updated:Connect(function(_, NewData)
 		Update(NewData)
 	end)
 	task.spawn(function()
@@ -109,9 +121,10 @@ function Avatar:Stop()
 end
 
 function Avatar:Start()
+	local AvatarManager = ServiceProvider:GetAvatarManager()
 	table.insert(
 		Avatar._Connections,
-		LocalAvatar.Updated:Connect(function()
+		AvatarManager.Updated:Connect(function()
 			Avatar:_HandleAvatar()
 		end)
 	)

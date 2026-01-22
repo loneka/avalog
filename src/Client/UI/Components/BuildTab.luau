@@ -1,7 +1,7 @@
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
-local LocalAvatar = require(Avalog.SourceCode.Client.Avatar.LocalAvatar)
+local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 local ScaleLimits = require(Avalog.SourceCode.Shared.ScaleLimits)
 local StretchNumber = require(Avalog.SourceCode.Shared.Utils.StretchNumber)
 local States = require(Avalog.SourceCode.Client.UI.States)
@@ -18,6 +18,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		SliderSetting = SliderSetting,
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
+	local AvatarManager = ServiceProvider:GetAvatarManager()
 
 	local Shown = OnyxUI.Util.Fallback(Props.Shown, false)
 
@@ -32,12 +33,14 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 	for _, ScaleProperty in ipairs(ScaleProperties) do
 		Scope:Observer(ScaleProperty.Value):onChange(function()
-			LocalAvatar:UpdateScale(ScaleProperty.Name, Fusion.peek(ScaleProperty.Value))
+			AvatarManager:UpdateScale(ScaleProperty.Name, Fusion.peek(ScaleProperty.Value))
 		end)
 	end
 
-	LocalAvatar.Updated:Connect(function()
-		local Data = LocalAvatar.HumanoidDescriber:GetData()
+	AvatarManager.Updated:Connect(function()
+		if AvatarManager.HumanoidDescriber == nil then return end
+
+		local Data = AvatarManager.HumanoidDescriber:GetData()
 
 		for _, ScaleProperty in ipairs(ScaleProperties) do
 			local ExistingScale = Data.Scale[ScaleProperty.Name]

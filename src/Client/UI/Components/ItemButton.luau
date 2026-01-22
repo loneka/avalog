@@ -2,7 +2,7 @@ local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
 local States = require(Avalog.SourceCode.Client.UI.States)
-local LocalAvatar = require(Avalog.SourceCode.Client.Avatar.LocalAvatar)
+local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 local CatalogItems = require(Avalog.SourceCode.Client.UI.StateExtensions.CatalogItems)
 
 local Children = Fusion.Children
@@ -22,6 +22,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		CustomButton = require(script.Parent.CustomButton),
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
+	local AvatarManager = ServiceProvider:GetAvatarManager()
 
 	local Id = Scope:EnsureValue(OnyxUI.Util.Fallback(Props.Id, nil))
 	local Type = OnyxUI.Util.Fallback(Props.Type, Enum.AvatarItemType.Asset)
@@ -69,8 +70,8 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		local IdValue = Use(Id)
 		local SafeItemInfoValue = Use(SafeItemInfo)
 
-		if SafeItemInfoValue.AssetType == Enum.AvatarAssetType.EmoteAnimation then
-			return LocalAvatar.HumanoidDescriber:GetEquippedEmote(SafeItemInfoValue.Name) ~= nil
+		if SafeItemInfoValue.AssetType == Enum.AvatarAssetType.EmoteAnimation and AvatarManager.HumanoidDescriber then
+			return AvatarManager.HumanoidDescriber:GetEquippedEmote(SafeItemInfoValue.Name) ~= nil
 		else
 			return table.find(AssetIdsValue, IdValue) ~= nil
 		end
@@ -92,7 +93,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			local ItemInfoValue = Fusion.peek(ItemInfo)
 
 			if ItemInfoValue then
-				LocalAvatar:ToggleCatalogItem(ItemInfoValue)
+				AvatarManager:ToggleCatalogItem(ItemInfoValue)
 			end
 		end,
 

@@ -1,12 +1,11 @@
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
+local Config = require(Avalog.Config)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local Categories = require(Avalog.SourceCode.Shared.Categories)
 
 local Children = Fusion.Children
-
-local MODES = { "Marketplace", "Inventory", "Customize" }
 
 export type Props = { [string]: any } & {}
 
@@ -20,10 +19,11 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		FeaturedItemsTab = require(script.Parent.FeaturedItemsTab),
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
+	local Modes = Config:Get().EditModes
 
 	local ActiveMode = Scope:Computed(function(Use)
 		local ModeValue = Use(States.Catalog.Mode)
-		return MODES[ModeValue]
+		return Modes[ModeValue]
 	end)
 	local ActiveCategory = Scope:Computed(function(Use)
 		local ActiveModeValue = Use(ActiveMode)
