@@ -73,7 +73,8 @@ end
 
 function Avatar:_HandleAvatar()
 	local AvatarManager = ServiceProvider:GetAvatarManager()
-	if (AvatarManager.Character == nil) or (AvatarManager.Character.Parent == nil) then
+
+	if AvatarManager.Character == nil then
 		-- Reset all states
 		States.Avatar.Character:set(nil)
 		States.Avatar.Loaded:set(false)
