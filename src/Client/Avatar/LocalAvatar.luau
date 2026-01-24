@@ -247,10 +247,6 @@ function LocalAvatar:Apply()
 		LocalAvatar.Humanoid:ApplyDescriptionReset(LocalAvatar.HumanoidDescriber.HumanoidDescription)
 	end):Await()
 
-	if not Success then
-		warn(Result)
-	end
-
 	return Success, Result
 end
 
