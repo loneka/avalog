@@ -97,7 +97,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 				[Children] = {
 					Scope:IconText {
-						Content = { "rbxassetid://13848466137", "Featured contains paid and curated listings." },
+						Content = { "rbxassetid://13848466137", "Contains exclusive, curated, and paid listings." },
 						ListPadding = Scope:Computed(function(Use)
 							return UDim.new(0, Use(Theme.Spacing["0.5"]))
 						end),
