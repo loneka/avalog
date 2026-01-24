@@ -187,12 +187,12 @@ function LocalAvatar:ToggleCatalogItem(CatalogItem: CatalogItem)
 			end
 
 			if UserOutfit then
-				local Success2, Result2 = Future.Try(function()
+				local Success, Result = Future.Try(function()
 					return Players:GetHumanoidDescriptionFromOutfitId(UserOutfit.Id)
 				end):Await()
 
-				if Success2 then
-					local BundleDescriber = HumanoidDescriber(Result2)
+				if Success then
+					local BundleDescriber = HumanoidDescriber(Result)
 					local BundleData = BundleDescriber:GetData()
 
 					if BundleDetails.BundleType == "BodyParts" then
@@ -213,7 +213,9 @@ function LocalAvatar:ToggleCatalogItem(CatalogItem: CatalogItem)
 					end
 
 					BundleDescriber:Destroy()
-					Result2:Destroy()
+					Result:Destroy()
+				else
+					warn(Result)
 				end
 			end
 		end
@@ -235,13 +237,21 @@ function LocalAvatar:Reset()
 	if Success then
 		LocalAvatar.HumanoidDescriber:ReadFromDescription(Result)
 		self:Apply()
+	else
+		warn(Result)
 	end
 end
 
 function LocalAvatar:Apply()
-	return Future.Try(function()
+	local Success, Result = Future.Try(function()
 		LocalAvatar.Humanoid:ApplyDescriptionReset(LocalAvatar.HumanoidDescriber.HumanoidDescription)
 	end):Await()
+
+	if not Success then
+		warn(Result)
+	end
+
+	return Success, Result
 end
 
 function LocalAvatar:SetCharacter(Character: Model)

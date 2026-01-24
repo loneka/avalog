@@ -17,11 +17,15 @@ function Featured:FetchItems(Count: number?): boolean
 
 	Future.Try(function()
 		return Zap.GetFeaturedItems.Call(StartIndex, StartIndex + Count)
-	end):After(function(_, Result)
-		if Result ~= nil then
-			Featured:_AddEntries(EnumSerDes.DeserializeTree(Result), States.Featured.Items)
+	end):After(function(Success, Result)
+		if Success then
+			if Result ~= nil then
+				Featured:_AddEntries(EnumSerDes.DeserializeTree(Result), States.Featured.Items)
 
-			return true
+				return true
+			end
+		else
+			warn(Result)
 		end
 	end)
 

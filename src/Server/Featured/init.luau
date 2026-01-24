@@ -87,21 +87,25 @@ end
 function Featured:Update()
 	local Success, Result = Featured:_FetchLatestVersion():Await()
 
-	if Success and (Result ~= nil) and (Result ~= Featured.LastUpdated) then
-		local Success2, Result2 = Featured:_FetchLatestData():Await()
+	if Success then
+		if (Result ~= nil) and (Result ~= Featured.LastUpdated) then
+			local Success2, Result2 = Featured:_FetchLatestData():Await()
 
-		if Success2 then
-			Featured.Data:Update(function()
-				return Result2
-			end)
-			Featured.LastUpdated = Result
+			if Success2 then
+				Featured.Data:Update(function()
+					return Result2
+				end)
+				Featured.LastUpdated = Result
 
-			Featured.Updated:Fire(Result2)
+				Featured.Updated:Fire(Result2)
 
-			return true, Result2
-		else
-			warn(Result2)
+				return true, Result2
+			else
+				warn(Result2)
+			end
 		end
+	else
+		warn(Result)
 	end
 
 	return false
@@ -118,6 +122,8 @@ function Featured:_FetchLatestData()
 			if typeof(Data) == "table" then
 				return Featured.FixData(Data)
 			end
+		else
+			warn(Response)
 		end
 
 		return {
@@ -135,6 +141,8 @@ function Featured:_FetchLatestVersion()
 			if Body then
 				return Body["published_at"]
 			end
+		else
+			warn(Response)
 		end
 
 		return nil
@@ -148,6 +156,8 @@ function Featured:_FetchIsActive()
 		if Response.Status == 404 then
 			return false
 		end
+	else
+		warn(Response)
 	end
 
 	return true
