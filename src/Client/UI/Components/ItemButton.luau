@@ -1,9 +1,13 @@
+local MarketplaceService = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
+
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 local CatalogItems = require(Avalog.SourceCode.Client.UI.StateExtensions.CatalogItems)
+local Future = require(Avalog.Parent.Future)
 
 local Children = Fusion.Children
 
@@ -184,6 +188,34 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				Active = false,
 				Selectable = false,
 				Visible = Equippable,
+			},
+			Scope:Button {
+				Content = { "Buy" },
+				AnchorPoint = Vector2.new(0.5, 1),
+				Position = UDim2.fromScale(0.5, 1),
+				Size = UDim2.fromScale(1, 0),
+				Color = OnyxUI.Util.Colors.Green["500"],
+				Scale = Scope:Spring(
+					Scope:Computed(function(Use)
+						local EquippedValue = Use(Equipped)
+
+						if EquippedValue then
+							return 1
+						else
+							return 0
+						end
+					end),
+					Theme.SpringSpeed["2"],
+					Theme.SpringDampening["1.5"]
+				),
+
+				OnActivated = function()
+					Future.Try(function()
+						local IdValue = Fusion.peek(Id)
+
+						return MarketplaceService:PromptPurchase(Players.LocalPlayer, IdValue)
+					end)
+				end,
 			},
 		},
 	}))
