@@ -10,6 +10,7 @@ export type EditMode = "Marketplace" | "Inventory" | "Customize"
 export type Config = {
 	Theme: any?,
 	DataStoreEnabled: boolean?,
+	AvatarSavingAllowed: boolean?,
 	Featured: {
 		Items: { Item }?,
 	}?,
@@ -22,6 +23,8 @@ export type Config = {
 
 local CONFIG_TEMPLATE: Config = {
 	Theme = DarkTheme,
+	DataStoreEnabled = true,
+	AvatarSavingAllowed = true,
 	Featured = {
 		Items = {},
 	},

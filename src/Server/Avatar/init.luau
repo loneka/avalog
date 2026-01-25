@@ -9,7 +9,9 @@ local EnumSerDes = require(Avalog.Parent.EnumSerDes)
 local PlayerDataStore = require(Avalog.SourceCode.Server.PlayerDataStorage.PlayerDataStore)
 local Squash = require(Avalog.Parent.Squash)
 local AvatarDataSerDes = require(Avalog.SourceCode.Server.PlayerDataStorage.SerDes.AvatarData)
+local Config = require(Avalog.Config)
 
+local CONFIG = Config:Get()
 local RATE_LIMITS = {
 	Update = RateLimit(1, 1),
 	BulkPurchaseItems = RateLimit(1, 2),
@@ -125,6 +127,10 @@ function Avatar:Start()
 	end)
 
 	Zap.UpdateAvatar.SetCallback(function(Player, Data): ()
+		if not CONFIG.AvatarSavingAllowed then
+			return
+		end
+
 		if RATE_LIMITS.Update(Player.UserId) then
 			local SafeData: HumanoidDescriber.Data = EnumSerDes.DeserializeTree(Data)
 

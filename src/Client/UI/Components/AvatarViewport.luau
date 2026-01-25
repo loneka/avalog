@@ -7,6 +7,11 @@ local Fusion = require(Avalog.Parent.Fusion)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 local Navigation = require(Avalog.SourceCode.Client.UI.StateExtensions.Navigation)
+local Config = require(Avalog.Config)
+
+local CONFIG = Config:Get()
+
+local AvatarManager = ServiceProvider:GetAvatarManager()
 
 local Children = Fusion.Children
 
@@ -15,7 +20,6 @@ export type Props = {}
 return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components)
 	local Theme = OnyxUI.Themer.Theme:now()
-	local AvatarManager = ServiceProvider:GetAvatarManager()
 
 	local ViewportCamera = Scope:New "Camera" {
 		CFrame = CFrame.lookAt(Vector3.new(4, 0, -8), Vector3.new(0, 0, 0)),
@@ -168,10 +172,10 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 										end,
 									},
 									Scope:Button {
-										Name = "DoneButton",
 										Content = { "rbxassetid://13846852950", "Done" },
 										Color = Theme.Colors.Success.Main,
 										SizeVariant = "Large",
+										Visible = CONFIG.AvatarSavingAllowed,
 
 										OnActivated = function()
 											AvatarManager:UpdateServer(Fusion.peek(States.Avatar.Data))

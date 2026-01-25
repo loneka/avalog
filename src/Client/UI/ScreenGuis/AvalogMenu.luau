@@ -3,6 +3,9 @@ local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
 local Components = require(Avalog.SourceCode.Client.UI.Components)
 local States = require(Avalog.SourceCode.Client.UI.States)
+local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
+
+local AvatarManager = ServiceProvider:GetAvatarManager()
 
 local Children = Fusion.Children
 
@@ -73,6 +76,8 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				[Children] = {
 					Scope:CatalogMenu {
 						OnExit = function()
+							AvatarManager:UpdateServer(Fusion.peek(States.Avatar.Data))
+
 							States.Open:set(false)
 						end,
 					},
