@@ -1,5 +1,4 @@
 local Avalog = script.Parent.Parent.Parent.Parent
-local Skilift = require(Avalog.Parent.Skilift)
 local Squash = require(Avalog.Parent.Squash)
 local DataValidater = require(script.Parent.DataValidater)
 local NewPlayerDataStore = require(Avalog.SourceCode.Storage.Utils.PlayerDataStore)

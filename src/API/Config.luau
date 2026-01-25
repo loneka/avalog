@@ -9,6 +9,7 @@ export type CoreGuiItem = "Chat" | "PlayerList" | "Backpack" | "Captures" | "Emo
 export type EditMode = "Marketplace" | "Inventory" | "Customize"
 export type Config = {
 	Theme: any?,
+	DataStoreEnabled: boolean?,
 	Featured: {
 		Items: { Item }?,
 	}?,
@@ -16,7 +17,7 @@ export type Config = {
 	Limits: {
 		Accessories: number?,
 	}?,
-	EditModes: {EditMode}?,
+	EditModes: { EditMode }?,
 }
 
 local CONFIG_TEMPLATE: Config = {

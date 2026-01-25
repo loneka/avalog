@@ -57,8 +57,11 @@ end
 
 function Avatar:UpdateData(Player: Player, Data: HumanoidDescriber.Data)
 	local Profile = PlayerDataStore:Get(Player)
+
 	if Profile ~= nil then
 		Profile.Session:patch(PlayerDataStore.Actions.SetAvatarData, Data)
+	else
+		Avatar:ApplyData(Player, Data)
 	end
 end
 
