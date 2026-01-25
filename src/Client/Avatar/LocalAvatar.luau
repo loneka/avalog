@@ -132,7 +132,9 @@ end
 
 function LocalAvatar:PromptCheckout(Items)
 	if #Items > 0 then
-		-- Zap.BulkPurchaseAvatarItems.Fire(EnumSerDes.SerializeTree(Items))
+		if Zap ~= nil then
+			Zap.BulkPurchaseAvatarItems.Fire(EnumSerDes.SerializeTree(Items))
+		end
 
 		return true
 	else
