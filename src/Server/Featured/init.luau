@@ -95,20 +95,20 @@ function Featured:Update()
 				Featured.Data:Update(function()
 					return Result2
 				end)
-				Featured.LastUpdated = Result
 
+				Featured.LastUpdated = Result
 				Featured.Updated:Fire(Result2)
 
 				return true, Result2
 			else
 				warn(Result2)
+				return false, Result2
 			end
 		end
 	else
 		warn(Result)
+		return false, Result
 	end
-
-	return false
 end
 
 function Featured:_FetchLatestData()
@@ -149,24 +149,8 @@ function Featured:_FetchLatestVersion()
 	end)
 end
 
-function Featured:_FetchIsActive()
-	local Success, Response = Fetch(`https://api.github.com/repos/{GITHUB_REPO}/releases/latest`):Await()
-
-	if Success then
-		if Response.Status == 404 then
-			return false
-		end
-	else
-		warn(Response)
-	end
-
-	return true
-end
-
 function Featured:Start()
-	if Featured:_FetchIsActive() then
-		Featured:SpawnUpdateLoop()
-	end
+	Featured:SpawnUpdateLoop()
 
 	Zap.GetFeaturedItems.SetCallback(function(Player: Player, Start: number, End: number): { Zap.FeaturedItem }?
 		assert((End - Start) <= 3 * 10, `Client requested too many ({End - Start}) items`)
