@@ -108,13 +108,10 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 							return UDim.new(0, Use(Theme.Spacing["1"]))
 						end),
 						Disabled = Scope:Computed(function(Use)
-							local CategoryValue = Use(Navigation.Category)
 							local ModeValue = Use(Navigation.Mode)
 							local AcceptedModes = { "Marketplace" }
 
 							if table.find(AcceptedModes, ModeValue) == nil then
-								return true
-							elseif CategoryValue.Name == "Featured" then
 								return true
 							else
 								return false

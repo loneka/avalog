@@ -10,83 +10,41 @@ local Config = require(Avalog.Config)
 
 local Children = Fusion.Children
 
-local ItemsTab = require(script.Parent.ItemsTab)
+local CatalogItemsTab = require(script.Parent.CatalogItemsTab)
 
-export type Props = ItemsTab.Props & {}
+export type Props = CatalogItemsTab.Props & {}
 
 return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components, {
 		ItemButton = require(script.Parent.ItemButton),
-		ItemsTab = require(script.Parent.ItemsTab),
+		CatalogItemsTab = CatalogItemsTab,
 		CustomButton = require(script.Parent.CustomButton),
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
-
-	local Shown = OnyxUI.Util.Fallback(Props.Shown, false)
-
-	local Search = Scope:Value(nil)
-	local CatalogResults = Scope:Value({})
-	local CatalogResultItems = Scope:ForValues(CatalogResults, function(Use, Scope, Result)
-		return {
-			Id = Result.Id,
-			Type = Enum.AvatarItemType[Result.ItemType],
-		}
-	end)
-
-	local function UpdateCatalogSearch()
-		if not Fusion.peek(Shown) then
-			return
-		end
-
-		local SearchObject = CatalogSearch.Search({
-			BundleTypes = {
-				Enum.BundleType.Animations,
-				Enum.BundleType.BodyParts,
-				Enum.BundleType.DynamicHead,
-				Enum.BundleType.DynamicHeadAvatar,
-				Enum.BundleType.Shoes,
-			},
-			AssetTypes = AvatarAssetTypes.Types.All,
-		})
-
-		SearchObject.Updated:Connect(function()
-			CatalogResults:set(SearchObject.Results)
-		end)
-
-		CatalogResults:set(SearchObject.Results)
-		Search:set(SearchObject)
-	end
 
 	Scope:Observer(States.Open):onChange(function()
 		local OpenValue = Fusion.peek(States.Open)
 
 		if OpenValue == true then
-			UpdateCatalogSearch()
 			Featured:FetchItems()
 		end
 	end)
 
 	local AdDisclaimerShown = Scope:Value(true)
 
-	return Scope:ItemsTab(OnyxUI.Util.CombineProps(Props, {
+	return Scope:CatalogItemsTab(OnyxUI.Util.CombineProps(Props, {
 		Name = script.Name,
-		Items = Scope:Computed(function(Use)
+		PrefixItems = Scope:Computed(function(Use)
 			local FeaturedItemsValue = Use(States.Featured.Items)
-			local CatalogResultItemsValue = Use(CatalogResultItems)
 			local DeveloperFeaturedItems = Config:Get().Featured.Items
 
-			return Sift.Array.merge(DeveloperFeaturedItems, FeaturedItemsValue, CatalogResultItemsValue)
+			return Sift.Array.merge(DeveloperFeaturedItems, FeaturedItemsValue)
 		end),
 
 		OnReachedEnd = function()
 			task.spawn(function()
 				Featured:FetchItems()
 			end)
-
-			local SearchValue = Fusion.peek(Search)
-			if SearchValue ~= nil then
-				SearchValue:LoadNextPage()
-			end
 		end,
 
 		[Children] = {

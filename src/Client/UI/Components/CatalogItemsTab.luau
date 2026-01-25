@@ -4,8 +4,10 @@ local Fusion = require(Avalog.Parent.Fusion)
 local CatalogSearch = require(Avalog.SourceCode.Client.UI.StateExtensions.CatalogSearch)
 local Navigation = require(Avalog.SourceCode.Client.UI.StateExtensions.Navigation)
 local States = require(Avalog.SourceCode.Client.UI.States)
+local Sift = require(Avalog.Parent.Sift)
 
 export type Props = {
+	PrefixItems: Fusion.UsedAs<{ [string]: any }>?,
 	Shown: Fusion.UsedAs<boolean>?,
 }
 
@@ -15,6 +17,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	})
 
 	local Shown = OnyxUI.Util.Fallback(Props.Shown, false)
+	local PrefixItems = OnyxUI.Util.Fallback(Props.PrefixItems, {})
 
 	local DeepestCategory = Scope:Computed(function(Use)
 		local CategoryValue = Use(Navigation.Category)
@@ -87,14 +90,31 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	end)
 	UpdateSearch()
 
+	local CombinedItems = Scope:Computed(function(Use)
+		local ResultsValue = Use(Results)
+		local PrefixItemsValue = Use(PrefixItems)
+		local SearchQueryValue = Use(SearchQuery)
+
+		if (SearchQueryValue == nil) or (SearchQueryValue == "") then
+			return Sift.Array.concat(PrefixItemsValue, ResultsValue)
+		else
+			return ResultsValue
+		end
+	end)
+
 	return Scope:ItemsTab(OnyxUI.Util.CombineProps(Props, {
 		Name = script.Name,
-		Items = Scope:ForValues(Results, function(Use, Scope, Result)
+		Items = Scope:ForValues(CombinedItems, function(Use, Scope, Item)
+			if typeof(Item.ItemType) == "string" then
+				Item.ItemType = Enum.AvatarItemType[Item.ItemType]
+			end
+
 			return {
-				Id = Result.Id,
-				Type = Enum.AvatarItemType[Result.ItemType],
+				Id = Item.Id,
+				Type = Item.ItemType,
 			}
 		end),
+
 		OnReachedEnd = function()
 			local SearchValue = Fusion.peek(Search)
 

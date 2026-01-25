@@ -2,7 +2,6 @@ local AvatarEditorService = game:GetService("AvatarEditorService")
 
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local Future = require(Avalog.Parent.Future)
-local HashDictionary = require(Avalog.SourceCode.Shared.Utils.HashDictionary)
 local Signal = require(Avalog.Parent.Signal)
 local CatalogItems = require(script.Parent.CatalogItems)
 
