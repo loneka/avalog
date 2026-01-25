@@ -12,10 +12,14 @@ local ScaleLimits = require(Avalog.SourceCode.Shared.ScaleLimits)
 local SquashNumber = require(Avalog.SourceCode.Shared.Utils.SquashNumber)
 local CatalogItems = require(Avalog.SourceCode.Client.UI.StateExtensions.CatalogItems)
 local AvatarManager = require(Avalog.SourceCode.Client.Avatar.AvatarManager)
-local Zap = require(Avalog.SourceCode.Shared.Zap.client)
 local EnumSerDes = require(Avalog.Parent.EnumSerDes)
 local Sift = require(Avalog.Parent.Sift)
 local Config = require(Avalog.Config)
+
+local Zap
+if RunService:IsRunning() then
+	Zap = require(Avalog.SourceCode.Shared.Zap.client)
+end
 
 export type CatalogItem = {
 	Id: number,
@@ -45,7 +49,9 @@ end
 
 function LocalAvatar:UpdateServer(Data: HumanoidDescriber.Data): ()
 	if Data then
-		Zap.UpdateAvatar.Fire(EnumSerDes.SerializeTree(Data))
+		if Zap ~= nil then
+			Zap.UpdateAvatar.Fire(EnumSerDes.SerializeTree(Data))
+		end
 	end
 end
 
@@ -126,7 +132,7 @@ end
 
 function LocalAvatar:PromptCheckout(Items)
 	if #Items > 0 then
-		Zap.BulkPurchaseAvatarItems.Fire(EnumSerDes.SerializeTree(Items))
+		-- Zap.BulkPurchaseAvatarItems.Fire(EnumSerDes.SerializeTree(Items))
 
 		return true
 	else

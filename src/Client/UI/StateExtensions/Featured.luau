@@ -1,14 +1,22 @@
+local RunService = game:GetService("RunService")
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local States = require(script.Parent.Parent.States)
 local Fusion = require(Avalog.Parent.Fusion)
-local Zap = require(Avalog.SourceCode.Shared.Zap.client)
 local Future = require(Avalog.Parent.Future)
 local Sift = require(Avalog.Parent.Sift)
 local EnumSerDes = require(Avalog.Parent.EnumSerDes)
 
+local Zap
+if RunService:IsRunning() then
+	Zap = require(Avalog.SourceCode.Shared.Zap.client)
+end
+
 local Featured = {}
 
 function Featured:FetchItems(Count: number?): boolean
+	if Zap == nil then
+		return
+	end
 	if Count == nil then
 		Count = 3 * 10
 	end
@@ -44,10 +52,12 @@ function Featured:_AddEntries(Entries, EntriesState: Fusion.Value<Fusion.Scope<a
 end
 
 function Featured:Start()
-	Zap.FeaturedItemsReset.SetCallback(function()
-		States.Featured.Items:set({})
-		Featured:FetchItems()
-	end)
+	if Zap ~= nil then
+		Zap.FeaturedItemsReset.SetCallback(function()
+			States.Featured.Items:set({})
+			Featured:FetchItems()
+		end)
+	end
 end
 
 return Featured
