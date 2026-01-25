@@ -104,6 +104,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			return {
 				Id = Result.AssetId,
 				Type = Enum.AvatarItemType.Asset,
+				Owned = true,
 			}
 		end),
 		OnReachedEnd = function()

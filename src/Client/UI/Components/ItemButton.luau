@@ -16,20 +16,24 @@ local ITEM_TYPE_INFO_TYPES = {
 	[Enum.AvatarItemType.Bundle] = Enum.InfoType.Bundle,
 }
 
-export type Props = { [string]: any } & {
+local CustomButton = require(script.Parent.CustomButton)
+
+export type Props = CustomButton.Props & {
 	Id: Fusion.UsedAs<number>?,
 	Type: Fusion.UsedAs<Enum.AvatarItemType>?,
+	Owned: Fusion.UsedAs<boolean>?,
 }
 
 return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components, {
-		CustomButton = require(script.Parent.CustomButton),
+		CustomButton = CustomButton(Scope, Props),
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
 	local AvatarManager = ServiceProvider:GetAvatarManager()
 
 	local Id = Scope:EnsureValue(OnyxUI.Util.Fallback(Props.Id, nil))
 	local Type = OnyxUI.Util.Fallback(Props.Type, Enum.AvatarItemType.Asset)
+	local Owned = OnyxUI.Util.Fallback(Props.Owned, false)
 
 	local ItemInfo = Scope:Value(nil)
 	local function UpdateItemInfo()
@@ -198,8 +202,9 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				Scale = Scope:Spring(
 					Scope:Computed(function(Use)
 						local EquippedValue = Use(Equipped)
+						local OwnedValue = Use(Owned)
 
-						if EquippedValue then
+						if EquippedValue and not OwnedValue then
 							return 1
 						else
 							return 0

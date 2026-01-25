@@ -79,6 +79,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 									Id = Item.Id,
 									Type = Item.Type,
 									Visible = Item.Visible,
+									Owned = Item.Owned,
 									LayoutOrder = Index,
 									Size = UDim2.fromScale(1 / 8, 0),
 									AutomaticSize = Enum.AutomaticSize.Y,
