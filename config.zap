@@ -127,3 +127,9 @@ funct GetFeaturedItems = {
 	args: (u32, u32),
 	rets: (FeaturedItem[]?),
 }
+
+event FeaturedItemsReset = {
+    from: Server,
+    type: Reliable,
+    call: SingleAsync,
+}

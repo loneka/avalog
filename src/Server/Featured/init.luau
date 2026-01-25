@@ -98,6 +98,7 @@ function Featured:Update()
 
 				Featured.LastUpdated = Result
 				Featured.Updated:Fire(Result2)
+				Zap.FeaturedItemsReset:FireAll()
 
 				return true, Result2
 			else

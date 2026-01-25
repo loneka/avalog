@@ -58,8 +58,12 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	end
 
 	Scope:Observer(States.Open):onChange(function()
-		UpdateCatalogSearch()
-		Featured:FetchItems()
+		local OpenValue = Fusion.peek(States.Open)
+
+		if OpenValue == true then
+			UpdateCatalogSearch()
+			Featured:FetchItems()
+		end
 	end)
 
 	local AdDisclaimerShown = Scope:Value(true)

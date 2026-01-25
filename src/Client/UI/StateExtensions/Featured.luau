@@ -43,4 +43,11 @@ function Featured:_AddEntries(Entries, EntriesState: Fusion.Value<Fusion.Scope<a
 	EntriesState:set(EntriesValue)
 end
 
+function Featured:Start()
+	Zap.FeaturedItemsReset.SetCallback(function()
+		States.Featured.Items:set({})
+		Featured:FetchItems()
+	end)
+end
+
 return Featured
