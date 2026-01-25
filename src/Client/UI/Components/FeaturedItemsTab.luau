@@ -1,12 +1,12 @@
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
-local CatalogSearch = require(Avalog.SourceCode.Client.UI.StateExtensions.CatalogSearch)
-local AvatarAssetTypes = require(Avalog.SourceCode.Shared.AvatarAssetTypes)
 local Featured = require(Avalog.SourceCode.Client.UI.StateExtensions.Featured)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local Sift = require(Avalog.Parent.Sift)
 local Config = require(Avalog.Config)
+
+local CONFIG = Config:Get()
 
 local Children = Fusion.Children
 
@@ -36,9 +36,8 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		Name = script.Name,
 		PrefixItems = Scope:Computed(function(Use)
 			local FeaturedItemsValue = Use(States.Featured.Items)
-			local DeveloperFeaturedItems = Config:Get().Featured.Items
 
-			return Sift.Array.merge(DeveloperFeaturedItems, FeaturedItemsValue)
+			return Sift.Array.merge(CONFIG.Featured.Items, FeaturedItemsValue)
 		end),
 
 		OnReachedEnd = function()
