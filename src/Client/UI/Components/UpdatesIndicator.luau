@@ -1,6 +1,7 @@
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
+local Version = require(Avalog.SourceCode.Shared.Version)
 
 local Children = Fusion.Children
 
@@ -69,7 +70,11 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				end,
 			},
 			Scope:TextInput {
-				Text = Link,
+				Text = Scope:Computed(function(Use)
+					local LinkValue = Use(Link)
+
+					return `Avalog {Version} • {LinkValue}`
+				end),
 				TextTransparency = 0,
 				TextEditable = false,
 				Disabled = true,
