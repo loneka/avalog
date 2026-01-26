@@ -11,8 +11,6 @@ local Config = require(Avalog.Config)
 
 local CONFIG = Config:Get()
 
-local AvatarManager = ServiceProvider:GetAvatarManager()
-
 local Children = Fusion.Children
 
 export type Props = {}
@@ -20,6 +18,8 @@ export type Props = {}
 return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components)
 	local Theme = OnyxUI.Themer.Theme:now()
+
+	local AvatarManager = ServiceProvider:GetAvatarManager()
 
 	local ViewportCamera = Scope:New "Camera" {
 		CFrame = CFrame.lookAt(Vector3.new(4, 0, -8), Vector3.new(0, 0, 0)),

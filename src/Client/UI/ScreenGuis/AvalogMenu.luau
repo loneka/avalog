@@ -5,8 +5,6 @@ local Components = require(Avalog.SourceCode.Client.UI.Components)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 
-local AvatarManager = ServiceProvider:GetAvatarManager()
-
 local Children = Fusion.Children
 
 export type Props = {
@@ -16,6 +14,8 @@ export type Props = {
 return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, OnyxUI.Util, OnyxUI.Components, Components)
 	local Theme = OnyxUI.Themer.Theme:now()
+
+	local AvatarManager = ServiceProvider:GetAvatarManager()
 
 	return Scope:New "ScreenGui" {
 		Name = script.Name,
