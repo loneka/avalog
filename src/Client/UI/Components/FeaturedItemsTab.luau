@@ -1,3 +1,4 @@
+local RunService = game:GetService("RunService")
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
@@ -47,25 +48,32 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		end,
 
 		[Children] = {
-			Scope:CustomButton {
-				AutomaticSize = Enum.AutomaticSize.Y,
-				Visible = AdDisclaimerShown,
-				ListHorizontalAlignment = Enum.HorizontalAlignment.Left,
+			Scope:Computed(function(Use)
+				if not RunService:IsStudio() then
+					return Scope:CustomButton {
+						AutomaticSize = Enum.AutomaticSize.Y,
+						Visible = AdDisclaimerShown,
+						ListHorizontalAlignment = Enum.HorizontalAlignment.Left,
 
-				OnActivated = function()
-					AdDisclaimerShown:set(false)
-				end,
+						OnActivated = function()
+							AdDisclaimerShown:set(false)
+						end,
 
-				[Children] = {
-					Scope:IconText {
-						Content = { "rbxassetid://13848466137", "Contains exclusive, curated, and paid listings." },
-						ListPadding = Scope:Computed(function(Use)
-							return UDim.new(0, Use(Theme.Spacing["0.5"]))
-						end),
-						ListVerticalAlignment = Enum.VerticalAlignment.Center,
-					},
-				},
-			},
+						[Children] = {
+							Scope:IconText {
+								Content = {
+									"rbxassetid://13848466137",
+									"Contains exclusive, curated, and paid listings.",
+								},
+								ListPadding = Scope:Computed(function(Use)
+									return UDim.new(0, Use(Theme.Spacing["0.5"]))
+								end),
+								ListVerticalAlignment = Enum.VerticalAlignment.Center,
+							},
+						},
+					}
+				end
+			end),
 		},
 	}))
 end
