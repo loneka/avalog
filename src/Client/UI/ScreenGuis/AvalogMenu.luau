@@ -84,6 +84,15 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					Scope:AvatarViewport {},
 				},
 			},
+			Scope:UpdatesIndicator {
+				Link = "https://devforum.roblox.com/t/3513102",
+				Logo = "rbxassetid://109049301067448",
+				UpdateAvailable = false,
+				AnchorPoint = Vector2.new(0, 1),
+				Position = Scope:Computed(function(Use)
+					return UDim2.fromScale(0, 1) + UDim2.fromOffset(Use(Theme.Spacing["1"]), -Use(Theme.Spacing["1"]))
+				end),
+			},
 		},
 	}
 end

@@ -17,6 +17,7 @@ local Components = {
 	SliderSetting = require(script.SliderSetting),
 	InventoryItemsTab = require(script.InventoryItemsTab),
 	FeaturedItemsTab = require(script.FeaturedItemsTab),
+	UpdatesIndicator = require(script.UpdatesIndicator),
 }
 
 for _, Child in ipairs(script:GetChildren()) do
