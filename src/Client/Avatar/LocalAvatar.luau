@@ -250,10 +250,20 @@ function LocalAvatar:Reset()
 	end
 end
 
-function LocalAvatar:Apply()
+function LocalAvatar:Apply(UpdateServer: boolean?)
+	if UpdateServer == nil then
+		UpdateServer = true
+	end
+
 	local Success, Result = Future.Try(function()
-		LocalAvatar.Humanoid:ApplyDescriptionReset(LocalAvatar.HumanoidDescriber.HumanoidDescription)
-	end):Await()
+		return LocalAvatar.Humanoid:ApplyDescriptionReset(LocalAvatar.HumanoidDescriber.HumanoidDescription)
+	end):After(function()
+		if UpdateServer then
+			return LocalAvatar:UpdateServer(LocalAvatar.HumanoidDescriber:GetData())
+		end
+
+		return true
+	end)
 
 	return Success, Result
 end
@@ -278,7 +288,7 @@ function LocalAvatar:SetCharacter(Character: Model)
 
 			OriginalCharacter.Humanoid.ApplyDescriptionFinished:Connect(function()
 				HumanoidDescriberObject:ReadFromDescription(OriginalHumanoid:GetAppliedDescription())
-				self:Apply()
+				self:Apply(false)
 			end)
 
 			LocalAvatar.Updated:Fire()

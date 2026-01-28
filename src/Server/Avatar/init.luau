@@ -13,7 +13,7 @@ local Config = require(Avalog.Config)
 
 local CONFIG = Config:Get()
 local RATE_LIMITS = {
-	Update = RateLimit(1, 1),
+	Update = RateLimit(3, 1),
 	BulkPurchaseItems = RateLimit(1, 2),
 }
 
