@@ -9,13 +9,37 @@ export type Category = {
 	BundleTypes: { Enum.BundleType }?,
 }
 
+local function PurgeBundles(Categories: { Category }): { Category }
+	local Result = {}
+
+	for _, Category in Categories do
+		local PurgedSubCategories = nil
+
+		if Category.SubCategories then
+			PurgedSubCategories = PurgeBundles(Category.SubCategories)
+
+			if #PurgedSubCategories == 0 then
+				PurgedSubCategories = nil
+			end
+		end
+
+		if Category.AssetTypes or PurgedSubCategories then
+			table.insert(Result, {
+				Name = Category.Name,
+				AssetTypes = Category.AssetTypes,
+				BundleTypes = Category.BundleTypes,
+				SubCategories = PurgedSubCategories,
+			})
+		end
+	end
+
+	return Result
+end
+
 local Categories: { [string]: { Category } } = {
 	Marketplace = {
 		{
 			Name = "Featured",
-		},
-		{
-			Name = "All",
 			AssetTypes = AvatarAssetTypes.Types.All,
 			BundleTypes = {
 				Enum.BundleType.Animations,
@@ -26,14 +50,14 @@ local Categories: { [string]: { Category } } = {
 			},
 		},
 		{
-			Name = "Characters",
-			BundleTypes = {
-				Enum.BundleType.BodyParts,
-			},
-		},
-		{
-			Name = "Head & Body",
+			Name = "Body",
 			SubCategories = {
+				{
+					Name = "Characters",
+					BundleTypes = {
+						Enum.BundleType.BodyParts,
+					},
+				},
 				{
 					Name = "Heads",
 					BundleTypes = { Enum.BundleType.DynamicHead },
@@ -93,6 +117,6 @@ local Categories: { [string]: { Category } } = {
 	Customize = { { Name = "Equipped" }, { Name = "Skin" }, { Name = "Build" } },
 }
 
-Categories.Inventory = Sift.Array.removeIndices(Sift.Dictionary.copyDeep(Categories.Marketplace), 1, 3)
+Categories.Inventory = PurgeBundles(Categories.Marketplace)
 
 return Categories
