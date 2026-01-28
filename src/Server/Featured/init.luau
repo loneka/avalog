@@ -45,7 +45,7 @@ local function CamelToPascal(Dictionary: { [string]: any })
 	end)
 end
 
-local GITHUB_REPO = "UseAvalog/Featured"
+local GITHUB_REPO = "loneka/avalog-cloud"
 local UPDATE_DELAY = 30 * 60
 local FAILED_UPDATE_DELAY = 1 * 60
 local SECONDS_PER_DAY = 86400
