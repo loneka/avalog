@@ -65,11 +65,15 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		local BundleTypesValue = Fusion.peek(BundleTypes)
 		local AssetTypesValue = Fusion.peek(AssetTypes)
 		local SearchQueryValue = Fusion.peek(SearchQuery)
+		local DeepestCategoryValue = Fusion.peek(DeepestCategory)
+
+		local Searching = string.len((SearchQueryValue or "")) == 0
 
 		local SearchObject = CatalogSearch.Search({
 			BundleTypes = BundleTypesValue,
 			AssetTypes = AssetTypesValue,
 			SearchKeyword = SearchQueryValue,
+			CategoryFilter = (Searching and DeepestCategoryValue.CategoryFilter) or nil,
 		})
 
 		SearchObject.Updated:Connect(function()

@@ -4,6 +4,7 @@ local Sift = require(Avalog.Parent.Sift)
 
 export type Category = {
 	Name: string,
+	CategoryFilter: Enum.CatalogCategoryFilter,
 	SubCategories: { Category }?,
 	AssetTypes: { Enum.AvatarAssetType }?,
 	BundleTypes: { Enum.BundleType }?,
@@ -40,6 +41,7 @@ local Categories: { [string]: { Category } } = {
 	Marketplace = {
 		{
 			Name = "Featured",
+			CategoryFilter = Enum.CatalogCategoryFilter.Recommended,
 			AssetTypes = AvatarAssetTypes.Types.All,
 			BundleTypes = {
 				Enum.BundleType.Animations,
