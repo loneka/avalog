@@ -1,5 +1,5 @@
 name = "avafe/avalog"
-version = "0.1.9-beta"
+version = "0.1.9"
 private = true
 
 [target]

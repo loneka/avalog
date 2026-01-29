@@ -20,7 +20,7 @@ t = "osyrisrblx/t@^3.1.1"
 name = "imavafe/avalog"
 realm = "shared"
 registry = "https://github.com/UpliftGames/wally-index"
-version = "0.1.9-beta"
+version = "0.1.9"
 
 exclude = ["**"]
 include = [
