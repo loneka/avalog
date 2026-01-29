@@ -43,6 +43,8 @@ local CONFIG_TEMPLATE: Config = {
 	@within Config
 
 	@field Theme Theme?
+	@field DataStoreEnabled boolean?
+	@field AvatarSavingAllowed boolean?
 	@field Featured { Items: { Item }? }?
 	@field HiddenCoreGui { CoreGuiItem }?
 	@field Limits { Accessories: number? }?
