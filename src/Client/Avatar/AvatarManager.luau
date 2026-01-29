@@ -1,3 +1,5 @@
+-- An AvatarManager represents an avatar and operations that can be performed on this avatar.
+
 local Avalog = script.Parent.Parent.Parent.Parent
 local HumanoidDescriber = require(Avalog.Parent.HumanoidDescriber)
 local Signal = require(Avalog.Parent.Signal)
@@ -9,9 +11,6 @@ export type CatalogItem = {
 	Name: string,
 }
 
---[=[
-    An AvatarManager represents an avatar and operations that can be performed on this avatar.
-]=]
 export type AvatarManager = {
 	Character: Model?,
 	Humanoid: Humanoid?,
