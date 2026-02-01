@@ -1,24 +1,24 @@
 {
-  "name": "Avalog",
-  "tree": {
-    "$path": "src/API",
-    "SourceCode": {
-      "$className": "Folder",
-      "Shared": {
-        "$path": "src/Shared",
-        "Zap": {
-          "$path": "network"
-        }
-      },
-      "Storage": {
-        "$path": "src/Storage"
-      },
-      "Server": {
-        "$path": "src/Server"
-      },
-      "Client": {
-        "$path": "src/Client"
-      }
-    }
-  }
+	"name": "avalog",
+	"tree": {
+		"$path": "src/API",
+		"SourceCode": {
+			"$className": "Folder",
+			"Shared": {
+				"$path": "src/Shared",
+				"Zap": {
+					"$path": "network"
+				}
+			},
+			"Storage": {
+				"$path": "src/Storage"
+			},
+			"Server": {
+				"$path": "src/Server"
+			},
+			"Client": {
+				"$path": "src/Client"
+			}
+		}
+	}
 }

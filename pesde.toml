@@ -1,5 +1,5 @@
 name = "avafe/avalog"
-version = "0.1.9"
+version = "0.1.10"
 private = true
 
 [target]
@@ -55,4 +55,5 @@ TopbarPlus = { wally = "neura-studios/topbarplus", version = "^3.0.2" }
 #   "wally.lock",
 #   "wally.toml",
 #   "network",
+#	"network/*",
 # ]

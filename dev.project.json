@@ -1,45 +1,45 @@
 {
-  "name": "Avalog",
-  "tree": {
-    "$className": "DataModel",
-    "ReplicatedStorage": {
-      "$className": "ReplicatedStorage",
-      "Avalog": {
-        "$className": "Folder",
-        "ThumbnailCamera": {
-          "$path": "Include/ThumbnailCamera.rbxm"
-        },
-        "EasyLoader": {
-          "$path": "Include/EasyLoader"
-        },
-        "Avalog": {
-          "$path": "Include/Linking.luau",
-          "Packages": {
-            "$path": "roblox_packages",
-            "Avalog": {
-              "$path": "src/API",
-              "SourceCode": {
-                "$className": "Folder",
-                "Shared": {
-                  "$path": "src/Shared",
-                  "Zap": {
-                    "$path": "network"
-                  }
-                },
-                "Storage": {
-                  "$path": "src/Storage"
-                },
-                "Server": {
-                  "$path": "src/Server"
-                },
-                "Client": {
-                  "$path": "src/Client"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+	"name": "avalog",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Avalog": {
+				"$className": "Folder",
+				"ThumbnailCamera": {
+					"$path": "Include/ThumbnailCamera.rbxm"
+				},
+				"EasyLoader": {
+					"$path": "Include/EasyLoader"
+				},
+				"Avalog": {
+					"$path": "Include/Linking.luau",
+					"Packages": {
+						"$path": "roblox_packages",
+						"Avalog": {
+							"$path": "src/API",
+							"SourceCode": {
+								"$className": "Folder",
+								"Shared": {
+									"$path": "src/Shared",
+									"Zap": {
+										"$path": "network"
+									}
+								},
+								"Storage": {
+									"$path": "src/Storage"
+								},
+								"Server": {
+									"$path": "src/Server"
+								},
+								"Client": {
+									"$path": "src/Client"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
