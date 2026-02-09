@@ -19,7 +19,7 @@ Before submitting an issue, first review this short checklist:
 1. `git clone` this repository, then `cd` into your copy
 2. Install the [Pesde](https://pesde.dev) package manager, if you haven’t already
 3. Run `pesde install`
-4. Review the [[#Codebase Guide|Codebase Guide]]
+4. Review the Codebase Guide *(at bottom)*
 
 ### Submitting your PR
 
