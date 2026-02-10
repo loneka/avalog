@@ -1,6 +1,6 @@
 [docusaurus]
 title = "Avalog"
-tagline = "Easy, themable avatar catalog for Roblox"
+tagline = "The premium avatar catalog editor"
 url = "https://loneka.com/"
 baseUrl = "/avalog"
 favicon = "svg/LogoGlyph.svg"
@@ -8,7 +8,6 @@ favicon = "svg/LogoGlyph.svg"
 [home]
 enabled = true
 includeReadme = false
-bannerImage = "img/BannerBackground.png"
 
 [[home.features]]
 title = "Simplicity 😌"
@@ -27,20 +26,16 @@ style = "light"
 copyright = "Copyright © 2025 Avafe. Built with Moonwave and Docusaurus"
 
 [[footer.links]]
-title = "Loneka Suite"
+title = "Loneka"
 
 [[footer.links.items]]
 label = "Home"
-href = "https://suite.loneka.com"
+href = "https://loneka.com"
 
-[[footer.links.items]]
-label = "Discord"
-href = "https://loneka.com/suite/discord"
+[navbar]
+title = ""
 
-[[footer.links.items]]
-label = "X"
-href = "https://loneka.com/x"
-
-[[footer.links.items]]
-label = "GitHub"
-href = "https://loneka.com/github"
+[navbar.logo]
+alt = "Avalog"
+src = "/svg/LogoDark.svg"
+srcDark = "/svg/Logo.svg"

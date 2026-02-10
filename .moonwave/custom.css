@@ -14,22 +14,25 @@
 	--ifm-navbar-search-input-background-color: var(--ifm-background-color);
 	--ifm-color-primary: #c572ff;
 	--ifm-color-primary-dark: #c572ff;
-	/* --ifm-color-secondary: var(--ifm-color-primary); */
-	/* --ifm-color-secondary-dark: var(--ifm-color-primary-dark);
-	--ifm-color-secondary-darker: var(--ifm-color-primary-dark); */
 	--docusaurus-highlighted-code-line-bg: #75757544;
 	--ifm-transition-fast: 350ms;
+	--tertiary: #10111d;
 }
 
 :root[data-theme="light"] {
 	--ifm-color-primary: #a450de;
-	--ifm-font-color-base: 0A0B14;
+	--ifm-font-color-base: #0a0b14;
 	--ifm-background-color: #fbfafd;
 	--ifm-hero-background-color: #fbfafd;
 	--ifm-navbar-search-input-background-color: #00000020;
 	--ifm-navbar-search-input-placeholder-color: #00000095;
 	--ifm-navbar-search-input-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24px' height='24px' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='m19.6 21l-6.3-6.3q-.75.6-1.725.95T9.5 16q-2.725 0-4.612-1.888T3 9.5t1.888-4.612T9.5 3t4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l6.3 6.3zM9.5 14q1.875 0 3.188-1.312T14 9.5t-1.312-3.187T9.5 5T6.313 6.313T5 9.5t1.313 3.188T9.5 14'/%3E%3C/svg%3E");
 	--ifm-footer-background-color: var(--ifm-background-color);
+	--tertiary: #e8e3f2;
+}
+
+.navbar__brand {
+	margin: 0px !important;
 }
 
 :root[data-theme="dark"] {
@@ -42,6 +45,18 @@
 	--ifm-navbar-search-input-background-color: #ffffff10;
 	--ifm-navbar-search-input-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24px' height='24px' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='m19.6 21l-6.3-6.3q-.75.6-1.725.95T9.5 16q-2.725 0-4.612-1.888T3 9.5t1.888-4.612T9.5 3t4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l6.3 6.3zM9.5 14q1.875 0 3.188-1.312T14 9.5t-1.312-3.187T9.5 5T6.313 6.313T5 9.5t1.313 3.188T9.5 14'/%3E%3C/svg%3E");
 	--ifm-footer-background-color: var(--ifm-background-color);
+}
+
+.button {
+	border-radius: 1000px;
+}
+
+.button--lg {
+	font-size: var(--ifm-font-size-base);
+}
+
+.hero__subtitle {
+	font-size: 1.375rem;
 }
 
 .navbar__link[href*="https://loneka.com/suite/discord"]
@@ -83,10 +98,6 @@
 div[class*="docSidebarContainer"],
 aside[class*="docSidebarContainer"] {
 	border: 0;
-}
-
-.hero-button:not(:hover) {
-	color: var(--ifm-color-secondary) !important;
 }
 
 div[class*="sourceButtonText"] {
