@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://avafe.me/Avalog">
+  <a href="https://loneka.com/avalog">
     <picture>
       <source srcset="/gh-assets/LogoStamp.svg"></source>
       <img alt="Avalog" src="/gh-assets/LogoStamp.svg" height="80"></img>
