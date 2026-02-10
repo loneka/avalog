@@ -4,7 +4,7 @@ import Layout from "@theme/Layout";
 import clsx from "clsx";
 import React from "react";
 import styles from "./index.module.css";
-import features from "./features";
+import features from "/features";
 import Logo from "@theme/Logo";
 
 function Feature({ image, title, description }) {
@@ -104,12 +104,6 @@ function HomepageHeader() {
 							height: 64px !important;
 						}
 					`}</style>
-					{/* <img
-						src={`/avalog/${siteConfig.themeConfig.navbar.logo.src}`}
-						height="64px"
-						alt={siteConfig.title}
-						role="img"
-					></img>*/}
 					<p className={taglineClassName}>{siteConfig.tagline}</p>
 				</div>
 				<div
