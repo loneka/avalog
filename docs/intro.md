@@ -22,12 +22,6 @@ sidebar_position: 1
 
 ### Wally
 
-:::warning
-
-Wally support is currently dysfunctional due to dependency issues. Please use the [`rbxm`](https://github.com/loneka/avalog/releases/latest) instead.
-
-:::
-
 1. Copy details from [Wally](https://wally.run/package/imavafe/avalog)
 2. Paste into your `wally.toml`
 3. Run `wally install`
