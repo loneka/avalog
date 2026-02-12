@@ -1,6 +1,7 @@
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
+local States = require(Avalog.SourceCode.Client.UI.States)
 
 local Children = Fusion.Children
 
@@ -31,7 +32,14 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				OnExit = Props.OnExit,
 			},
 			Scope:CategoryBar {},
-			Scope:TabDisplay {},
+			Scope:Computed(function(Use, Scope)
+				-- Clean menu when closed, improving passive game performance
+				if Use(States.Open) then
+					return OnyxUI.Themer.Theme:is(Theme):during(function()
+						return Scope:TabDisplay {}
+					end)
+				end
+			end),
 		},
 	}))
 end
