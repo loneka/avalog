@@ -1,41 +1,35 @@
 {
 	"name": "avalog",
 	"tree": {
-		"$path": "Include/Linking.luau",
-		"Packages": {
-			"$path": "Packages",
-			"Avalog": {
-				"$className": "Folder",
-				"ThumbnailCamera": {
-					"$path": "Include/ThumbnailCamera.rbxm"
-				},
-				"EasyLoader": {
-					"$path": "Include/EasyLoader"
-				},
+		"$className": "Folder",
+		"ThumbnailCamera": {
+			"$path": "Include/ThumbnailCamera.rbxm"
+		},
+		"EasyLoader": {
+			"$path": "Include/EasyLoader"
+		},
+		"Avalog": {
+			"$path": "Include/Linking.luau",
+			"Packages": {
+				"$path": "Packages",
 				"Avalog": {
-					"$path": "Include/Linking.luau",
-					"Packages": {
-						"$path": "Packages",
-						"Avalog": {
-							"$path": "src/API",
-							"SourceCode": {
-								"$className": "Folder",
-								"Shared": {
-									"$path": "src/Shared",
-									"Zap": {
-										"$path": "network"
-									}
-								},
-								"Storage": {
-									"$path": "src/Storage"
-								},
-								"Server": {
-									"$path": "src/Server"
-								},
-								"Client": {
-									"$path": "src/Client"
-								}
+					"$path": "src/API",
+					"SourceCode": {
+						"$className": "Folder",
+						"Shared": {
+							"$path": "src/Shared",
+							"Zap": {
+								"$path": "network"
 							}
+						},
+						"Storage": {
+							"$path": "src/Storage"
+						},
+						"Server": {
+							"$path": "src/Server"
+						},
+						"Client": {
+							"$path": "src/Client"
 						}
 					}
 				}
