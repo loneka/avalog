@@ -1,4 +1,5 @@
 local RunService = game:GetService("RunService")
+
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
@@ -36,9 +37,13 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	return Scope:CatalogItemsTab(OnyxUI.Util.CombineProps(Props, {
 		Name = script.Name,
 		PrefixItems = Scope:Computed(function(Use)
-			local FeaturedItemsValue = Use(States.Featured.Items)
+			if not RunService:IsStudio() then
+				local FeaturedItemsValue = Use(States.Featured.Items)
 
-			return Sift.Array.merge(CONFIG.Featured.Items, FeaturedItemsValue)
+				return Sift.Array.merge(CONFIG.Featured.Items, FeaturedItemsValue)
+			end
+
+			return {}
 		end),
 
 		OnReachedEnd = function()
