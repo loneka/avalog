@@ -1,9 +1,31 @@
+local RunService = game:GetService("RunService")
+
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
 local States = require(Avalog.SourceCode.Client.UI.States)
+local Categories = require(Avalog.SourceCode.Shared.Categories)
+local AvatarAssetTypes = require(Avalog.SourceCode.Shared.AvatarAssetTypes)
 
 local Children = Fusion.Children
+
+-- Avalog cannot develop w/o featured tab
+if RunService:IsStudio() then
+	if Categories.Marketplace[1].Name ~= "Featured" then
+		table.insert(Categories.Marketplace, 1, {
+			Name = "Featured",
+			CategoryFilter = Enum.CatalogCategoryFilter.Recommended,
+			AssetTypes = AvatarAssetTypes.Types.All,
+			BundleTypes = {
+				Enum.BundleType.Animations,
+				Enum.BundleType.BodyParts,
+				Enum.BundleType.DynamicHead,
+				Enum.BundleType.DynamicHeadAvatar,
+				Enum.BundleType.Shoes,
+			},
+		})
+	end
+end
 
 export type Props = {
 	OnExit: () -> (),

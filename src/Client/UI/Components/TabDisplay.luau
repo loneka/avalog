@@ -12,7 +12,7 @@ local SkinTab = require(script.Parent.SkinTab)
 local BuildTab = require(script.Parent.BuildTab)
 local EquippedItemsTab = require(script.Parent.EquippedItemsTab)
 local InventoryItemsTab = require(script.Parent.InventoryItemsTab)
-local FeaturedItemsTab = require(script.Parent.FeaturedItemsTab)
+local PrimaryItemsTab = require(script.Parent.PrimaryItemsTab)
 
 local TAB_COMPONENTS = {
 	CatalogItemsTab = CatalogItemsTab,
@@ -20,7 +20,7 @@ local TAB_COMPONENTS = {
 	BuildTab = BuildTab,
 	EquippedItemsTab = EquippedItemsTab,
 	InventoryItemsTab = InventoryItemsTab,
-	FeaturedItemsTab = FeaturedItemsTab,
+	PrimaryItemsTab = PrimaryItemsTab,
 }
 
 export type Props = { [string]: any } & {}
@@ -32,7 +32,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		BuildTab = BuildTab,
 		EquippedItemsTab = EquippedItemsTab,
 		InventoryItemsTab = InventoryItemsTab,
-		FeaturedItemsTab = FeaturedItemsTab,
+		PrimaryItemsTab = PrimaryItemsTab,
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
 	local Modes = Config:Get().EditModes
@@ -53,7 +53,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 		if ActiveModeValue == "Marketplace" then
 			if CategoryValue.Name == "Featured" then
-				return "FeaturedItemsTab"
+				return "PrimaryItemsTab"
 			else
 				return "CatalogItemsTab"
 			end

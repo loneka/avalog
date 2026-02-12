@@ -52,6 +52,17 @@ local Categories: { [string]: { Category } } = {
 			},
 		},
 		{
+			Name = "All",
+			AssetTypes = AvatarAssetTypes.Types.All,
+			BundleTypes = {
+				Enum.BundleType.Animations,
+				Enum.BundleType.BodyParts,
+				Enum.BundleType.DynamicHead,
+				Enum.BundleType.DynamicHeadAvatar,
+				Enum.BundleType.Shoes,
+			},
+		},
+		{
 			Name = "Body",
 			SubCategories = {
 				{
@@ -121,5 +132,6 @@ local Categories: { [string]: { Category } } = {
 }
 
 Categories.Inventory = PurgeBundles(Categories.Marketplace)
+table.remove(Categories.Inventory, 1)
 
 return Categories

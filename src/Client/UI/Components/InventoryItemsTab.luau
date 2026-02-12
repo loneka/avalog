@@ -81,14 +81,17 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		end
 	end)
 
-	Scope:Observer(Shown):onChange(function()
+	local function CheckInventoryAccess()
 		local ShownValue = Fusion.peek(Shown)
 		local AccessAllowedValue = Fusion.peek(States.Inventory.AccessAllowed)
 
 		if ShownValue and not AccessAllowedValue then
 			AvatarEditorService:PromptAllowInventoryReadAccess()
 		end
-	end)
+	end
+
+	CheckInventoryAccess()
+
 	AvatarEditorService.PromptAllowInventoryReadAccessCompleted:Connect(function(Result)
 		local ShownValue = Fusion.peek(Shown)
 		local ModeValue = Fusion.peek(States.Catalog.Mode)

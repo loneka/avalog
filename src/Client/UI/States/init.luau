@@ -29,7 +29,7 @@ local States = {
 		AccessAllowed = Scope:Value(false),
 	},
 	Featured = {
-		Items = Scope:Value({}),
+		PrefixItems = Scope:Value({}),
 		Creators = Scope:Value({}),
 	},
 	Screen = {

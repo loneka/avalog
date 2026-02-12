@@ -1,3 +1,4 @@
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
@@ -9,6 +10,7 @@ local Sift = require(Avalog.Parent.Sift)
 local Config = require(Avalog.Config)
 
 local CONFIG = Config:Get()
+local CURATED_SHOWN = (not RunService:IsStudio()) and not (game.CreatorId == Players.LocalPlayer.UserId) -- Only show curated items when relevant
 
 local Children = Fusion.Children
 
@@ -32,15 +34,15 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		end
 	end)
 
-	local AdDisclaimerShown = Scope:Value(true)
+	local CuratedMessageShown = Scope:Value(true)
 
 	return Scope:CatalogItemsTab(OnyxUI.Util.CombineProps(Props, {
 		Name = script.Name,
 		PrefixItems = Scope:Computed(function(Use)
-			if not RunService:IsStudio() then
-				local FeaturedItemsValue = Use(States.Featured.Items)
+			if CURATED_SHOWN then
+				local PrefixItems = Use(States.Featured.PrefixItems)
 
-				return Sift.Array.merge(CONFIG.Featured.Items, FeaturedItemsValue)
+				return Sift.Array.merge(CONFIG.Featured.Items, PrefixItems)
 			end
 
 			return {}
@@ -54,21 +56,21 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 		[Children] = {
 			Scope:Computed(function(Use)
-				if not RunService:IsStudio() then
+				if CURATED_SHOWN then
 					return Scope:CustomButton {
 						AutomaticSize = Enum.AutomaticSize.Y,
-						Visible = AdDisclaimerShown,
+						Visible = CuratedMessageShown,
 						ListHorizontalAlignment = Enum.HorizontalAlignment.Left,
 
 						OnActivated = function()
-							AdDisclaimerShown:set(false)
+							CuratedMessageShown:set(false)
 						end,
 
 						[Children] = {
 							Scope:IconText {
 								Content = {
-									"rbxassetid://13848466137",
-									"Contains exclusive, curated, and paid listings.",
+									"rbxassetid://13850331560",
+									"Contains exclusive, curated, and sponsored listings.",
 								},
 								ListPadding = Scope:Computed(function(Use)
 									return UDim.new(0, Use(Theme.Spacing["0.5"]))

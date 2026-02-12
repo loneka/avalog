@@ -2,6 +2,7 @@ local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
+local States = require(Avalog.SourceCode.Client.UI.States)
 
 local Children = Fusion.Children
 
@@ -15,6 +16,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components, {
 		SliderSetting = SliderSetting,
 	})
+	local Theme = OnyxUI.Themer.Theme:now()
 	local AvatarManager = ServiceProvider:GetAvatarManager()
 
 	local Shown = OnyxUI.Util.Fallback(Props.Shown, false)
@@ -47,18 +49,22 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		Visible = Shown,
 
 		[Children] = {
-			Scope:SliderSetting {
-				Label = "Hue",
-				Value = Hue,
-			},
-			Scope:SliderSetting {
-				Label = "Saturation",
-				Value = Saturation,
-			},
-			Scope:SliderSetting {
-				Label = "Brightness",
-				Value = Brightness,
-			},
+			OnyxUI.Themer.Theme:is(Fusion.peek(States.Theme)):during(function()
+				return {
+					Scope:SliderSetting {
+						Label = "Hue",
+						Value = Hue,
+					},
+					Scope:SliderSetting {
+						Label = "Saturation",
+						Value = Saturation,
+					},
+					Scope:SliderSetting {
+						Label = "Brightness",
+						Value = Brightness,
+					},
+				}
+			end),
 		},
 	}))
 end

@@ -21,14 +21,14 @@ function Featured:FetchItems(Count: number?): boolean
 		Count = 3 * 10
 	end
 
-	local StartIndex = #Fusion.peek(States.Featured.Items)
+	local StartIndex = #Fusion.peek(States.Featured.PrefixItems)
 
 	Future.Try(function()
 		return Zap.GetFeaturedItems.Call(StartIndex, StartIndex + Count)
 	end):After(function(Success, Result)
 		if Success then
 			if Result ~= nil then
-				Featured:_AddEntries(EnumSerDes.DeserializeTree(Result), States.Featured.Items)
+				Featured:_AddEntries(EnumSerDes.DeserializeTree(Result), States.Featured.PrefixItems)
 
 				return true
 			end
@@ -54,7 +54,7 @@ end
 function Featured:Start()
 	if Zap ~= nil then
 		Zap.FeaturedItemsReset.SetCallback(function()
-			States.Featured.Items:set({})
+			States.Featured.PrefixItems:set({})
 			Featured:FetchItems()
 		end)
 	end

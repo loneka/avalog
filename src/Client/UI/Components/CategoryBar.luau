@@ -35,7 +35,13 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				Options = Scope:Computed(function(Use)
 					local ModeValue = Use(Navigation.Mode)
 
-					return CategoriesToNames(Categories[ModeValue])
+					local CategoryNames = CategoriesToNames(Categories[ModeValue])
+
+					if (ModeValue == "Marketplace") and (CategoryNames[1] ~= "Featured") then
+						table.insert(CategoryNames, 1, "Featured")
+					end
+
+					return CategoryNames
 				end),
 				Selection = States.Catalog.Category,
 				Padding = Scope:Computed(function(Use)

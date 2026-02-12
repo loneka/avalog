@@ -16,7 +16,7 @@ local Components = {
 	EquippedItemsTab = require(script.EquippedItemsTab),
 	SliderSetting = require(script.SliderSetting),
 	InventoryItemsTab = require(script.InventoryItemsTab),
-	FeaturedItemsTab = require(script.FeaturedItemsTab),
+	PrimaryItemsTab = require(script.PrimaryItemsTab),
 	UpdatesIndicator = require(script.UpdatesIndicator),
 }
 

@@ -22,9 +22,8 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		AssetIds:set(EquippedAssetIdsValue)
 	end
 
-	Scope:Observer(Shown):onChange(function()
-		UpdateAssetIds()
-	end)
+	UpdateAssetIds()
+
 	Scope:Observer(States.Avatar.Loaded):onChange(function()
 		UpdateAssetIds()
 	end)
