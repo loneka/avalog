@@ -85,6 +85,7 @@ local Categories: { [string]: { Category } } = {
 				{
 					Name = "Shoes",
 					AssetTypes = { Enum.AvatarAssetType.LeftShoeAccessory, Enum.AvatarAssetType.RightShoeAccessory },
+					BundleTypes = { Enum.BundleType.Shoes },
 				},
 				{ Name = "Classic Shirts", AssetTypes = { Enum.AvatarAssetType.Shirt } },
 				{ Name = "Classic T-Shirts", AssetTypes = { Enum.AvatarAssetType.TShirt } },
