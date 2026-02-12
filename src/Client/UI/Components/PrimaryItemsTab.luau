@@ -34,8 +34,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		end
 	end)
 
-	local CuratedMessageShown = Scope:Value(true)
-
 	return Scope:CatalogItemsTab(OnyxUI.Util.CombineProps(Props, {
 		Name = script.Name,
 		PrefixItems = Scope:Computed(function(Use)
@@ -59,11 +57,11 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				if CURATED_SHOWN then
 					return Scope:CustomButton {
 						AutomaticSize = Enum.AutomaticSize.Y,
-						Visible = CuratedMessageShown,
+						Visible = States.Featured.MessageShown,
 						ListHorizontalAlignment = Enum.HorizontalAlignment.Left,
 
 						OnActivated = function()
-							CuratedMessageShown:set(false)
+							States.Featured.MessageShown:set(false)
 						end,
 
 						[Children] = {

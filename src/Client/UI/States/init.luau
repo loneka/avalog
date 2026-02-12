@@ -29,6 +29,7 @@ local States = {
 		AccessAllowed = Scope:Value(false),
 	},
 	Featured = {
+		MessageShown = Scope:Value(true),
 		PrefixItems = Scope:Value({}),
 		Creators = Scope:Value({}),
 	},
