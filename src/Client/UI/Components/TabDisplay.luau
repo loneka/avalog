@@ -7,16 +7,32 @@ local Categories = require(Avalog.SourceCode.Shared.Categories)
 
 local Children = Fusion.Children
 
+local CatalogItemsTab = require(script.Parent.CatalogItemsTab)
+local SkinTab = require(script.Parent.SkinTab)
+local BuildTab = require(script.Parent.BuildTab)
+local EquippedItemsTab = require(script.Parent.EquippedItemsTab)
+local InventoryItemsTab = require(script.Parent.InventoryItemsTab)
+local FeaturedItemsTab = require(script.Parent.FeaturedItemsTab)
+
+local TAB_COMPONENTS = {
+	CatalogItemsTab = CatalogItemsTab,
+	SkinTab = SkinTab,
+	BuildTab = BuildTab,
+	EquippedItemsTab = EquippedItemsTab,
+	InventoryItemsTab = InventoryItemsTab,
+	FeaturedItemsTab = FeaturedItemsTab,
+}
+
 export type Props = { [string]: any } & {}
 
 return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components, {
-		CatalogItemsTab = require(script.Parent.CatalogItemsTab),
-		SkinTab = require(script.Parent.SkinTab),
-		BuildTab = require(script.Parent.BuildTab),
-		EquippedItemsTab = require(script.Parent.EquippedItemsTab),
-		InventoryItemsTab = require(script.Parent.InventoryItemsTab),
-		FeaturedItemsTab = require(script.Parent.FeaturedItemsTab),
+		CatalogItemsTab = CatalogItemsTab,
+		SkinTab = SkinTab,
+		BuildTab = BuildTab,
+		EquippedItemsTab = EquippedItemsTab,
+		InventoryItemsTab = InventoryItemsTab,
+		FeaturedItemsTab = FeaturedItemsTab,
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
 	local Modes = Config:Get().EditModes
@@ -70,42 +86,16 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		ClipsDescendants = true,
 
 		[Children] = {
-			Scope:FeaturedItemsTab {
-				Shown = Scope:Computed(function(Use)
-					local ActiveTabValue = Use(ActiveTab)
-					return ActiveTabValue == "FeaturedItemsTab"
-				end),
-			},
-			Scope:CatalogItemsTab {
-				Shown = Scope:Computed(function(Use)
-					local ActiveTabValue = Use(ActiveTab)
-					return ActiveTabValue == "CatalogItemsTab"
-				end),
-			},
-			Scope:InventoryItemsTab {
-				Shown = Scope:Computed(function(Use)
-					local ActiveTabValue = Use(ActiveTab)
-					return ActiveTabValue == "InventoryItemsTab"
-				end),
-			},
-			Scope:EquippedItemsTab {
-				Shown = Scope:Computed(function(Use)
-					local ActiveTabValue = Use(ActiveTab)
-					return ActiveTabValue == "EquippedItemsTab"
-				end),
-			},
-			Scope:SkinTab {
-				Shown = Scope:Computed(function(Use)
-					local ActiveTabValue = Use(ActiveTab)
-					return ActiveTabValue == "SkinTab"
-				end),
-			},
-			Scope:BuildTab {
-				Shown = Scope:Computed(function(Use)
-					local ActiveTabValue = Use(ActiveTab)
-					return ActiveTabValue == "BuildTab"
-				end),
-			},
+			-- Only render the active tab
+			Scope:Computed(function(Use, Scope)
+				local TabComponent = TAB_COMPONENTS[Use(ActiveTab)]
+
+				if TabComponent then
+					return TabComponent(Scope, {
+						Shown = true,
+					})
+				end
+			end),
 		},
 	}))
 end

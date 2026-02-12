@@ -74,7 +74,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				[Children] = {
 					Scope:ForPairs(Items, function(Use, Scope, Index, Item)
 						return Index,
-							OnyxUI.Themer.Theme:is(Fusion.peek(States.Theme)):during(function()
+							OnyxUI.Themer.Theme:is(Use(States.Theme)):during(function()
 								return Scope:ItemButton {
 									Id = Item.Id,
 									Type = Item.Type,
