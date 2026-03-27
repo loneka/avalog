@@ -55,5 +55,6 @@ TopbarPlus = { wally = "neura-studios/topbarplus", version = "^3.0.2" }
 #   "wally.lock",
 #   "wally.toml",
 #   "network",
-#	"network/*",
+# 	"network/*",
+# 	LICENSE,
 # ]
