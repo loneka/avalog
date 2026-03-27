@@ -30,18 +30,24 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		ListPadding = Scope:Computed(function(Use)
 			return UDim.new(0, Use(Theme.Spacing["0.25"]))
 		end),
+		BackgroundColor3 = Color,
 
 		[Children] = {
 			Scope:IconButton {
 				Image = Logo,
 				ContentSize = Theme.TextSize["1.5"],
 				Color = Scope:Computed(function(Use)
-					local UpdateAvailable = Use(UpdateAvailable)
-
-					if UpdateAvailable then
-						return Use(Theme.Colors.Warning.Dark)
+					if Use(UpdateAvailable) then
+						return Use(Theme.Colors.Warning.Main)
 					else
 						return Use(Theme.Colors.Neutral.Main)
+					end
+				end),
+				ContentColor = Scope:Computed(function(Use)
+					if Use(UpdateAvailable) then
+						return OnyxUI.Util.Colors.Black
+					else
+						return OnyxUI.Util.Colors.White
 					end
 				end),
 				PaddingLeft = Scope:Computed(function(Use)
@@ -69,15 +75,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					Open:set(not OpenValue)
 				end,
 			},
-			Scope:TextInput {
-				Text = Scope:Computed(function(Use)
-					local LinkValue = Use(Link)
-
-					return `Avalog {Version} • {LinkValue}`
-				end),
-				TextTransparency = 0,
-				TextEditable = false,
-				Disabled = true,
+			Scope:Frame {
 				BackgroundColor3 = Theme.Colors.Neutral.Main,
 				BackgroundTransparency = 0,
 				CornerRadius = Scope:Computed(function(Use)
@@ -96,6 +94,36 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					Theme.SpringSpeed["2"],
 					Theme.SpringDampening["1"]
 				),
+				ListEnabled = true,
+				ListFillDirection = Enum.FillDirection.Horizontal,
+				ListVerticalAlignment = Enum.VerticalAlignment.Center,
+				ListPadding = Scope:Computed(function(Use)
+					return UDim.new(0, Use(Theme.Spacing["0"]))
+				end),
+				Padding = Scope:Computed(function(Use)
+					return UDim.new(0, Use(Theme.Spacing["0.5"]))
+				end),
+
+				[Children] = {
+					Scope:Text {
+						Text = `Avalog {Version} • `,
+					},
+					Scope:TextInput {
+						Text = Scope:Computed(function(Use)
+							local LinkValue = Use(Link)
+
+							return `{LinkValue}`
+						end),
+						TextTransparency = 0,
+						TextEditable = false,
+						Disabled = true,
+						StrokeEnabled = false,
+						PaddingLeft = UDim.new(),
+						PaddingRight = UDim.new(),
+						PaddingTop = UDim.new(),
+						PaddingBottom = UDim.new(),
+					},
+				},
 			},
 		},
 	}))
