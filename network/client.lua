@@ -135,10 +135,10 @@ if not RunService:IsRunning() then
 		UpdateAvatar = table.freeze({
 			Fire = noop
 		}),
-		GetFeaturedItems = table.freeze({
+		GetCloudConfig = table.freeze({
 			Call = noop
 		}),
-		FeaturedItemsReset = table.freeze({
+		CloudConfigReset = table.freeze({
 			SetCallback = noop
 		}),
 		BulkPurchaseAvatarItems = table.freeze({
@@ -151,6 +151,23 @@ local remotes = ReplicatedStorage:WaitForChild("ZAP")
 local reliable = remotes:WaitForChild("AVALOG_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected AVALOG_RELIABLE to be a RemoteEvent")
 
+export type SerEnumItem = ({
+	["EnumType"]: (string),
+	["Value"]: (number),
+})
+export type AccessorySpec = ({
+	["AssetId"]: (number),
+	["AccessoryType"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+	["Order"]: ((number)?),
+	["Puffiness"]: ((number)?),
+	["IsLayered"]: ((boolean)?),
+	["Position"]: ((Vector3)?),
+	["Rotation"]: ((Vector3)?),
+	["Scale"]: ((Vector3)?),
+})
 export type CatalogItem = ({
 	["AssetId"]: (number),
 	["Name"]: (string),
@@ -162,6 +179,19 @@ export type CatalogItem = ({
 		["EnumType"]: (string),
 		["Value"]: (number),
 	}),
+})
+export type EquippedEmote = ({
+	["Name"]: (string),
+	["Slot"]: (number),
+})
+export type PromotedItem = ({
+	["itemId"]: (string),
+	["itemType"]: ("Asset" | "Bundle"),
+	["tintColor"]: ((string)?),
+	["promotionId"]: (string),
+	["bid"]: (number),
+	["startTime"]: (number),
+	["endTime"]: (number),
 })
 export type AvatarItem = ({
 	["Id"]: (number),
@@ -175,50 +205,33 @@ export type AvatarItem = ({
 	}),
 	["Name"]: (string),
 })
-export type BulkPurchaseAvatarItem = ({
-	["Id"]: (string),
-	["Type"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
+export type ItemType = ("Asset" | "Bundle")
+export type Item = ({
+	["itemId"]: (string),
+	["itemType"]: ("Asset" | "Bundle"),
+	["tintColor"]: ((string)?),
 })
-export type FeaturedData = ({
-	["Items"]: ({ ({
-		["TransactionHash"]: (string),
-		["Bid"]: (number),
-		["StartTime"]: (number),
-		["EndTime"]: (number),
-		["Power"]: (number),
-		["Id"]: (number),
-		["ItemType"]: ({
-			["EnumType"]: (string),
-			["Value"]: (number),
-		}),
+export type CloudConfig = ({
+	["latestVersion"]: (string),
+	["featuredItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
 	}) }),
-	["Creators"]: ({ ({
-		["TransactionHash"]: (string),
-		["Bid"]: (number),
-		["StartTime"]: (number),
-		["EndTime"]: (number),
-		["Power"]: (number),
-		["Id"]: (number),
-		["CreatorType"]: ({
-			["EnumType"]: (string),
-			["Value"]: (number),
-		}),
+	["pinnedItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
 	}) }),
-})
-export type FeaturedItem = ({
-	["TransactionHash"]: (string),
-	["Bid"]: (number),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-	["Power"]: (number),
-	["Id"]: (number),
-	["ItemType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
+	["promotedItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+		["promotionId"]: (string),
+		["bid"]: (number),
+		["startTime"]: (number),
+		["endTime"]: (number),
+	}) }),
 })
 export type HumanoidDescriberData = ({
 	["Accessories"]: ({ ({
@@ -280,38 +293,12 @@ export type HumanoidDescriberData = ({
 		["Pants"]: (number),
 	}),
 })
-export type FeaturedCreator = ({
-	["TransactionHash"]: (string),
-	["Bid"]: (number),
-	["StartTime"]: (number),
-	["EndTime"]: (number),
-	["Power"]: (number),
-	["Id"]: (number),
-	["CreatorType"]: ({
+export type BulkPurchaseAvatarItem = ({
+	["Id"]: (string),
+	["Type"]: ({
 		["EnumType"]: (string),
 		["Value"]: (number),
 	}),
-})
-export type AccessorySpec = ({
-	["AssetId"]: (number),
-	["AccessoryType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-	["Order"]: ((number)?),
-	["Puffiness"]: ((number)?),
-	["IsLayered"]: ((boolean)?),
-	["Position"]: ((Vector3)?),
-	["Rotation"]: ((Vector3)?),
-	["Scale"]: ((Vector3)?),
-})
-export type EquippedEmote = ({
-	["Name"]: (string),
-	["Slot"]: (number),
-})
-export type SerEnumItem = ({
-	["EnumType"]: (string),
-	["Value"]: (number),
 })
 
 local function SendEvents()
@@ -343,38 +330,91 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 	local len = buffer.len(buff)
 	while incoming_read < len do
 		local id = buffer.readu8(buff, read(1))
-		if id == 0 then -- FeaturedItemsReset
+		if id == 0 then -- CloudConfigReset
 			local value
 			if reliable_events[0] then
 				task.spawn(reliable_events[0], value)
 			else
 				reliable_event_queue[0] += 1
 				if reliable_event_queue[0] > 16 then
-					warn(`[ZAP] {reliable_event_queue[0]} events in queue for FeaturedItemsReset. Did you forget to attach a listener?`)
+					warn(`[ZAP] {reliable_event_queue[0]} events in queue for CloudConfigReset. Did you forget to attach a listener?`)
 				end
 			end
-		elseif id == 1 then -- GetFeaturedItems
+		elseif id == 1 then -- GetCloudConfig
 			local call_id = buffer.readu8(incoming_buff, read(1))
 			local value
 			local bool_1 = buffer.readu8(incoming_buff, read(1))
 			if bit32.btest(bool_1, 0b0000000000000001) then
+				value = {  }
 				local len_1 = buffer.readu16(incoming_buff, read(2))
-				value = table.create(len_1)
-				for i_1 = 1, len_1 do
+				value["latestVersion"] = buffer.readstring(incoming_buff, read(len_1), len_1)
+				local len_2 = buffer.readu16(incoming_buff, read(2))
+				value["featuredItems"] = table.create(len_2)
+				for i_1 = 1, len_2 do
+					local bool_2 = buffer.readu8(incoming_buff, read(1))
 					local val_1
 					val_1 = {  }
-					local len_2 = buffer.readu16(incoming_buff, read(2))
-					val_1["TransactionHash"] = buffer.readstring(incoming_buff, read(len_2), len_2)
-					val_1["Bid"] = buffer.readf64(incoming_buff, read(8))
-					val_1["StartTime"] = buffer.readf64(incoming_buff, read(8))
-					val_1["EndTime"] = buffer.readf64(incoming_buff, read(8))
-					val_1["Power"] = buffer.readf64(incoming_buff, read(8))
-					val_1["Id"] = buffer.readf64(incoming_buff, read(8))
-					val_1["ItemType"] = {  }
 					local len_3 = buffer.readu16(incoming_buff, read(2))
-					val_1["ItemType"]["EnumType"] = buffer.readstring(incoming_buff, read(len_3), len_3)
-					val_1["ItemType"]["Value"] = buffer.readu16(incoming_buff, read(2))
-					value[i_1] = val_1
+					val_1["itemId"] = buffer.readstring(incoming_buff, read(len_3), len_3)
+					if bit32.btest(bool_2, 0b0000000000000001) then
+						val_1["itemType"] = "Asset"
+					else
+						val_1["itemType"] = "Bundle"
+					end
+					if bit32.btest(bool_2, 0b0000000000000010) then
+						local len_4 = buffer.readu16(incoming_buff, read(2))
+						val_1["tintColor"] = buffer.readstring(incoming_buff, read(len_4), len_4)
+					else
+						val_1["tintColor"] = nil
+					end
+					value["featuredItems"][i_1] = val_1
+				end
+				local len_5 = buffer.readu16(incoming_buff, read(2))
+				value["pinnedItems"] = table.create(len_5)
+				for i_2 = 1, len_5 do
+					local bool_3 = buffer.readu8(incoming_buff, read(1))
+					local val_2
+					val_2 = {  }
+					local len_6 = buffer.readu16(incoming_buff, read(2))
+					val_2["itemId"] = buffer.readstring(incoming_buff, read(len_6), len_6)
+					if bit32.btest(bool_3, 0b0000000000000001) then
+						val_2["itemType"] = "Asset"
+					else
+						val_2["itemType"] = "Bundle"
+					end
+					if bit32.btest(bool_3, 0b0000000000000010) then
+						local len_7 = buffer.readu16(incoming_buff, read(2))
+						val_2["tintColor"] = buffer.readstring(incoming_buff, read(len_7), len_7)
+					else
+						val_2["tintColor"] = nil
+					end
+					value["pinnedItems"][i_2] = val_2
+				end
+				local len_8 = buffer.readu16(incoming_buff, read(2))
+				value["promotedItems"] = table.create(len_8)
+				for i_3 = 1, len_8 do
+					local bool_4 = buffer.readu8(incoming_buff, read(1))
+					local val_3
+					val_3 = {  }
+					local len_9 = buffer.readu16(incoming_buff, read(2))
+					val_3["itemId"] = buffer.readstring(incoming_buff, read(len_9), len_9)
+					if bit32.btest(bool_4, 0b0000000000000001) then
+						val_3["itemType"] = "Asset"
+					else
+						val_3["itemType"] = "Bundle"
+					end
+					if bit32.btest(bool_4, 0b0000000000000010) then
+						local len_10 = buffer.readu16(incoming_buff, read(2))
+						val_3["tintColor"] = buffer.readstring(incoming_buff, read(len_10), len_10)
+					else
+						val_3["tintColor"] = nil
+					end
+					local len_11 = buffer.readu16(incoming_buff, read(2))
+					val_3["promotionId"] = buffer.readstring(incoming_buff, read(len_11), len_11)
+					val_3["bid"] = buffer.readf32(incoming_buff, read(4))
+					val_3["startTime"] = buffer.readf32(incoming_buff, read(4))
+					val_3["endTime"] = buffer.readf32(incoming_buff, read(4))
+					value["promotedItems"][i_3] = val_3
 				end
 			else
 				value = nil
@@ -458,107 +498,107 @@ local returns = {
 		}))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
-			local bool_3 = 0
-			local bool_3_pos_1 = alloc(1)
-			local len_4 = #Value["Accessories"]
+			local bool_6 = 0
+			local bool_6_pos_1 = alloc(1)
+			local len_12 = #Value["Accessories"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_4)
-			for i_2 = 1, len_4 do
-				local bool_2 = 0
-				local bool_2_pos_1 = alloc(1)
-				local val_2 = Value["Accessories"][i_2]
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_12)
+			for i_4 = 1, len_12 do
+				local bool_5 = 0
+				local bool_5_pos_1 = alloc(1)
+				local val_4 = Value["Accessories"][i_4]
 				alloc(8)
-				buffer.writef64(outgoing_buff, outgoing_apos, val_2["AssetId"])
-				local len_5 = #val_2["AccessoryType"]["EnumType"]
+				buffer.writef64(outgoing_buff, outgoing_apos, val_4["AssetId"])
+				local len_13 = #val_4["AccessoryType"]["EnumType"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_5)
-				alloc(len_5)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_2["AccessoryType"]["EnumType"], len_5)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_13)
+				alloc(len_13)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_4["AccessoryType"]["EnumType"], len_13)
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, val_2["AccessoryType"]["Value"])
-				if val_2["Order"] ~= nil then
-					bool_2 = bit32.bor(bool_2, 0b0000000000000001)
+				buffer.writeu16(outgoing_buff, outgoing_apos, val_4["AccessoryType"]["Value"])
+				if val_4["Order"] ~= nil then
+					bool_5 = bit32.bor(bool_5, 0b0000000000000001)
 					alloc(2)
-					buffer.writeu16(outgoing_buff, outgoing_apos, val_2["Order"])
+					buffer.writeu16(outgoing_buff, outgoing_apos, val_4["Order"])
 				end
-				if val_2["Puffiness"] ~= nil then
-					bool_2 = bit32.bor(bool_2, 0b0000000000000010)
+				if val_4["Puffiness"] ~= nil then
+					bool_5 = bit32.bor(bool_5, 0b0000000000000010)
 					alloc(4)
-					buffer.writef32(outgoing_buff, outgoing_apos, val_2["Puffiness"])
+					buffer.writef32(outgoing_buff, outgoing_apos, val_4["Puffiness"])
 				end
-				if val_2["IsLayered"] ~= nil then
-					bool_2 = bit32.bor(bool_2, 0b0000000000000100)
-					if val_2["IsLayered"] then
-						bool_2 = bit32.bor(bool_2, 0b0000000000001000)
+				if val_4["IsLayered"] ~= nil then
+					bool_5 = bit32.bor(bool_5, 0b0000000000000100)
+					if val_4["IsLayered"] then
+						bool_5 = bit32.bor(bool_5, 0b0000000000001000)
 					end
 				end
-				if val_2["Position"] ~= nil then
-					bool_2 = bit32.bor(bool_2, 0b0000000000010000)
+				if val_4["Position"] ~= nil then
+					bool_5 = bit32.bor(bool_5, 0b0000000000010000)
 					alloc(4)
-					buffer.writef32(outgoing_buff, outgoing_apos, val_2["Position"].X)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_4["Position"].X)
 					alloc(4)
-					buffer.writef32(outgoing_buff, outgoing_apos, val_2["Position"].Y)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_4["Position"].Y)
 					alloc(4)
-					buffer.writef32(outgoing_buff, outgoing_apos, val_2["Position"].Z)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_4["Position"].Z)
 				end
-				if val_2["Rotation"] ~= nil then
-					bool_2 = bit32.bor(bool_2, 0b0000000000100000)
+				if val_4["Rotation"] ~= nil then
+					bool_5 = bit32.bor(bool_5, 0b0000000000100000)
 					alloc(4)
-					buffer.writef32(outgoing_buff, outgoing_apos, val_2["Rotation"].X)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_4["Rotation"].X)
 					alloc(4)
-					buffer.writef32(outgoing_buff, outgoing_apos, val_2["Rotation"].Y)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_4["Rotation"].Y)
 					alloc(4)
-					buffer.writef32(outgoing_buff, outgoing_apos, val_2["Rotation"].Z)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_4["Rotation"].Z)
 				end
-				if val_2["Scale"] ~= nil then
-					bool_2 = bit32.bor(bool_2, 0b0000000001000000)
+				if val_4["Scale"] ~= nil then
+					bool_5 = bit32.bor(bool_5, 0b0000000001000000)
 					alloc(4)
-					buffer.writef32(outgoing_buff, outgoing_apos, val_2["Scale"].X)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_4["Scale"].X)
 					alloc(4)
-					buffer.writef32(outgoing_buff, outgoing_apos, val_2["Scale"].Y)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_4["Scale"].Y)
 					alloc(4)
-					buffer.writef32(outgoing_buff, outgoing_apos, val_2["Scale"].Z)
+					buffer.writef32(outgoing_buff, outgoing_apos, val_4["Scale"].Z)
 				end
-				buffer.writeu8(outgoing_buff, bool_2_pos_1, bool_2)
+				buffer.writeu8(outgoing_buff, bool_5_pos_1, bool_5)
 			end
 			local len_pos_1
-			local len_6 = 0
+			local len_14 = 0
 			for k_1, v_1 in Value["Emotes"] do
-				if len_6 == 0 then
+				if len_14 == 0 then
 					len_pos_1 = alloc(2)
 				end
-				len_6 = len_6 + 1
-				local len_7 = #k_1
+				len_14 = len_14 + 1
+				local len_15 = #k_1
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_7)
-				alloc(len_7)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_1, len_7)
-				local len_8 = #v_1
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_15)
+				alloc(len_15)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_1, len_15)
+				local len_16 = #v_1
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_8)
-				for i_3 = 1, len_8 do
-					local val_3 = v_1[i_3]
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_16)
+				for i_5 = 1, len_16 do
+					local val_5 = v_1[i_5]
 					alloc(8)
-					buffer.writef64(outgoing_buff, outgoing_apos, val_3)
+					buffer.writef64(outgoing_buff, outgoing_apos, val_5)
 				end
 			end
 			if len_pos_1 then
-				buffer.writeu16(outgoing_buff, len_pos_1, len_6 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_1, len_14 - 1)
 			else
-				bool_3 = bit32.bor(bool_3, 0b0000000000000001)
+				bool_6 = bit32.bor(bool_6, 0b0000000000000001)
 			end
-			local len_9 = #Value["EquippedEmotes"]
+			local len_17 = #Value["EquippedEmotes"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_9)
-			for i_4 = 1, len_9 do
-				local val_4 = Value["EquippedEmotes"][i_4]
-				local len_10 = #val_4["Name"]
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_17)
+			for i_6 = 1, len_17 do
+				local val_6 = Value["EquippedEmotes"][i_6]
+				local len_18 = #val_6["Name"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_10)
-				alloc(len_10)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_4["Name"], len_10)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_18)
+				alloc(len_18)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_6["Name"], len_18)
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, val_4["Slot"])
+				buffer.writeu16(outgoing_buff, outgoing_apos, val_6["Slot"])
 			end
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Face"])
@@ -644,22 +684,32 @@ local returns = {
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Clothing"]["TShirt"])
 			alloc(8)
 			buffer.writef64(outgoing_buff, outgoing_apos, Value["Clothing"]["Pants"])
-			buffer.writeu8(outgoing_buff, bool_3_pos_1, bool_3)
+			buffer.writeu8(outgoing_buff, bool_6_pos_1, bool_6)
 		end,
 	},
-	GetFeaturedItems = {
-		Call = function(Value: (number), Value2: (number)): ((({ ({
-			["TransactionHash"]: (string),
-			["Bid"]: (number),
-			["StartTime"]: (number),
-			["EndTime"]: (number),
-			["Power"]: (number),
-			["Id"]: (number),
-			["ItemType"]: ({
-				["EnumType"]: (string),
-				["Value"]: (number),
-			}),
-		}) })?))
+	GetCloudConfig = {
+		Call = function(): ((({
+			["latestVersion"]: (string),
+			["featuredItems"]: ({ ({
+				["itemId"]: (string),
+				["itemType"]: ("Asset" | "Bundle"),
+				["tintColor"]: ((string)?),
+			}) }),
+			["pinnedItems"]: ({ ({
+				["itemId"]: (string),
+				["itemType"]: ("Asset" | "Bundle"),
+				["tintColor"]: ((string)?),
+			}) }),
+			["promotedItems"]: ({ ({
+				["itemId"]: (string),
+				["itemType"]: ("Asset" | "Bundle"),
+				["tintColor"]: ((string)?),
+				["promotionId"]: (string),
+				["bid"]: (number),
+				["startTime"]: (number),
+				["endTime"]: (number),
+			}) }),
+		})?))
 			function_call_id += 1
 			function_call_id %= 256
 			if reliable_event_queue[1][function_call_id] then
@@ -670,15 +720,11 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, function_call_id)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value)
-			alloc(4)
-			buffer.writeu32(outgoing_buff, outgoing_apos, Value2)
 			reliable_event_queue[1][function_call_id] = coroutine.running()
 			return coroutine.yield()
 		end,
 	},
-	FeaturedItemsReset = {
+	CloudConfigReset = {
 		SetCallback = function(Callback: () -> ()): () -> ()
 			reliable_events[0] = Callback
 			for _ = 1, reliable_event_queue[0] do
@@ -700,25 +746,25 @@ local returns = {
 		}) }))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local len_11 = #Value
-			assert(len_11 >= 1, "value is less than 1!")
-			assert(len_11 <= 20, "value is more than 20!")
+			local len_19 = #Value
+			assert(len_19 >= 1, "value is less than 1!")
+			assert(len_19 <= 20, "value is more than 20!")
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, len_11 - 1)
-			for i_5 = 1, len_11 do
-				local val_5 = Value[i_5]
-				local len_12 = #val_5["Id"]
+			buffer.writeu8(outgoing_buff, outgoing_apos, len_19 - 1)
+			for i_7 = 1, len_19 do
+				local val_7 = Value[i_7]
+				local len_20 = #val_7["Id"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_12)
-				alloc(len_12)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_5["Id"], len_12)
-				local len_13 = #val_5["Type"]["EnumType"]
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
+				alloc(len_20)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_7["Id"], len_20)
+				local len_21 = #val_7["Type"]["EnumType"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_13)
-				alloc(len_13)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_5["Type"]["EnumType"], len_13)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
+				alloc(len_21)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_7["Type"]["EnumType"], len_21)
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, val_5["Type"]["Value"])
+				buffer.writeu16(outgoing_buff, outgoing_apos, val_7["Type"]["Value"])
 			end
 		end,
 	},

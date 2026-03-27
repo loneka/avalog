@@ -4,13 +4,27 @@ local RunService = game:GetService("RunService")
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
-local Featured = require(Avalog.SourceCode.Client.UI.StateExtensions.Featured)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local Sift = require(Avalog.Parent.Sift)
 local Config = require(Avalog.Config)
 
 local CONFIG = Config:Get()
-local CURATED_SHOWN = (not RunService:IsStudio()) and not (game.CreatorId == Players.LocalPlayer.UserId) -- Only show curated items when relevant
+local CURATED_SHOWN = true -- (not RunService:IsStudio()) and not (game.CreatorId == Players.LocalPlayer.UserId) -- Only show curated items when relevant
+
+local function CamelToPascal(Dictionary: { [string]: any })
+	return Sift.Dictionary.map(Dictionary, function(Value, Key)
+		if typeof(Value) == "table" then
+			Value = CamelToPascal(Value)
+		end
+		if typeof(Key) == "string" then
+			Key = Key:gsub("(%l)(%w*)", function(a, b)
+				return a:upper() .. b
+			end)
+		end
+
+		return Value, Key
+	end)
+end
 
 local Children = Fusion.Children
 
@@ -26,31 +40,22 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
 
-	Scope:Observer(States.Open):onChange(function()
-		local OpenValue = Fusion.peek(States.Open)
-
-		if OpenValue == true then
-			Featured:FetchItems()
-		end
-	end)
-
 	return Scope:CatalogItemsTab(OnyxUI.Util.CombineProps(Props, {
 		Name = script.Name,
 		PrefixItems = Scope:Computed(function(Use)
 			if CURATED_SHOWN then
-				local PrefixItems = Use(States.Featured.PrefixItems)
+				local PinnedItems = Use(States.CloudConfig).pinnedItems
 
-				return Sift.Array.merge(CONFIG.Featured.Items, PrefixItems)
+				for _, Item in PinnedItems do
+					Item.Id = tonumber(Item.itemId)
+					Item.ItemType = Item.itemType
+				end
+
+				return Sift.Array.merge(CONFIG.Featured.Items, PinnedItems)
 			end
 
 			return {}
 		end),
-
-		OnReachedEnd = function()
-			task.spawn(function()
-				Featured:FetchItems()
-			end)
-		end,
 
 		[Children] = {
 			Scope:Computed(function(Use)

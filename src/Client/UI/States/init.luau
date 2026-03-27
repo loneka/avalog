@@ -1,5 +1,6 @@
 local Avalog = script.Parent.Parent.Parent.Parent
 local Fusion = require(Avalog.Parent.Fusion)
+local Types = require(Avalog.SourceCode.Shared.Types)
 
 local Scope = Fusion.scoped(Fusion)
 
@@ -33,6 +34,7 @@ local States = {
 		PrefixItems = Scope:Value({}),
 		Creators = Scope:Value({}),
 	},
+	CloudConfig = Scope:Value(Types.AvalogConfig.Fallback),
 	Screen = {
 		Resolution = Scope:Value(Vector2.new()),
 	},
