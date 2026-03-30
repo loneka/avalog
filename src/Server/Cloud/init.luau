@@ -2,8 +2,6 @@
 	Handles interaction with external cloud APIs.
 ]]
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
 local Avalog = script.Parent.Parent.Parent
 local Zap = require(Avalog.SourceCode.Shared.Zap.server)
 local Fetch = require(Avalog.Parent.Fetch)
@@ -57,6 +55,7 @@ end
 function Cloud.UpdateConfig(_self: typeof(Cloud))
 	local Success, Response = Fetch(BASE_URL .. "/app-config", {
 		Headers = {
+			["Experience-Id"] = tostring(game.GameId),
 			["Place-Id"] = tostring(game.PlaceId),
 		},
 	}):Await()
