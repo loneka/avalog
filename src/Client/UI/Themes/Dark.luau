@@ -11,17 +11,17 @@ local Scope = Fusion.scoped(Fusion)
 return Themer.NewTheme(Scope, {
 	Colors = {
 		Primary = {
-			Main = Util.Colors.White,
+			Main = Color3.fromHex("fbfafd"),
 		},
 		Secondary = {
-			Main = Util.Colors.White,
+			Main = Color3.fromHex("fbfafd"),
 		},
 		Accent = {
-			Main = Util.Colors.White,
+			Main = Color3.fromHex("fbfafd"),
 		},
 
 		Neutral = {
-			Main = Util.Colors.Zinc["800"],
+			Main = Color3.fromHex("#242429"),
 		},
 		NeutralContent = {
 			Main = Util.Colors.Stone["100"],
@@ -29,14 +29,14 @@ return Themer.NewTheme(Scope, {
 		},
 
 		Base = {
-			Main = Color3.fromHex("121215"),
+			Main = Color3.fromHex("0A0B14"),
 		},
 		BaseContent = {
-			Main = Util.Colors.White,
+			Main = Color3.fromHex("fbfafd"),
 		},
 
 		Success = {
-			Main = Util.Colors.Green["500"],
+			Main = Util.Colors.Green["600"],
 		},
 		Error = {
 			Main = Util.Colors.Red["500"],
