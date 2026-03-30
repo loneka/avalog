@@ -40,6 +40,10 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
 
+	local CloudConfigLoaded = Scope:Computed(function(Use)
+		return Use(States.CloudConfig).latestVersion ~= "0.0.0"
+	end)
+
 	return Scope:CatalogItemsTab(OnyxUI.Util.CombineProps(Props, {
 		Name = script.Name,
 		PrefixItems = Scope:Computed(function(Use)
@@ -56,8 +60,36 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 			return {}
 		end),
+		LoadItems = CloudConfigLoaded,
 
 		[Children] = {
+			Scope:Computed(function(Use)
+				local CloudConfigFailedValue = Use(CloudConfigLoaded)
+
+				if CloudConfigFailedValue then
+					return
+				end
+
+				return Scope:Card {
+					BackgroundColor3 = Theme.Colors.Neutral.Main,
+					ListEnabled = true,
+					CornerRadius = Scope:Computed(function(Use)
+						return UDim.new(0, Use(Theme.CornerRadius["1.5"]))
+					end),
+
+					[Children] = {
+						Scope:Text {
+							Text = "Avalog requires access to HTTP requests to function properly.",
+						},
+						Scope:TextInput {
+							Text = "https://devforum.roblox.com/t/3513102/71",
+							Color = Theme.Colors.BaseContent.Main,
+							TextTransparency = 0,
+							TextEditable = false,
+						},
+					},
+				}
+			end),
 			Scope:Computed(function(Use)
 				if CURATED_SHOWN then
 					return Scope:CustomButton {

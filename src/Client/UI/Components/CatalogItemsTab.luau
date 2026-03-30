@@ -8,6 +8,7 @@ local Sift = require(Avalog.Parent.Sift)
 
 export type Props = {
 	PrefixItems: Fusion.UsedAs<{ [string]: any }>?,
+	LoadItems: Fusion.UsedAs<boolean>?,
 	Shown: Fusion.UsedAs<boolean>?,
 }
 
@@ -18,6 +19,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 	local Shown = OnyxUI.Util.Fallback(Props.Shown, false)
 	local PrefixItems = OnyxUI.Util.Fallback(Props.PrefixItems, {})
+	local LoadItems = OnyxUI.Util.Fallback(Props.LoadItems, true)
 
 	local DeepestCategory = Scope:Computed(function(Use)
 		local CategoryValue = Use(Navigation.Category)
@@ -59,6 +61,9 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 	local function UpdateSearch()
 		if not Fusion.peek(Shown) then
+			return
+		end
+		if not Fusion.peek(LoadItems) then
 			return
 		end
 
