@@ -45,7 +45,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				end),
 				Selection = States.Catalog.Category,
 				Padding = Scope:Computed(function(Use)
-					return UDim.new(0, Use(Theme.Spacing["0.75"]))
+					return UDim.new(0, Use(Theme.Spacing["0.5"]))
 				end),
 				AutomaticSize = Enum.AutomaticSize.Y,
 			},
@@ -58,7 +58,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				end),
 				Selection = States.Catalog.SubCategory,
 				Padding = Scope:Computed(function(Use)
-					return UDim.new(0, Use(Theme.Spacing["0.75"]))
+					return UDim.new(0, Use(Theme.Spacing["0.5"]))
 				end),
 				BackgroundTransparency = 0,
 				BackgroundColor3 = Theme.Colors.Neutral.Main,

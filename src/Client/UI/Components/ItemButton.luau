@@ -136,7 +136,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 							return UDim.new(0, Use(Theme.CornerRadius["1"]))
 						end),
 						Size = Scope:Computed(function(Use)
-							local Offset = Use(Theme.Spacing["8"])
+							local Offset = Use(Theme.TextSize["1"]) * 5
 							return UDim2.fromOffset(Offset, Offset)
 						end),
 					},

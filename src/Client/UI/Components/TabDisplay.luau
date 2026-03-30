@@ -78,7 +78,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		Name = "Tab",
 		FlexMode = Enum.UIFlexMode.Fill,
 		Padding = Scope:Computed(function(Use)
-			return UDim.new(0, Use(Theme.Spacing["1"]))
+			return UDim.new(0, Use(Theme.Spacing["0.5"]))
 		end),
 		ListEnabled = true,
 		ListHorizontalFlex = Enum.UIFlexAlignment.Fill,

@@ -83,7 +83,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			Scope:Frame {
 				Name = "Contents",
 				Padding = Scope:Computed(function(Use)
-					return UDim.new(0, Use(Theme.Spacing["1"]))
+					return UDim.new(0, Use(Theme.Spacing["0.25"]))
 				end),
 				AutomaticSize = Enum.AutomaticSize.None,
 
@@ -205,7 +205,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 								[Children] = {
 									Scope:Button {
 										Content = { "rbxassetid://13846120661" },
-										SizeVariant = "ExtraLarge",
+										SizeVariant = "Large",
 										Disabled = Scope:Computed(function(Use)
 											local DataHistoryValue = Use(States.Avatar.DataHistory)
 											local Category = Use(Navigation.Category)
@@ -218,7 +218,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 									},
 									Scope:Button {
 										Content = { "rbxassetid://13847364382" },
-										SizeVariant = "ExtraLarge",
+										SizeVariant = "Large",
 										Color = Theme.Colors.Error.Main,
 
 										OnActivated = function()
@@ -227,7 +227,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 									},
 									Scope:Button {
 										Content = { "rbxassetid://13846158505" },
-										SizeVariant = "ExtraLarge",
+										SizeVariant = "Large",
 										Disabled = Scope:Computed(function(Use)
 											local UndoHistoryValue = Use(States.Avatar.UndoHistory)
 											local Category = Use(Navigation.Category)
