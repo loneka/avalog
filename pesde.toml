@@ -36,25 +36,22 @@ Bootloader = { wally = "imavafe/bootloader", version = "^0.1.0" }
 Stator = { wally = "imavafe/stator", version = "^0.1.1" }
 Squash = { wally = "data-oriented-house/squash", version = "^2.5.0" }
 Sift = { wally = "csqrl/sift", version = "^0.0.9" }
-
 Fusion = { wally = "elttob/fusion", version = "^0.3.0" }
 Skilift = { wally = "alicesaidhi/skilift", version = "^0.3.1" }
-
 OnyxUI = { wally = "imavafe/onyx-ui", version = "^0.5.3" }
+TopbarPlus = { wally = "1foreverhd/topbarplus", version = "^3.4.0" }
 
-TopbarPlus = { wally = "neura-studios/topbarplus", version = "^3.0.2" }
 
-
-# For wally
+# For wally:
 
 # exclude = ["**"]
 # include = [
-#   "src",
-#   "src/*",
-#   "default.project.json",
-#   "wally.lock",
-#   "wally.toml",
-#   "network",
+# 	"src",
+# 	"src/*",
+# 	"default.project.json",
+# 	"wally.lock",
+# 	"wally.toml",
+# 	"network",
 # 	"network/*",
-# 	LICENSE,
+# 	"LICENSE",
 # ]

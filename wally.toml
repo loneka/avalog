@@ -13,7 +13,7 @@ Signal = "sleitnick/signal@^2.0.1"
 Skilift = "alicesaidhi/skilift@^0.3.1"
 Squash = "data-oriented-house/squash@^2.5.0"
 Stator = "imavafe/stator@^0.1.1"
-TopbarPlus = "neura-studios/topbarplus@^3.0.2"
+TopbarPlus = "1foreverhd/topbarplus@^3.4.0"
 t = "osyrisrblx/t@^3.1.1"
 
 [package]
@@ -24,12 +24,12 @@ version = "0.1.11"
 
 exclude = ["**"]
 include = [
-  "src",
-  "src/*",
-  "default.project.json",
-  "wally.lock",
-  "wally.toml",
-  "network",
-  "network/*",
-  "LICENSE",
+	"src",
+	"src/*",
+	"default.project.json",
+	"wally.lock",
+	"wally.toml",
+	"network",
+	"network/*",
+	"LICENSE",
 ]
