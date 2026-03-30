@@ -20,7 +20,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Link = OnyxUI.Util.Fallback(Props.Link, "https://devforum.com")
 	local Logo = OnyxUI.Util.Fallback(Props.Logo, "")
 	local UpdateAvailable = OnyxUI.Util.Fallback(Props.UpdateAvailable, false)
-	local Color = OnyxUI.Util.Fallback(Props.Color, Theme.Colors.Neutral.Main)
+	local Color = OnyxUI.Util.Fallback(Props.Color, Theme.Colors.Neutral.Dark)
 
 	return Scope:Frame(OnyxUI.Util.CombineProps(Props, {
 		Name = script.Name,
@@ -31,11 +31,18 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			return UDim.new(0, Use(Theme.Spacing["0.25"]))
 		end),
 		BackgroundColor3 = Color,
+		BackgroundTransparency = 0,
+		CornerRadius = Scope:Computed(function(Use)
+			return UDim.new(0, Use(Theme.CornerRadius["Full"]))
+		end),
+		Padding = Scope:Computed(function(Use)
+			return UDim.new(0, Use(Theme.Spacing["0.25"]))
+		end),
 
 		[Children] = {
 			Scope:IconButton {
 				Image = Logo,
-				ContentSize = Theme.TextSize["1.5"],
+				ContentSize = Theme.TextSize["1.25"],
 				Color = Scope:Computed(function(Use)
 					if Use(UpdateAvailable) then
 						return Use(Theme.Colors.Warning.Main)
@@ -92,7 +99,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 						end
 					end),
 					Theme.SpringSpeed["2"],
-					Theme.SpringDampening["1"]
+					Theme.SpringDampening["1.5"]
 				),
 				ListEnabled = true,
 				ListFillDirection = Enum.FillDirection.Horizontal,
@@ -103,6 +110,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				Padding = Scope:Computed(function(Use)
 					return UDim.new(0, Use(Theme.Spacing["0.5"]))
 				end),
+				Visible = Open,
 
 				[Children] = {
 					Scope:Text {
