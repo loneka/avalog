@@ -55,7 +55,7 @@ jobs:
           wally publish
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2.6.1
         with:
           name: ${{ steps.read_toml.outputs.value }}
           tag_name: ${{ steps.read_toml.outputs.value }}
