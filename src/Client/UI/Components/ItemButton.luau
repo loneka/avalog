@@ -94,7 +94,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		Name = script.Name,
 		StrokeEnabled = Equipped,
 		StrokeThickness = Theme.StrokeThickness["2"],
-		StrokeColor = Theme.Colors.BaseContent.Main,
+		StrokeColor = Theme.Colors.Primary.Main,
 		ListEnabled = false,
 
 		OnActivated = function()
@@ -185,8 +185,14 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				},
 			},
 			Scope:Checkbox {
-				Name = "EquippedMarker",
 				Checked = EquippedValueState,
+				Color = Scope:Computed(function(Use)
+					if Use(EquippedValueState) then
+						return Use(Theme.Colors.Primary.Main)
+					else
+						return Use(Theme.Colors.BaseContent.Dark)
+					end
+				end),
 				AnchorPoint = Vector2.new(1, 0),
 				Position = UDim2.fromScale(1, 0),
 				Active = false,

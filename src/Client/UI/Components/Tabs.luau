@@ -52,7 +52,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 								return "Ghost"
 							end
 						end),
-						Color = Theme.Colors.Primary.Main,
+						Color = Theme.Colors.BaseContent.Main,
 						SizeVariant = "Medium",
 						LayoutOrder = Scope:Computed(function()
 							return table.find(OptionsValue, Option) or 0
