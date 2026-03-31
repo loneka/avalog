@@ -62,6 +62,7 @@ jobs:
           files: Avalog.rbxm
           generate_release_notes: true
           draft: true
+          overwrite_files: false
 
   development:
     if: ${{ github.ref == 'refs/heads/dev' }}
