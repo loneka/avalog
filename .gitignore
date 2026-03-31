@@ -6,3 +6,5 @@ lune_packages
 sourcemap.json
 
 build
+
+.DS_Store
