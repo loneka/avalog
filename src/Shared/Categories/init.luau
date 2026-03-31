@@ -1,6 +1,4 @@
-local Avalog = script.Parent.Parent.Parent
 local AvatarAssetTypes = require(script.Parent.AvatarAssetTypes)
-local Sift = require(Avalog.Parent.Sift)
 
 export type Category = {
 	Name: string,
@@ -66,21 +64,17 @@ local Categories: { [string]: { Category } } = {
 			Name = "Body",
 			SubCategories = {
 				{
-					Name = "Characters",
+					Name = "Bodies",
 					BundleTypes = {
 						Enum.BundleType.BodyParts,
 					},
 				},
+				{ Name = "Hair", AssetTypes = { Enum.AvatarAssetType.HairAccessory } },
 				{
 					Name = "Heads",
 					BundleTypes = { Enum.BundleType.DynamicHead },
-					AssetTypes = { Enum.AvatarAssetType.DynamicHead, Enum.AvatarAssetType.Head },
+					AssetTypes = { Enum.AvatarAssetType.DynamicHead },
 				},
-				{
-					Name = "Faces",
-					AssetTypes = { Enum.AvatarAssetType.Face },
-				},
-				{ Name = "Hair", AssetTypes = { Enum.AvatarAssetType.HairAccessory } },
 			},
 		},
 		{
