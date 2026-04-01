@@ -26,7 +26,7 @@ export type Props = CustomButton.Props & {
 
 return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components, {
-		CustomButton = CustomButton(Scope, Props),
+		CustomButton = CustomButton,
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
 	local AvatarManager = ServiceProvider:GetAvatarManager()
