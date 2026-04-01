@@ -1,10 +1,12 @@
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
-local Components = require(Avalog.SourceCode.Client.UI.Components)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 local Version = require(Avalog.SourceCode.Shared.Version)
+local UpdatesIndicator = require(script.Parent.Parent.Components.UpdatesIndicator)
+local CatalogMenu = require(script.Parent.Parent.Components.CatalogMenu)
+local AvatarViewport = require(script.Parent.Parent.Components.AvatarViewport)
 
 local Children = Fusion.Children
 
@@ -13,7 +15,11 @@ export type Props = {
 }
 
 return function(Scope: Fusion.Scope<any>, Props: Props)
-	local Scope = Fusion.innerScope(Scope, OnyxUI.Util, OnyxUI.Components, Components)
+	local Scope = Fusion.innerScope(Scope, OnyxUI.Util, OnyxUI.Components, {
+		CatalogMenu = CatalogMenu,
+		AvatarViewport = AvatarViewport,
+		UpdatesIndicator = UpdatesIndicator,
+	})
 	local Theme = OnyxUI.Themer.Theme:now()
 
 	local AvatarManager = ServiceProvider:GetAvatarManager()
