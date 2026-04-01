@@ -12,9 +12,9 @@ local Children = Fusion.Children
 
 local CONFIG = Config:Get()
 local EDIT_MODE_ICONS = {
-	Marketplace = "rbxassetid://13846120661",
-	Inventory = "rbxassetid://13846738861",
-	Customize = "rbxassetid://13846852950",
+	Marketplace = "rbxassetid://13850201307",
+	Inventory = "rbxassetid://13846287045",
+	Customize = "rbxassetid://13845862177",
 }
 
 export type Props = { [string]: any } & {
@@ -45,6 +45,9 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				ListFillDirection = Enum.FillDirection.Horizontal,
 				ListHorizontalAlignment = Enum.HorizontalAlignment.Center,
 				ListVerticalAlignment = Enum.VerticalAlignment.Center,
+				ListPadding = Scope:Computed(function(Use)
+					return UDim.new(0, Use(Theme.Spacing["0.5"]))
+				end),
 				AutomaticSize = Enum.AutomaticSize.Y,
 				Padding = Scope:Computed(function(Use)
 					return UDim.new(0, Use(Theme.Spacing["0.25"]))
@@ -64,6 +67,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					},
 					Scope:TextInput {
 						PlaceholderText = "Search",
+						Color = Theme.Colors.NeutralContent.Main,
 						MaxSize = Scope:Computed(function(Use)
 							return Vector2.new(Use(Theme.Spacing["16"]), math.huge)
 						end),
@@ -73,6 +77,8 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 						CornerRadius = Scope:Computed(function(Use)
 							return UDim.new(0, Use(Theme.CornerRadius["1.5"]))
 						end),
+						-- StrokeTransparency = 0,
+						TextTransparency = 0,
 
 						OnFocusLost = function()
 							States.Catalog.SearchQuery:set(Fusion.peek(SearchBarText))
