@@ -7,7 +7,6 @@ local Scope = Fusion.scoped(Fusion)
 local States = {
 	Theme = Scope:Value(nil),
 	Catalog = {
-		Searching = Scope:Value(false),
 		SearchQuery = Scope:Value(""),
 		Mode = Scope:Value(1),
 		Category = Scope:Value(1),

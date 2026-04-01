@@ -49,12 +49,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			return {}
 		end
 	end)
-	local SearchQuery = Scope:Computed(function(Use)
-		local SearchQueryValue = Use(States.Catalog.SearchQuery)
-		local SearchingValue = Use(States.Catalog.Searching)
-
-		return (SearchingValue and SearchQueryValue) or nil
-	end)
 
 	local Search = Scope:Value(nil)
 	local Results = Scope:Value({})
@@ -69,7 +63,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 		local BundleTypesValue = Fusion.peek(BundleTypes)
 		local AssetTypesValue = Fusion.peek(AssetTypes)
-		local SearchQueryValue = Fusion.peek(SearchQuery)
+		local SearchQueryValue = Fusion.peek(States.Catalog.SearchQuery)
 		local DeepestCategoryValue = Fusion.peek(DeepestCategory)
 
 		local Searching = string.len((SearchQueryValue or "")) == 0
@@ -94,7 +88,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	Scope:Observer(AssetTypes):onChange(function()
 		UpdateSearch()
 	end)
-	Scope:Observer(SearchQuery):onChange(function()
+	Scope:Observer(States.Catalog.SearchQuery):onChange(function()
 		UpdateSearch()
 	end)
 	UpdateSearch()
@@ -102,7 +96,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	local CombinedItems = Scope:Computed(function(Use)
 		local ResultsValue = Use(Results)
 		local PrefixItemsValue = Use(PrefixItems)
-		local SearchQueryValue = Use(SearchQuery)
+		local SearchQueryValue = Use(States.Catalog.SearchQuery)
 
 		if (SearchQueryValue == nil) or (SearchQueryValue == "") then
 			return Sift.Array.concat(PrefixItemsValue, ResultsValue)
