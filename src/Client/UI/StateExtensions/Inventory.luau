@@ -67,7 +67,7 @@ end
 
 function Inventory.Pages(AssetTypes: { Enum.AvatarAssetType }?)
 	return Future.Try(function()
-		return AvatarEditorService:GetInventory(AssetTypes)
+		return AvatarEditorService:GetInventoryAsync(AssetTypes)
 	end)
 end
 
