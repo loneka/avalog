@@ -196,7 +196,7 @@ function LocalAvatar:ToggleCatalogItem(CatalogItem: CatalogItem)
 
 			if UserOutfit then
 				local Success, Result = Future.Try(function()
-					return Players:GetHumanoidDescriptionFromOutfitId(UserOutfit.Id)
+					return Players:GetHumanoidDescriptionFromOutfitIdAsync(UserOutfit.Id)
 				end):Await()
 
 				if Success then
@@ -239,7 +239,7 @@ end
 
 function LocalAvatar:Reset()
 	local Success, Result = Future.Try(function()
-		return Players:GetHumanoidDescriptionFromUserId(Players.LocalPlayer.UserId or 1)
+		return Players:GetHumanoidDescriptionFromUserIdAsync(Players.LocalPlayer.UserId or 1)
 	end):Await()
 
 	if Success then
