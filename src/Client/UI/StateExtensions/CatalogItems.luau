@@ -75,9 +75,9 @@ function CatalogItems:OwnsItem(Id: number, Type: Enum.AvatarItemType)
 		if table.find(RelevantTable, Id) == nil then
 			local Success, Result = Future.Try(function()
 				if Type == Enum.AvatarItemType.Asset then
-					return MarketplaceService:PlayerOwnsAsset(Players.LocalPlayer, Id)
+					return MarketplaceService:PlayerOwnsAssetAsync(Players.LocalPlayer, Id)
 				elseif Type == Enum.AvatarItemType.Bundle then
-					return MarketplaceService:PlayerOwnsBundle(Players.LocalPlayer, Id)
+					return MarketplaceService:PlayerOwnsBundleAsync(Players.LocalPlayer, Id)
 				else
 					return nil
 				end
@@ -103,7 +103,7 @@ function CatalogItems:GetItem(Id: number, InfoType: Enum.InfoType): CatalogItem?
 		return ExistingEntry
 	else
 		local Success, Result = Future.Try(function()
-			return MarketplaceService:GetProductInfo(Id, InfoType)
+			return MarketplaceService:GetProductInfoAsync(Id, InfoType)
 		end):Await()
 		if Success then
 			local Item = {
