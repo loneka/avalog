@@ -96,7 +96,7 @@ function Avatar:Apply(Player: Player, HumanoidDescription: HumanoidDescription)
 		local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 		if Humanoid then
 			return Future.Try(function()
-				Humanoid:ApplyDescriptionReset(HumanoidDescription)
+				Humanoid:ApplyDescriptionResetAsync(HumanoidDescription)
 			end)
 		end
 	end
