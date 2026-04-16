@@ -1,13 +1,13 @@
 local RunService = game:GetService("RunService")
 
 local Avalog = script.Parent.Parent.Parent
-local Version = require(Avalog.SourceCode.Shared.Version)
+local Manifest = require(Avalog.SourceCode.Shared.Manifest)
 
 local Promo = {}
 
 function Promo:Start()
 	if not RunService:IsStudio() then
-		print(`Running Avalog {Version} 🛠️\n> https://devforum.roblox.com/t/3513102`)
+		print(`Running Avalog {Manifest.Version} 🛠️\n> https://devforum.roblox.com/t/3513102`)
 	end
 end
 

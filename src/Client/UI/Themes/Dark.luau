@@ -45,7 +45,7 @@ return Themer.NewTheme(Scope, {
 			Main = Util.Colors.Amber["500"],
 		},
 		Info = {
-			Main = Util.Colors.Cyan["400"],
+			Main = Util.Colors.Blue["400"],
 		},
 	},
 	Font = {

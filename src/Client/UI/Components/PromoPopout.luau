@@ -1,7 +1,10 @@
+local MarketplaceService = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
+
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
-local Version = require(Avalog.SourceCode.Shared.Version)
+local Manifest = require(Avalog.SourceCode.Shared.Manifest)
 
 local Children = Fusion.Children
 
@@ -105,7 +108,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				ListFillDirection = Enum.FillDirection.Horizontal,
 				ListVerticalAlignment = Enum.VerticalAlignment.Center,
 				ListPadding = Scope:Computed(function(Use)
-					return UDim.new(0, Use(Theme.Spacing["0"]))
+					return UDim.new(0, Use(Theme.Spacing["0.25"]))
 				end),
 				Padding = Scope:Computed(function(Use)
 					return UDim.new(0, Use(Theme.Spacing["0.5"]))
@@ -113,8 +116,15 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				Visible = Open,
 
 				[Children] = {
-					Scope:Text {
-						Text = `Avalog {Version} • `,
+					Scope:Button {
+						Content = { `Avalog {Manifest.Version}` },
+						Color = Theme.Colors.BaseContent.Main,
+						Style = "Ghost",
+						SizeVariant = "Small",
+
+						OnActivated = function()
+							MarketplaceService:PromptPurchase(Players.LocalPlayer, Manifest.AssetId)
+						end,
 					},
 					Scope:TextInput {
 						Text = Scope:Computed(function(Use)
@@ -122,6 +132,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 							return `{LinkValue}`
 						end),
+						TextColor3 = Theme.Colors.Info.Main,
 						TextTransparency = 0,
 						TextEditable = false,
 						Disabled = true,

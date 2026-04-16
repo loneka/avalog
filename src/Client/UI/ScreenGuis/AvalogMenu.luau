@@ -3,8 +3,8 @@ local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
-local Version = require(Avalog.SourceCode.Shared.Version)
-local UpdatesIndicator = require(script.Parent.Parent.Components.UpdatesIndicator)
+local Manifest = require(Avalog.SourceCode.Shared.Manifest)
+local PromoPopout = require(script.Parent.Parent.Components.PromoPopout)
 local CatalogMenu = require(script.Parent.Parent.Components.CatalogMenu)
 local AvatarViewport = require(script.Parent.Parent.Components.AvatarViewport)
 
@@ -18,7 +18,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, OnyxUI.Util, OnyxUI.Components, {
 		CatalogMenu = CatalogMenu,
 		AvatarViewport = AvatarViewport,
-		UpdatesIndicator = UpdatesIndicator,
+		PromoPopout = PromoPopout,
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
 
@@ -91,11 +91,11 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					Scope:AvatarViewport {},
 				},
 			},
-			Scope:UpdatesIndicator {
+			Scope:PromoPopout {
 				Link = "devforum.roblox.com/t/3513102",
 				Logo = "rbxassetid://109049301067448",
 				UpdateAvailable = Scope:Computed(function(Use)
-					return Version ~= Use(States.CloudConfig).latestVersion
+					return Manifest.Version ~= Use(States.CloudConfig).latestVersion
 				end),
 				AnchorPoint = Vector2.new(0, 1),
 				Position = Scope:Computed(function(Use)
