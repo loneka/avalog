@@ -138,3 +138,10 @@ event CloudConfigReset = {
     type: Reliable,
     call: SingleAsync
 }
+
+event RecordPurchase = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: (Item: Item)
+}

@@ -135,6 +135,9 @@ if not RunService:IsRunning() then
 		UpdateAvatar = table.freeze({
 			Fire = noop
 		}),
+		RecordPurchase = table.freeze({
+			Fire = noop
+		}),
 		GetCloudConfig = table.freeze({
 			Call = noop
 		}),
@@ -151,38 +154,12 @@ local remotes = ReplicatedStorage:WaitForChild("ZAP")
 local reliable = remotes:WaitForChild("AVALOG_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected AVALOG_RELIABLE to be a RemoteEvent")
 
-export type SerEnumItem = ({
-	["EnumType"]: (string),
-	["Value"]: (number),
-})
-export type AccessorySpec = ({
-	["AssetId"]: (number),
-	["AccessoryType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-	["Order"]: ((number)?),
-	["Puffiness"]: ((number)?),
-	["IsLayered"]: ((boolean)?),
-	["Position"]: ((Vector3)?),
-	["Rotation"]: ((Vector3)?),
-	["Scale"]: ((Vector3)?),
-})
-export type CatalogItem = ({
-	["AssetId"]: (number),
-	["Name"]: (string),
+export type BulkPurchaseAvatarItem = ({
+	["Id"]: (string),
 	["Type"]: ({
 		["EnumType"]: (string),
 		["Value"]: (number),
 	}),
-	["AssetType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-})
-export type EquippedEmote = ({
-	["Name"]: (string),
-	["Slot"]: (number),
 })
 export type PromotedItem = ({
 	["itemId"]: (string),
@@ -205,33 +182,21 @@ export type AvatarItem = ({
 	}),
 	["Name"]: (string),
 })
-export type ItemType = ("Asset" | "Bundle")
-export type Item = ({
-	["itemId"]: (string),
-	["itemType"]: ("Asset" | "Bundle"),
-	["tintColor"]: ((string)?),
+export type CatalogItem = ({
+	["AssetId"]: (number),
+	["Name"]: (string),
+	["Type"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+	["AssetType"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
 })
-export type CloudConfig = ({
-	["latestVersion"]: (string),
-	["featuredItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-	}) }),
-	["pinnedItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-	}) }),
-	["promotedItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-		["promotionId"]: (string),
-		["bid"]: (number),
-		["startTime"]: (number),
-		["endTime"]: (number),
-	}) }),
+export type EquippedEmote = ({
+	["Name"]: (string),
+	["Slot"]: (number),
 })
 export type HumanoidDescriberData = ({
 	["Accessories"]: ({ ({
@@ -293,12 +258,50 @@ export type HumanoidDescriberData = ({
 		["Pants"]: (number),
 	}),
 })
-export type BulkPurchaseAvatarItem = ({
-	["Id"]: (string),
-	["Type"]: ({
+export type ItemType = ("Asset" | "Bundle")
+export type CloudConfig = ({
+	["latestVersion"]: (string),
+	["featuredItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+	}) }),
+	["pinnedItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+	}) }),
+	["promotedItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+		["promotionId"]: (string),
+		["bid"]: (number),
+		["startTime"]: (number),
+		["endTime"]: (number),
+	}) }),
+})
+export type SerEnumItem = ({
+	["EnumType"]: (string),
+	["Value"]: (number),
+})
+export type Item = ({
+	["itemId"]: (string),
+	["itemType"]: ("Asset" | "Bundle"),
+	["tintColor"]: ((string)?),
+})
+export type AccessorySpec = ({
+	["AssetId"]: (number),
+	["AccessoryType"]: ({
 		["EnumType"]: (string),
 		["Value"]: (number),
 	}),
+	["Order"]: ((number)?),
+	["Puffiness"]: ((number)?),
+	["IsLayered"]: ((boolean)?),
+	["Position"]: ((Vector3)?),
+	["Rotation"]: ((Vector3)?),
+	["Scale"]: ((Vector3)?),
 })
 
 local function SendEvents()
@@ -687,6 +690,39 @@ local returns = {
 			buffer.writeu8(outgoing_buff, bool_6_pos_1, bool_6)
 		end,
 	},
+	RecordPurchase = {
+		Fire = function(Item: ({
+			["itemId"]: (string),
+			["itemType"]: ("Asset" | "Bundle"),
+			["tintColor"]: ((string)?),
+		}))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			local bool_7 = 0
+			local bool_7_pos_1 = alloc(1)
+			local len_19 = #Item["itemId"]
+			alloc(2)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
+			alloc(len_19)
+			buffer.writestring(outgoing_buff, outgoing_apos, Item["itemId"], len_19)
+			if Item["itemType"] == "Asset" then
+				bool_7 = bit32.bor(bool_7, 0b0000000000000001)
+			elseif Item["itemType"] == "Bundle" then
+				local _
+			else
+				error("Invalid enumerator")
+			end
+			if Item["tintColor"] ~= nil then
+				bool_7 = bit32.bor(bool_7, 0b0000000000000010)
+				local len_20 = #Item["tintColor"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
+				alloc(len_20)
+				buffer.writestring(outgoing_buff, outgoing_apos, Item["tintColor"], len_20)
+			end
+			buffer.writeu8(outgoing_buff, bool_7_pos_1, bool_7)
+		end,
+	},
 	GetCloudConfig = {
 		Call = function(): ((({
 			["latestVersion"]: (string),
@@ -717,7 +753,7 @@ local returns = {
 				error("Zap has more than 256 calls awaiting a response, and therefore this packet has been dropped")
 			end
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, function_call_id)
 			reliable_event_queue[1][function_call_id] = coroutine.running()
@@ -746,23 +782,23 @@ local returns = {
 		}) }))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local len_19 = #Value
-			assert(len_19 >= 1, "value is less than 1!")
-			assert(len_19 <= 20, "value is more than 20!")
+			local len_21 = #Value
+			assert(len_21 >= 1, "value is less than 1!")
+			assert(len_21 <= 20, "value is more than 20!")
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, len_19 - 1)
-			for i_7 = 1, len_19 do
+			buffer.writeu8(outgoing_buff, outgoing_apos, len_21 - 1)
+			for i_7 = 1, len_21 do
 				local val_7 = Value[i_7]
-				local len_20 = #val_7["Id"]
+				local len_22 = #val_7["Id"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
-				alloc(len_20)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_7["Id"], len_20)
-				local len_21 = #val_7["Type"]["EnumType"]
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_22)
+				alloc(len_22)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_7["Id"], len_22)
+				local len_23 = #val_7["Type"]["EnumType"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
-				alloc(len_21)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_7["Type"]["EnumType"], len_21)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_23)
+				alloc(len_23)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_7["Type"]["EnumType"], len_23)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, val_7["Type"]["Value"])
 			end

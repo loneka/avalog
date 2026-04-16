@@ -137,6 +137,9 @@ if not RunService:IsRunning() then
 		UpdateAvatar = table.freeze({
 			SetCallback = noop
 		}),
+		RecordPurchase = table.freeze({
+			SetCallback = noop
+		}),
 		GetCloudConfig = table.freeze({
 			SetCallback = noop
 		}),
@@ -180,38 +183,12 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type SerEnumItem = ({
-	["EnumType"]: (string),
-	["Value"]: (number),
-})
-export type AccessorySpec = ({
-	["AssetId"]: (number),
-	["AccessoryType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-	["Order"]: ((number)?),
-	["Puffiness"]: ((number)?),
-	["IsLayered"]: ((boolean)?),
-	["Position"]: ((Vector3)?),
-	["Rotation"]: ((Vector3)?),
-	["Scale"]: ((Vector3)?),
-})
-export type CatalogItem = ({
-	["AssetId"]: (number),
-	["Name"]: (string),
+export type BulkPurchaseAvatarItem = ({
+	["Id"]: (string),
 	["Type"]: ({
 		["EnumType"]: (string),
 		["Value"]: (number),
 	}),
-	["AssetType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-})
-export type EquippedEmote = ({
-	["Name"]: (string),
-	["Slot"]: (number),
 })
 export type PromotedItem = ({
 	["itemId"]: (string),
@@ -234,33 +211,21 @@ export type AvatarItem = ({
 	}),
 	["Name"]: (string),
 })
-export type ItemType = ("Asset" | "Bundle")
-export type Item = ({
-	["itemId"]: (string),
-	["itemType"]: ("Asset" | "Bundle"),
-	["tintColor"]: ((string)?),
+export type CatalogItem = ({
+	["AssetId"]: (number),
+	["Name"]: (string),
+	["Type"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+	["AssetType"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
 })
-export type CloudConfig = ({
-	["latestVersion"]: (string),
-	["featuredItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-	}) }),
-	["pinnedItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-	}) }),
-	["promotedItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-		["promotionId"]: (string),
-		["bid"]: (number),
-		["startTime"]: (number),
-		["endTime"]: (number),
-	}) }),
+export type EquippedEmote = ({
+	["Name"]: (string),
+	["Slot"]: (number),
 })
 export type HumanoidDescriberData = ({
 	["Accessories"]: ({ ({
@@ -322,12 +287,50 @@ export type HumanoidDescriberData = ({
 		["Pants"]: (number),
 	}),
 })
-export type BulkPurchaseAvatarItem = ({
-	["Id"]: (string),
-	["Type"]: ({
+export type ItemType = ("Asset" | "Bundle")
+export type CloudConfig = ({
+	["latestVersion"]: (string),
+	["featuredItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+	}) }),
+	["pinnedItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+	}) }),
+	["promotedItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+		["promotionId"]: (string),
+		["bid"]: (number),
+		["startTime"]: (number),
+		["endTime"]: (number),
+	}) }),
+})
+export type SerEnumItem = ({
+	["EnumType"]: (string),
+	["Value"]: (number),
+})
+export type Item = ({
+	["itemId"]: (string),
+	["itemType"]: ("Asset" | "Bundle"),
+	["tintColor"]: ((string)?),
+})
+export type AccessorySpec = ({
+	["AssetId"]: (number),
+	["AccessoryType"]: ({
 		["EnumType"]: (string),
 		["Value"]: (number),
 	}),
+	["Order"]: ((number)?),
+	["Puffiness"]: ((number)?),
+	["IsLayered"]: ((boolean)?),
+	["Position"]: ((Vector3)?),
+	["Rotation"]: ((Vector3)?),
+	["Scale"]: ((Vector3)?),
 })
 
 local function SendEvents()
@@ -348,7 +351,7 @@ end
 
 RunService.Heartbeat:Connect(SendEvents)
 
-local reliable_events = table.create(3)
+local reliable_events = table.create(4)
 reliable.OnServerEvent:Connect(function(player, buff, inst)
 	incoming_buff = buff
 	incoming_inst = inst
@@ -469,146 +472,166 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 			if reliable_events[1] then
 				task.spawn(reliable_events[1], player, value)
 			end
+		elseif id == 2 then -- RecordPurchase
+			local value
+			local bool_3 = buffer.readu8(incoming_buff, read(1))
+			value = {  }
+			local len_7 = buffer.readu16(incoming_buff, read(2))
+			value["itemId"] = buffer.readstring(incoming_buff, read(len_7), len_7)
+			if bit32.btest(bool_3, 0b0000000000000001) then
+				value["itemType"] = "Asset"
+			else
+				value["itemType"] = "Bundle"
+			end
+			if bit32.btest(bool_3, 0b0000000000000010) then
+				local len_8 = buffer.readu16(incoming_buff, read(2))
+				value["tintColor"] = buffer.readstring(incoming_buff, read(len_8), len_8)
+			else
+				value["tintColor"] = nil
+			end
+			if reliable_events[2] then
+				task.spawn(reliable_events[2], player, value)
+			end
 		elseif id == 0 then -- BulkPurchaseAvatarItems
 			local value
-			local len_7 = buffer.readu8(incoming_buff, read(1)) + 1
-			assert(len_7 >= 1, "value is less than 1!")
-			assert(len_7 <= 20, "value is more than 20!")
-			value = table.create(len_7)
-			for i_4 = 1, len_7 do
+			local len_9 = buffer.readu8(incoming_buff, read(1)) + 1
+			assert(len_9 >= 1, "value is less than 1!")
+			assert(len_9 <= 20, "value is more than 20!")
+			value = table.create(len_9)
+			for i_4 = 1, len_9 do
 				local val_5
 				val_5 = {  }
-				local len_8 = buffer.readu16(incoming_buff, read(2))
-				val_5["Id"] = buffer.readstring(incoming_buff, read(len_8), len_8)
+				local len_10 = buffer.readu16(incoming_buff, read(2))
+				val_5["Id"] = buffer.readstring(incoming_buff, read(len_10), len_10)
 				val_5["Type"] = {  }
-				local len_9 = buffer.readu16(incoming_buff, read(2))
-				val_5["Type"]["EnumType"] = buffer.readstring(incoming_buff, read(len_9), len_9)
+				local len_11 = buffer.readu16(incoming_buff, read(2))
+				val_5["Type"]["EnumType"] = buffer.readstring(incoming_buff, read(len_11), len_11)
 				val_5["Type"]["Value"] = buffer.readu16(incoming_buff, read(2))
 				value[i_4] = val_5
 			end
 			if reliable_events[0] then
 				task.spawn(reliable_events[0], player, value)
 			end
-		elseif id == 2 then -- GetCloudConfig
+		elseif id == 3 then -- GetCloudConfig
 			local call_id = buffer.readu8(buff, read(1))
 			local value
-			if reliable_events[2] then
+			if reliable_events[3] then
 				task.spawn(function(player_2, call_id_2, value_1)
-					local ret_1 = reliable_events[2](player_2, value_1)
+					local ret_1 = reliable_events[3](player_2, value_1)
 					load_player(player_2)
 					alloc(1)
 					buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 					alloc(1)
 					buffer.writeu8(outgoing_buff, outgoing_apos, call_id_2)
-					local bool_3 = 0
-					local bool_3_pos_1 = alloc(1)
+					local bool_4 = 0
+					local bool_4_pos_1 = alloc(1)
 					if ret_1 ~= nil then
-						bool_3 = bit32.bor(bool_3, 0b0000000000000001)
-						local len_10 = #ret_1["latestVersion"]
+						bool_4 = bit32.bor(bool_4, 0b0000000000000001)
+						local len_12 = #ret_1["latestVersion"]
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_10)
-						alloc(len_10)
-						buffer.writestring(outgoing_buff, outgoing_apos, ret_1["latestVersion"], len_10)
-						local len_11 = #ret_1["featuredItems"]
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_12)
+						alloc(len_12)
+						buffer.writestring(outgoing_buff, outgoing_apos, ret_1["latestVersion"], len_12)
+						local len_13 = #ret_1["featuredItems"]
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_11)
-						for i_5 = 1, len_11 do
-							local bool_4 = 0
-							local bool_4_pos_1 = alloc(1)
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_13)
+						for i_5 = 1, len_13 do
+							local bool_5 = 0
+							local bool_5_pos_1 = alloc(1)
 							local val_6 = ret_1["featuredItems"][i_5]
-							local len_12 = #val_6["itemId"]
+							local len_14 = #val_6["itemId"]
 							alloc(2)
-							buffer.writeu16(outgoing_buff, outgoing_apos, len_12)
-							alloc(len_12)
-							buffer.writestring(outgoing_buff, outgoing_apos, val_6["itemId"], len_12)
+							buffer.writeu16(outgoing_buff, outgoing_apos, len_14)
+							alloc(len_14)
+							buffer.writestring(outgoing_buff, outgoing_apos, val_6["itemId"], len_14)
 							if val_6["itemType"] == "Asset" then
-								bool_4 = bit32.bor(bool_4, 0b0000000000000001)
+								bool_5 = bit32.bor(bool_5, 0b0000000000000001)
 							elseif val_6["itemType"] == "Bundle" then
 								local _
 							else
 								error("Invalid enumerator")
 							end
 							if val_6["tintColor"] ~= nil then
-								bool_4 = bit32.bor(bool_4, 0b0000000000000010)
-								local len_13 = #val_6["tintColor"]
+								bool_5 = bit32.bor(bool_5, 0b0000000000000010)
+								local len_15 = #val_6["tintColor"]
 								alloc(2)
-								buffer.writeu16(outgoing_buff, outgoing_apos, len_13)
-								alloc(len_13)
-								buffer.writestring(outgoing_buff, outgoing_apos, val_6["tintColor"], len_13)
+								buffer.writeu16(outgoing_buff, outgoing_apos, len_15)
+								alloc(len_15)
+								buffer.writestring(outgoing_buff, outgoing_apos, val_6["tintColor"], len_15)
 							end
-							buffer.writeu8(outgoing_buff, bool_4_pos_1, bool_4)
+							buffer.writeu8(outgoing_buff, bool_5_pos_1, bool_5)
 						end
-						local len_14 = #ret_1["pinnedItems"]
+						local len_16 = #ret_1["pinnedItems"]
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_14)
-						for i_6 = 1, len_14 do
-							local bool_5 = 0
-							local bool_5_pos_1 = alloc(1)
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_16)
+						for i_6 = 1, len_16 do
+							local bool_6 = 0
+							local bool_6_pos_1 = alloc(1)
 							local val_7 = ret_1["pinnedItems"][i_6]
-							local len_15 = #val_7["itemId"]
+							local len_17 = #val_7["itemId"]
 							alloc(2)
-							buffer.writeu16(outgoing_buff, outgoing_apos, len_15)
-							alloc(len_15)
-							buffer.writestring(outgoing_buff, outgoing_apos, val_7["itemId"], len_15)
+							buffer.writeu16(outgoing_buff, outgoing_apos, len_17)
+							alloc(len_17)
+							buffer.writestring(outgoing_buff, outgoing_apos, val_7["itemId"], len_17)
 							if val_7["itemType"] == "Asset" then
-								bool_5 = bit32.bor(bool_5, 0b0000000000000001)
+								bool_6 = bit32.bor(bool_6, 0b0000000000000001)
 							elseif val_7["itemType"] == "Bundle" then
 								local _
 							else
 								error("Invalid enumerator")
 							end
 							if val_7["tintColor"] ~= nil then
-								bool_5 = bit32.bor(bool_5, 0b0000000000000010)
-								local len_16 = #val_7["tintColor"]
+								bool_6 = bit32.bor(bool_6, 0b0000000000000010)
+								local len_18 = #val_7["tintColor"]
 								alloc(2)
-								buffer.writeu16(outgoing_buff, outgoing_apos, len_16)
-								alloc(len_16)
-								buffer.writestring(outgoing_buff, outgoing_apos, val_7["tintColor"], len_16)
+								buffer.writeu16(outgoing_buff, outgoing_apos, len_18)
+								alloc(len_18)
+								buffer.writestring(outgoing_buff, outgoing_apos, val_7["tintColor"], len_18)
 							end
-							buffer.writeu8(outgoing_buff, bool_5_pos_1, bool_5)
+							buffer.writeu8(outgoing_buff, bool_6_pos_1, bool_6)
 						end
-						local len_17 = #ret_1["promotedItems"]
+						local len_19 = #ret_1["promotedItems"]
 						alloc(2)
-						buffer.writeu16(outgoing_buff, outgoing_apos, len_17)
-						for i_7 = 1, len_17 do
-							local bool_6 = 0
-							local bool_6_pos_1 = alloc(1)
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
+						for i_7 = 1, len_19 do
+							local bool_7 = 0
+							local bool_7_pos_1 = alloc(1)
 							local val_8 = ret_1["promotedItems"][i_7]
-							local len_18 = #val_8["itemId"]
+							local len_20 = #val_8["itemId"]
 							alloc(2)
-							buffer.writeu16(outgoing_buff, outgoing_apos, len_18)
-							alloc(len_18)
-							buffer.writestring(outgoing_buff, outgoing_apos, val_8["itemId"], len_18)
+							buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
+							alloc(len_20)
+							buffer.writestring(outgoing_buff, outgoing_apos, val_8["itemId"], len_20)
 							if val_8["itemType"] == "Asset" then
-								bool_6 = bit32.bor(bool_6, 0b0000000000000001)
+								bool_7 = bit32.bor(bool_7, 0b0000000000000001)
 							elseif val_8["itemType"] == "Bundle" then
 								local _
 							else
 								error("Invalid enumerator")
 							end
 							if val_8["tintColor"] ~= nil then
-								bool_6 = bit32.bor(bool_6, 0b0000000000000010)
-								local len_19 = #val_8["tintColor"]
+								bool_7 = bit32.bor(bool_7, 0b0000000000000010)
+								local len_21 = #val_8["tintColor"]
 								alloc(2)
-								buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
-								alloc(len_19)
-								buffer.writestring(outgoing_buff, outgoing_apos, val_8["tintColor"], len_19)
+								buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
+								alloc(len_21)
+								buffer.writestring(outgoing_buff, outgoing_apos, val_8["tintColor"], len_21)
 							end
-							local len_20 = #val_8["promotionId"]
+							local len_22 = #val_8["promotionId"]
 							alloc(2)
-							buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
-							alloc(len_20)
-							buffer.writestring(outgoing_buff, outgoing_apos, val_8["promotionId"], len_20)
+							buffer.writeu16(outgoing_buff, outgoing_apos, len_22)
+							alloc(len_22)
+							buffer.writestring(outgoing_buff, outgoing_apos, val_8["promotionId"], len_22)
 							alloc(4)
 							buffer.writef32(outgoing_buff, outgoing_apos, val_8["bid"])
 							alloc(4)
 							buffer.writef32(outgoing_buff, outgoing_apos, val_8["startTime"])
 							alloc(4)
 							buffer.writef32(outgoing_buff, outgoing_apos, val_8["endTime"])
-							buffer.writeu8(outgoing_buff, bool_6_pos_1, bool_6)
+							buffer.writeu8(outgoing_buff, bool_7_pos_1, bool_7)
 						end
 					end
-					buffer.writeu8(outgoing_buff, bool_3_pos_1, bool_3)
+					buffer.writeu8(outgoing_buff, bool_4_pos_1, bool_4)
 					player_map[player_2] = save()
 				end, player, call_id, value)
 			end
@@ -689,6 +712,18 @@ local returns = {
 			end
 		end,
 	},
+	RecordPurchase = {
+		SetCallback = function(Callback: (Player: Player, Item: ({
+			["itemId"]: (string),
+			["itemType"]: ("Asset" | "Bundle"),
+			["tintColor"]: ((string)?),
+		})) -> ()): () -> ()
+			reliable_events[2] = Callback
+			return function()
+				reliable_events[2] = nil
+			end
+		end,
+	},
 	GetCloudConfig = {
 		SetCallback = function(Callback: (Player: Player) -> ((({
 			["latestVersion"]: (string),
@@ -712,9 +747,9 @@ local returns = {
 				["endTime"]: (number),
 			}) }),
 		})?))): () -> ()
-			reliable_events[2] = Callback
+			reliable_events[3] = Callback
 			return function()
-				reliable_events[2] = nil
+				reliable_events[3] = nil
 			end
 		end,
 	},
