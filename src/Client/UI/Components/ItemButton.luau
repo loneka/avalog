@@ -22,6 +22,7 @@ export type Props = CustomButton.Props & {
 	Id: Fusion.UsedAs<number>?,
 	Type: Fusion.UsedAs<Enum.AvatarItemType>?,
 	Owned: Fusion.UsedAs<boolean>?,
+	Featured: Fusion.UsedAs<boolean>?,
 }
 
 return function(Scope: Fusion.Scope<any>, Props: Props)
@@ -34,6 +35,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Id = Scope:EnsureValue(OnyxUI.Util.Fallback(Props.Id, nil))
 	local Type = OnyxUI.Util.Fallback(Props.Type, Enum.AvatarItemType.Asset)
 	local Owned = OnyxUI.Util.Fallback(Props.Owned, false)
+	local Featured = OnyxUI.Util.Fallback(Props.Featured, false)
 
 	local ItemInfo = Scope:Value(nil)
 	local function UpdateItemInfo()
@@ -68,10 +70,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				AssetType = Enum.AvatarAssetType.Hat,
 			}
 		end
-	end)
-	local Equippable = Scope:Computed(function(Use)
-		local SafeItemInfoValue = Use(SafeItemInfo)
-		return SafeItemInfoValue.Type == Enum.AvatarItemType.Asset
 	end)
 	local Equipped = Scope:Computed(function(Use)
 		local AssetIdsValue = Use(States.Avatar.AssetIds)
@@ -141,7 +139,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 						end),
 					},
 					Scope:Frame {
-						Name = "Text",
 						ListEnabled = true,
 						ListFillDirection = Enum.FillDirection.Vertical,
 						ListHorizontalFlex = Enum.UIFlexAlignment.Fill,
@@ -164,11 +161,13 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 								AutoLocalize = false,
 							},
 							Scope:IconText {
-								Name = "Price",
 								Content = Scope:Computed(function(Use)
 									local ItemInfoValue = Use(ItemInfo)
 									if ItemInfoValue and ItemInfoValue.Price then
-										return { "rbxassetid://102562927562320", ItemInfoValue.Price }
+										return {
+											"rbxassetid://102562927562320",
+											ItemInfoValue.Price,
+										}
 									else
 										return { "Offsale" }
 									end
@@ -183,21 +182,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 						},
 					},
 				},
-			},
-			Scope:Checkbox {
-				Checked = EquippedValueState,
-				Color = Scope:Computed(function(Use)
-					if Use(EquippedValueState) then
-						return Use(Theme.Colors.Primary.Main)
-					else
-						return Use(Theme.Colors.BaseContent.Dark)
-					end
-				end),
-				AnchorPoint = Vector2.new(1, 0),
-				Position = UDim2.fromScale(1, 0),
-				Active = false,
-				Selectable = false,
-				Visible = Equippable,
 			},
 			Scope:Button {
 				Content = { "Buy" },
@@ -228,6 +212,16 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					end)
 				end,
 			},
+			Scope:Computed(function(Use)
+				if Use(Featured) then
+					return Scope:Icon {
+						Image = "rbxassetid://13850331560",
+						Size = Scope:Computed(function(Use)
+							return UDim2.fromOffset(Use(Theme.TextSize["1.25"]), Use(Theme.TextSize["1.25"]))
+						end),
+					}
+				end
+			end),
 		},
 	}))
 end

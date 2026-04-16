@@ -115,6 +115,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			return {
 				Id = Item.Id,
 				Type = Item.ItemType,
+				Featured = Item.Featured,
 			}
 		end),
 

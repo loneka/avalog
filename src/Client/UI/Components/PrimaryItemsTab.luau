@@ -55,7 +55,10 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					Item.ItemType = Item.itemType
 				end
 
-				return Sift.Array.merge(CONFIG.Featured.Items, PinnedItems)
+				return Sift.Array.map(Sift.Array.merge(CONFIG.Featured.Items, PinnedItems), function(Item)
+					Item.Featured = true
+					return Item
+				end)
 			end
 
 			return {}

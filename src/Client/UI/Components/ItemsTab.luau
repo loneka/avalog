@@ -78,6 +78,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 								return Scope:ItemButton {
 									Id = Item.Id,
 									Type = Item.Type,
+									Featured = Item.Featured,
 									Visible = Item.Visible,
 									Owned = Item.Owned,
 									LayoutOrder = Index,
