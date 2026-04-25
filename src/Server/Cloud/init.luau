@@ -3,6 +3,7 @@
 ]]
 
 local MarketplaceService = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local Avalog = script.Parent.Parent.Parent
@@ -11,10 +12,12 @@ local Fetch = require(Avalog.Parent.Fetch)
 local RateLimit = require(Avalog.Parent.RateLimit)
 local Stator = require(Avalog.Parent.Stator)
 local Types = require(Avalog.SourceCode.Shared.Types)
+local UsageRecorder = require(script.UsageRecorder)
 
 local BASE_URL = "http://loneka.com/api/v1/avalog"
 local UPDATE_DELAY = 30 * 60
 local FAILED_UPDATE_DELAY = 1 * 60
+local SNAPSHOT_DELAY = 15 * 60
 local RATE_LIMITS = {
 	GetCloudConfig = RateLimit(1, 10),
 }
@@ -41,6 +44,8 @@ local Cloud = {
 }
 
 function Cloud.Start(self: typeof(Cloud))
+	UsageRecorder:Start()
+
 	-- Initial HTTP ability check
 	self:IsHttpEnabled()
 
@@ -55,6 +60,28 @@ function Cloud.Start(self: typeof(Cloud))
 				task.wait(FAILED_UPDATE_DELAY)
 			end
 		end
+	end)
+
+	-- Send usage snapshots periodically and upon server shutdown
+	if not RunService:IsStudio() then
+		task.spawn(function()
+			while true do
+				self:RecordUsageSnapshot()
+				task.wait(SNAPSHOT_DELAY)
+			end
+		end)
+		game:BindToClose(function()
+			for _, Player in Players:GetPlayers() do
+				UsageRecorder:RecordMenuToggle(Player.UserId, false)
+			end
+
+			self:RecordUsageSnapshot()
+		end)
+	end
+
+	-- Record Avalog menu toggles
+	Zap.RecordMenuToggle.SetCallback(function(Player, Open)
+		UsageRecorder:RecordMenuToggle(Player.UserId, Open)
 	end)
 
 	-- Serve cloud config upon client request
@@ -116,7 +143,20 @@ function Cloud.UpdateConfig(_self: typeof(Cloud))
 	return Success, Response
 end
 
-function Cloud.RecordItemSale(_self: typeof(Cloud), Player: Player, Item: Types.Item)
+function Cloud.RecordUsageSnapshot(_self: typeof(Cloud))
+	local USAGE_SNAPSHOT = UsageRecorder:CompileSnapshot()
+
+	Fetch(BASE_URL .. "/usage", {
+		Method = "POST",
+		Body = USAGE_SNAPSHOT,
+	}):After(function(Success, Response)
+		if not Success or not Response.Ok then
+			warn(Response:Json())
+		end
+	end)
+end
+
+function Cloud.RecordItemSale(_self: typeof(Cloud), _Player: Player, Item: Types.Item)
 	local ItemSale: Types.ItemSale = {
 		experienceId = tostring(game.GameId),
 		itemId = Item.itemId,

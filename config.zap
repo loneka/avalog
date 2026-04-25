@@ -145,3 +145,10 @@ event RecordPurchase = {
 	call: SingleAsync,
 	data: (Item: Item)
 }
+
+event RecordMenuToggle = {
+	from: Client,
+	type: Reliable,
+	call: SingleAsync,
+	data: (Open: boolean)
+}

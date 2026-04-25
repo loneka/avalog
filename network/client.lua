@@ -138,6 +138,9 @@ if not RunService:IsRunning() then
 		RecordPurchase = table.freeze({
 			Fire = noop
 		}),
+		RecordMenuToggle = table.freeze({
+			Fire = noop
+		}),
 		GetCloudConfig = table.freeze({
 			Call = noop
 		}),
@@ -154,22 +157,7 @@ local remotes = ReplicatedStorage:WaitForChild("ZAP")
 local reliable = remotes:WaitForChild("AVALOG_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected AVALOG_RELIABLE to be a RemoteEvent")
 
-export type BulkPurchaseAvatarItem = ({
-	["Id"]: (string),
-	["Type"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-})
-export type PromotedItem = ({
-	["itemId"]: (string),
-	["itemType"]: ("Asset" | "Bundle"),
-	["tintColor"]: ((string)?),
-	["promotionId"]: (string),
-	["bid"]: (number),
-	["startTime"]: (number),
-	["endTime"]: (number),
-})
+export type ItemType = ("Asset" | "Bundle")
 export type AvatarItem = ({
 	["Id"]: (number),
 	["Type"]: ({
@@ -181,22 +169,6 @@ export type AvatarItem = ({
 		["Value"]: (number),
 	}),
 	["Name"]: (string),
-})
-export type CatalogItem = ({
-	["AssetId"]: (number),
-	["Name"]: (string),
-	["Type"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-	["AssetType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-})
-export type EquippedEmote = ({
-	["Name"]: (string),
-	["Slot"]: (number),
 })
 export type HumanoidDescriberData = ({
 	["Accessories"]: ({ ({
@@ -258,7 +230,60 @@ export type HumanoidDescriberData = ({
 		["Pants"]: (number),
 	}),
 })
-export type ItemType = ("Asset" | "Bundle")
+export type AccessorySpec = ({
+	["AssetId"]: (number),
+	["AccessoryType"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+	["Order"]: ((number)?),
+	["Puffiness"]: ((number)?),
+	["IsLayered"]: ((boolean)?),
+	["Position"]: ((Vector3)?),
+	["Rotation"]: ((Vector3)?),
+	["Scale"]: ((Vector3)?),
+})
+export type SerEnumItem = ({
+	["EnumType"]: (string),
+	["Value"]: (number),
+})
+export type Item = ({
+	["itemId"]: (string),
+	["itemType"]: ("Asset" | "Bundle"),
+	["tintColor"]: ((string)?),
+})
+export type PromotedItem = ({
+	["itemId"]: (string),
+	["itemType"]: ("Asset" | "Bundle"),
+	["tintColor"]: ((string)?),
+	["promotionId"]: (string),
+	["bid"]: (number),
+	["startTime"]: (number),
+	["endTime"]: (number),
+})
+export type BulkPurchaseAvatarItem = ({
+	["Id"]: (string),
+	["Type"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+})
+export type EquippedEmote = ({
+	["Name"]: (string),
+	["Slot"]: (number),
+})
+export type CatalogItem = ({
+	["AssetId"]: (number),
+	["Name"]: (string),
+	["Type"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+	["AssetType"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+})
 export type CloudConfig = ({
 	["latestVersion"]: (string),
 	["featuredItems"]: ({ ({
@@ -280,28 +305,6 @@ export type CloudConfig = ({
 		["startTime"]: (number),
 		["endTime"]: (number),
 	}) }),
-})
-export type SerEnumItem = ({
-	["EnumType"]: (string),
-	["Value"]: (number),
-})
-export type Item = ({
-	["itemId"]: (string),
-	["itemType"]: ("Asset" | "Bundle"),
-	["tintColor"]: ((string)?),
-})
-export type AccessorySpec = ({
-	["AssetId"]: (number),
-	["AccessoryType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-	["Order"]: ((number)?),
-	["Puffiness"]: ((number)?),
-	["IsLayered"]: ((boolean)?),
-	["Position"]: ((Vector3)?),
-	["Rotation"]: ((Vector3)?),
-	["Scale"]: ((Vector3)?),
 })
 
 local function SendEvents()
@@ -723,6 +726,18 @@ local returns = {
 			buffer.writeu8(outgoing_buff, bool_7_pos_1, bool_7)
 		end,
 	},
+	RecordMenuToggle = {
+		Fire = function(Open: (boolean))
+			alloc(1)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			local bool_8 = 0
+			local bool_8_pos_1 = alloc(1)
+			if Open then
+				bool_8 = bit32.bor(bool_8, 0b0000000000000001)
+			end
+			buffer.writeu8(outgoing_buff, bool_8_pos_1, bool_8)
+		end,
+	},
 	GetCloudConfig = {
 		Call = function(): ((({
 			["latestVersion"]: (string),
@@ -753,7 +768,7 @@ local returns = {
 				error("Zap has more than 256 calls awaiting a response, and therefore this packet has been dropped")
 			end
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, 3)
+			buffer.writeu8(outgoing_buff, outgoing_apos, 4)
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, function_call_id)
 			reliable_event_queue[1][function_call_id] = coroutine.running()

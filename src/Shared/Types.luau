@@ -11,6 +11,7 @@ export type ItemSale = {
 
 export type AvalogUsageSnapshot = {
 	experienceId: string,
+	placeId: string,
 	jobId: string,
 	uptime: number,
 	totalMenuOpens: number,
