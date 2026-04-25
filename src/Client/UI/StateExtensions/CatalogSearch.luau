@@ -20,9 +20,7 @@ export type SearchParams = {
 	Limit: number?,
 }
 
-local CatalogSearch = {
-	Searches = {},
-}
+local CatalogSearch = {}
 
 function CatalogSearch.Search(Params: SearchParams)
 	local Search = {
@@ -109,11 +107,6 @@ function CatalogSearch.Params(Params: SearchParams)
 	return CatalogSearchParams
 end
 
-function CatalogSearch:Stop()
-	for Hash, Search in pairs(self.Searches) do
-		Search:Destroy()
-		self.Searches[Hash] = nil
-	end
-end
+function CatalogSearch:Stop() end
 
 return CatalogSearch

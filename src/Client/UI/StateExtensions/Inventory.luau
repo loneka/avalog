@@ -4,18 +4,10 @@ local Avalog = script.Parent.Parent.Parent.Parent.Parent
 local States = require(script.Parent.Parent.States)
 local Future = require(Avalog.Parent.Future)
 local Signal = require(Avalog.Parent.Signal)
-local HashDictionary = require(Avalog.SourceCode.Shared.Utils.HashDictionary)
 
-local Inventory = {
-	Searches = {},
-}
+local Inventory = {}
 
 function Inventory.Search(AssetTypes: { Enum.AvatarAssetType })
-	local QueryHash = HashDictionary(AssetTypes)
-	if Inventory.Searches[QueryHash] ~= nil then
-		return Inventory.Searches[QueryHash]
-	end
-
 	local Search = {
 		Results = {},
 		Pages = nil,
@@ -59,8 +51,6 @@ function Inventory.Search(AssetTypes: { Enum.AvatarAssetType })
 			Search:_LoadPage(Result:GetCurrentPage())
 		end
 	end)
-
-	Inventory.Searches[QueryHash] = Search
 
 	return Search
 end
