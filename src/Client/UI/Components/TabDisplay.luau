@@ -91,9 +91,11 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				local TabComponent = TAB_COMPONENTS[Use(ActiveTab)]
 
 				if TabComponent then
-					return TabComponent(Scope, {
-						Shown = true,
-					})
+					return OnyxUI.Themer.Theme:is(Theme):during(function()
+						return TabComponent(Scope, {
+							Shown = true,
+						})
+					end)
 				end
 			end),
 		},
