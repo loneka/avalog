@@ -7,6 +7,8 @@ local Navigation = require(Avalog.SourceCode.Client.UI.StateExtensions.Navigatio
 local States = require(Avalog.SourceCode.Client.UI.States)
 local Inventory = require(Avalog.SourceCode.Client.UI.StateExtensions.Inventory)
 
+local Children = Fusion.Children
+
 export type Props = {
 	Shown: Fusion.UsedAs<boolean>?,
 }
@@ -15,6 +17,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Scope = Fusion.innerScope(Scope, Fusion, OnyxUI.Util, OnyxUI.Components, {
 		ItemsTab = require(script.Parent.ItemsTab),
 	})
+	local Theme = OnyxUI.Themer.Theme:now()
 
 	local Shown = OnyxUI.Util.Fallback(Props.Shown, false)
 
@@ -81,23 +84,11 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		end
 	end)
 
-	local function CheckInventoryAccess()
-		local ShownValue = Fusion.peek(Shown)
-		local AccessAllowedValue = Fusion.peek(States.Inventory.AccessAllowed)
-
-		if ShownValue and not AccessAllowedValue then
-			AvatarEditorService:PromptAllowInventoryReadAccess()
-		end
-	end
-
-	CheckInventoryAccess()
-
 	AvatarEditorService.PromptAllowInventoryReadAccessCompleted:Connect(function(Result)
 		local ShownValue = Fusion.peek(Shown)
-		local ModeValue = Fusion.peek(States.Catalog.Mode)
 
 		if ShownValue and (Result ~= Enum.AvatarPromptResult.Success) then
-			States.Catalog.Mode:set(ModeValue + 1)
+			States.Catalog.Mode:set(1)
 		end
 	end)
 
@@ -116,5 +107,40 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				SearchValue:LoadNextPage()
 			end
 		end,
+
+		[Children] = {
+			Scope:Computed(function(Use)
+				local AccessAllowedValue = Use(States.Inventory.AccessAllowed)
+
+				if AccessAllowedValue then
+					return
+				end
+
+				return OnyxUI.Themer.Theme:is(Theme):during(function()
+					return Scope:Card {
+						BackgroundColor3 = Theme.Colors.Neutral.Main,
+						ListEnabled = true,
+						ListHorizontalFlex = Enum.UIFlexAlignment.Fill,
+						CornerRadius = Scope:Computed(function(Use)
+							return UDim.new(0, Use(Theme.CornerRadius["1.5"]))
+						end),
+
+						[Children] = {
+							Scope:Text {
+								Text = "Please allow access to your inventory.",
+							},
+							Scope:Button {
+								Content = { "Allow" },
+								Color = Theme.Colors.Primary.Main,
+
+								OnActivated = function()
+									AvatarEditorService:PromptAllowInventoryReadAccess()
+								end,
+							},
+						},
+					}
+				end)
+			end),
+		},
 	}))
 end
