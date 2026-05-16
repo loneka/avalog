@@ -51,6 +51,11 @@ local AvatarAssetTypes = {
 			Enum.AvatarAssetType.EyebrowAccessory,
 			Enum.AvatarAssetType.EyelashAccessory,
 		},
+		Makeup = {
+			Enum.AvatarAssetType.FaceMakeup,
+			Enum.AvatarAssetType.LipMakeup,
+			Enum.AvatarAssetType.EyeMakeup,
+		},
 		Gear = {
 			Enum.AvatarAssetType.Gear,
 		},

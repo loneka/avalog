@@ -75,6 +75,14 @@ local Categories: { [string]: { Category } } = {
 					BundleTypes = { Enum.BundleType.DynamicHead },
 					AssetTypes = { Enum.AvatarAssetType.DynamicHead },
 				},
+				{
+					Name = "Makeup",
+					AssetTypes = {
+						Enum.AvatarAssetType.FaceMakeup,
+						Enum.AvatarAssetType.LipMakeup,
+						Enum.AvatarAssetType.EyeMakeup,
+					},
+				},
 			},
 		},
 		{
