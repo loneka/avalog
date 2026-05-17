@@ -116,6 +116,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				Id = Item.Id,
 				Type = Item.ItemType,
 				Featured = Item.Featured,
+				TintColor = Item.TintColor,
 			}
 		end),
 

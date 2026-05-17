@@ -79,6 +79,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 									Id = Item.Id,
 									Type = Item.Type,
 									Featured = Item.Featured,
+									TintColor = Item.TintColor,
 									Visible = Item.Visible,
 									Owned = Item.Owned,
 									LayoutOrder = Index,

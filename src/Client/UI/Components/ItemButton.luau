@@ -8,6 +8,7 @@ local States = require(Avalog.SourceCode.Client.UI.States)
 local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 local CatalogItems = require(Avalog.SourceCode.Client.UI.StateExtensions.CatalogItems)
 local Future = require(Avalog.Parent.Future)
+local ColorUtils = require(Avalog.Parent.ColorUtils)
 
 local Children = Fusion.Children
 
@@ -23,6 +24,7 @@ export type Props = CustomButton.Props & {
 	Type: Fusion.UsedAs<Enum.AvatarItemType>?,
 	Owned: Fusion.UsedAs<boolean>?,
 	Featured: Fusion.UsedAs<boolean>?,
+	TintColor: Fusion.UsedAs<Color3?>?,
 }
 
 return function(Scope: Fusion.Scope<any>, Props: Props)
@@ -36,6 +38,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Type = OnyxUI.Util.Fallback(Props.Type, Enum.AvatarItemType.Asset)
 	local Owned = OnyxUI.Util.Fallback(Props.Owned, false)
 	local Featured = OnyxUI.Util.Fallback(Props.Featured, false)
+	local TintColor = OnyxUI.Util.Fallback(Props.TintColor, nil)
 
 	local ItemInfo = Scope:Value(nil)
 	local function UpdateItemInfo()
@@ -94,6 +97,16 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		StrokeThickness = Theme.StrokeThickness["2"],
 		StrokeColor = Theme.Colors.Primary.Main,
 		ListEnabled = false,
+		Color = Scope:Computed(function(Use)
+			local TintColorValue = Use(TintColor)
+			local DefaultColorValue = Use(Theme.Colors.Neutral.Main)
+
+			if TintColorValue ~= nil then
+				return ColorUtils.Blend.Transparency(DefaultColorValue, TintColorValue, 0.8)
+			else
+				return DefaultColorValue
+			end
+		end),
 
 		OnActivated = function()
 			local ItemInfoValue = Fusion.peek(ItemInfo)
