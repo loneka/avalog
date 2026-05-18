@@ -97,32 +97,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					},
 				}
 			end),
-			Scope:Computed(function(Use)
-				if CURATED_SHOWN then
-					return Scope:CustomButton {
-						AutomaticSize = Enum.AutomaticSize.Y,
-						Visible = States.Featured.MessageShown,
-						ListHorizontalAlignment = Enum.HorizontalAlignment.Left,
-
-						OnActivated = function()
-							States.Featured.MessageShown:set(false)
-						end,
-
-						[Children] = {
-							Scope:IconText {
-								Content = {
-									"rbxassetid://13850331560",
-									"Contains exclusive, curated, and sponsored listings.",
-								},
-								ListPadding = Scope:Computed(function(Use)
-									return UDim.new(0, Use(Theme.Spacing["0.5"]))
-								end),
-								ListVerticalAlignment = Enum.VerticalAlignment.Center,
-							},
-						},
-					}
-				end
-			end),
 		},
 	}))
 end
