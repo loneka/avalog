@@ -56,10 +56,13 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					Item.TintColor = Item.tintColor
 				end
 
-				return Sift.Array.map(Sift.Array.merge(CONFIG.Featured.Items, PinnedItems), function(Item)
-					Item.Featured = true
-					return Item
-				end)
+				return Sift.Array.merge(
+					Sift.Array.map(PinnedItems, function(Item)
+						Item.Featured = true
+						return Item
+					end),
+					CONFIG.Featured.Items
+				)
 			end
 
 			return {}
