@@ -93,7 +93,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			},
 			Scope:PromoPopout {
 				Link = "devforum.roblox.com/t/3513102",
-				Logo = "rbxassetid://109049301067448",
+				Logo = "rbxassetid://93133319477541",
 				UpdateAvailable = Scope:Computed(function(Use)
 					return Manifest.Version ~= Use(States.CloudConfig).latestVersion
 				end),
