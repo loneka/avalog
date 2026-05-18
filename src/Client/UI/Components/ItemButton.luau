@@ -240,9 +240,9 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			Scope:Computed(function(Use)
 				if Use(Featured) then
 					return Scope:Icon {
-						Image = "rbxassetid://93133319477541",
+						Image = "rbxassetid://13850331560",
 						Size = Scope:Computed(function(Use)
-							return UDim2.fromOffset(Use(Theme.TextSize["1"]), Use(Theme.TextSize["1"]))
+							return UDim2.fromOffset(Use(Theme.TextSize["1.25"]), Use(Theme.TextSize["1.25"]))
 						end),
 					}
 				end
