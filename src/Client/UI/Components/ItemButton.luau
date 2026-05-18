@@ -102,10 +102,22 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			local DefaultColorValue = Use(Theme.Colors.Neutral.Main)
 
 			if TintColorValue ~= nil then
-				return ColorUtils.Blend.Transparency(DefaultColorValue, TintColorValue, 0.8)
+				return ColorUtils.Blend.Transparency(DefaultColorValue, TintColorValue, 0.85)
 			else
 				return DefaultColorValue
 			end
+		end),
+		GradientEnabled = Scope:Computed(function(Use)
+			return Use(TintColor) ~= nil
+		end),
+		GradientColor = ColorSequence.new(Color3.new(1, 1, 1)),
+		GradientTransparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.25),
+			NumberSequenceKeypoint.new(0.5, 0),
+			NumberSequenceKeypoint.new(1, 0.25),
+		}),
+		GradientRotation = Scope:Computed(function(Use)
+			return Use(States.UnixTimestamp) / 15 % 360 - 180
 		end),
 
 		OnActivated = function()

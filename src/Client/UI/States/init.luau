@@ -37,6 +37,7 @@ local States = {
 	Screen = {
 		Resolution = Scope:Value(Vector2.new()),
 	},
+	UnixTimestamp = Scope:Value(0),
 	Open = Scope:Value(false),
 }
 
