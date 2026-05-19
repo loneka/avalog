@@ -79,11 +79,16 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		local IdValue = Use(Id)
 		local SafeItemInfoValue = Use(SafeItemInfo)
 
-		if SafeItemInfoValue.AssetType == Enum.AvatarAssetType.EmoteAnimation and AvatarManager.HumanoidDescriber then
-			return AvatarManager.HumanoidDescriber:GetEquippedEmote(SafeItemInfoValue.Name) ~= nil
-		else
-			return table.find(AssetIdsValue, IdValue) ~= nil
+		if
+			SafeItemInfoValue.AssetType == Enum.AvatarAssetType.EmoteAnimation
+			and AvatarManager.HumanoidDescriber ~= nil
+		then
+			if AvatarManager.HumanoidDescriber:GetEquippedEmote(SafeItemInfoValue.Name) == nil then
+				return
+			end
 		end
+
+		return table.find(AssetIdsValue, IdValue) ~= nil
 	end)
 
 	local EquippedValueState = Scope:Value(Fusion.peek(Equipped))
