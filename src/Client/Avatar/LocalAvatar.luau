@@ -184,51 +184,22 @@ end
 function LocalAvatar:ToggleCatalogItem(CatalogItem: CatalogItem)
 	if CatalogItem.Type == Enum.AvatarItemType.Bundle then
 		local BundleDetails = CatalogItems:GetBundle(CatalogItem.Id)
-		local UserOutfit
 
-		if BundleDetails then
-			for _, BundleItem in ipairs(BundleDetails.Items) do
-				if BundleItem.Type == "UserOutfit" then
-					UserOutfit = BundleItem
-					break
-				end
-			end
+		if BundleDetails ~= nil then
+			for _, BundleItem in BundleDetails.Items do
+				if BundleItem.Type == "Asset" then
+					local AssetType = Enum.AvatarAssetType[BundleItem.AssetType]
 
-			if UserOutfit then
-				local Success, Result = Future.Try(function()
-					return Players:GetHumanoidDescriptionFromOutfitId(UserOutfit.Id)
-				end):Await()
-
-				if Success then
-					local BundleDescriber = HumanoidDescriber(Result)
-					local BundleData = BundleDescriber:GetData()
-
-					if BundleDetails.BundleType == "BodyParts" then
-						LocalAvatar.HumanoidDescriber:UpdateData(function(Data)
-							Data.BodyParts = BundleData.BodyParts
-							return Data
-						end)
-					elseif BundleDetails.BundleType == "AvatarAnimations" then
-						LocalAvatar.HumanoidDescriber:UpdateData(function(Data)
-							Data.Animations = BundleData.Animations
-							return Data
-						end)
-					elseif BundleDetails.BundleType == "DynamicHead" then
-						LocalAvatar.HumanoidDescriber:EquipAsset(
-							BundleData.BodyParts.Head,
-							Enum.AvatarAssetType.DynamicHead
-						)
+					if AssetType ~= nil then
+						local Equipped = LocalAvatar.HumanoidDescriber:IsAssetEquipped(BundleItem.Id, AssetType)
+						LocalAvatar.HumanoidDescriber:SetAssetEquipped(BundleItem.Id, AssetType, not Equipped)
 					end
-
-					BundleDescriber:Destroy()
-					Result:Destroy()
-				else
-					warn(Result)
 				end
 			end
 		end
 	elseif CatalogItem.Type == Enum.AvatarItemType.Asset then
 		local Equipped = LocalAvatar.HumanoidDescriber:IsAssetEquipped(CatalogItem.Id, CatalogItem.AssetType)
+
 		LocalAvatar.HumanoidDescriber:SetAssetEquipped(CatalogItem.Id, CatalogItem.AssetType, not Equipped)
 	end
 
