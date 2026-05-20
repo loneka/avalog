@@ -131,7 +131,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 							},
 							Scope:Button {
 								Content = { "Allow" },
-								Color = Theme.Colors.Primary.Main,
+								Color = Theme.Colors.BaseContent.Main,
 
 								OnActivated = function()
 									AvatarEditorService:PromptAllowInventoryReadAccess()

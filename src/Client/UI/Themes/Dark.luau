@@ -11,7 +11,7 @@ local Scope = Fusion.scoped(Fusion)
 return Themer.NewTheme(Scope, {
 	Colors = {
 		Primary = {
-			Main = Color3.fromHex("fbfafd"),
+			Main = Color3.fromHex("#C766FF"),
 		},
 		Secondary = {
 			Main = Color3.fromHex("fbfafd"),

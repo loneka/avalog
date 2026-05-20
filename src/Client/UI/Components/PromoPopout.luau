@@ -48,16 +48,9 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				ContentSize = Theme.TextSize["1.25"],
 				Color = Scope:Computed(function(Use)
 					if Use(UpdateAvailable) then
-						return Use(Theme.Colors.Warning.Main)
+						return Use(Theme.Colors.Primary.Main)
 					else
 						return Use(Theme.Colors.Neutral.Main)
-					end
-				end),
-				ContentColor = Scope:Computed(function(Use)
-					if Use(UpdateAvailable) then
-						return OnyxUI.Util.Colors.Black
-					else
-						return OnyxUI.Util.Colors.White
 					end
 				end),
 				PaddingLeft = Scope:Computed(function(Use)

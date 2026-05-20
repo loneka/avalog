@@ -107,7 +107,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		Name = script.Name,
 		StrokeEnabled = Equipped,
 		StrokeThickness = Theme.StrokeThickness["2"],
-		StrokeColor = Theme.Colors.Primary.Main,
+		StrokeColor = Theme.Colors.BaseContent.Main,
 		ListEnabled = false,
 		Color = Scope:Computed(function(Use)
 			local TintColorValue = Use(TintColor)
@@ -225,7 +225,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				AnchorPoint = Vector2.new(0.5, 1),
 				Position = UDim2.fromScale(0.5, 1),
 				Size = UDim2.fromScale(1, 0),
-				Color = OnyxUI.Util.Colors.Green["500"],
+				Color = Theme.Colors.Primary.Main,
 				Scale = Scope:Spring(
 					Scope:Computed(function(Use)
 						local EquippedValue = Use(Equipped)

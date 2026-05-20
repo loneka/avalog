@@ -32,6 +32,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			},
 			Scope:Slider {
 				Value = Value,
+				Color = Theme.Colors.BaseContent.Main,
 			},
 		},
 	}))
