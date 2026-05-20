@@ -4,12 +4,17 @@
 
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
 local Avalog = script.Parent.Parent.Parent
-local Zap = require(Avalog.SourceCode.Shared.Zap.client)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local Fusion = require(Avalog.Parent.Fusion)
 local Types = require(Avalog.SourceCode.Shared.Types)
+local Zap: typeof(require(Avalog.SourceCode.Shared.Zap.client))? = nil
+
+if RunService:IsRunning() then
+	Zap = require(Avalog.SourceCode.Shared.Zap.client)
+end
 
 local MARKETPLACE_PRODUCT_TYPE_ITEM_TYPES = {
 	[Enum.MarketplaceProductType.AvatarAsset] = "Asset",
@@ -44,10 +49,12 @@ function Cloud.Start(_self: typeof(Cloud))
 			return
 		end
 
-		Zap.RecordPurchase.Fire({
-			itemId = tostring(AssetId),
-			itemType = "Asset",
-		})
+		if Zap ~= nil then
+			Zap.RecordPurchase.Fire({
+				itemId = tostring(AssetId),
+				itemType = "Asset",
+			})
+		end
 	end)
 
 	-- Ingest Bundle purchases
