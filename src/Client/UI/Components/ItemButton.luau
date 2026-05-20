@@ -240,6 +240,9 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					Theme.SpringSpeed["2"],
 					Theme.SpringDampening["1.5"]
 				),
+				Selectable = Scope:Computed(function(Use)
+					return Use(Equipped) and not Use(Owned)
+				end),
 
 				OnActivated = function()
 					Future.Try(function()
