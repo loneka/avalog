@@ -40,6 +40,7 @@ Fusion = { wally = "elttob/fusion", version = "^0.3.0" }
 Skilift = { wally = "alicesaidhi/skilift", version = "^0.3.1" }
 OnyxUI = { wally = "imavafe/onyx-ui", version = "^0.5.3" }
 TopbarPlus = { wally = "1foreverhd/topbarplus", version = "^3.4.0" }
+ModelSquash = { wally = "maximumadhd/model-squash", version = "^1.1.9" }
 
 
 # For wally:
