@@ -2,27 +2,52 @@
 	Injects the upgraded model counterparts of Avalog Cosmetics.
 ]]
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local Avalog = script.Parent.Parent.Parent
-local LuauRoblox = require(Avalog.SourceCode.Storage.Utils.LuauRoblox)
-local MaterializeVirtualInstance = require(Avalog.SourceCode.Storage.Utils.MaterializeVirtualInstance)
+local ModelSquash = require(Avalog.Parent.ModelSquash)
 local Fetch = require(Avalog.Parent.Fetch)
 
-local Cosmetics = {}
+local BASE_URL = "http://localhost:3000"
 
-function Cosmetics.Start(_self: typeof(Cosmetics))
-	local Success, Response = Fetch("http://localhost:3000/cosmetic/135037445384022.rbxm"):Await()
+local Cosmetics = {
+	_ModelStorage = Instance.new("Folder"),
+	_Models = {} :: { [string]: string },
+}
 
-	if Success then
-		print(Response.Body)
+function Cosmetics.Start(self: typeof(Cosmetics))
+	self._ModelStorage.Name = "AVALOG_COSMETICS"
+	self._ModelStorage.Parent = ReplicatedStorage
 
-		local Instances = LuauRoblox.deserializeModel(Response.Body)
-		local Model = MaterializeVirtualInstance(Instances[1])
+	local Model = self:GetModelAsync("135037445384022")
+	print(Model)
+end
 
-		print(Model)
+function Cosmetics.GetModelAsync(self: typeof(Cosmetics), Id: string): Instance?
+	local ExistingModel = self._ModelStorage:FindFirstChild(Id)
+	if ExistingModel ~= nil then
+		return ExistingModel
+	end
 
-		Model.Name = "DeserializedModel"
-		Model.Parent = workspace
-		Model.Position = Vector3.new(0, 10, 0)
+	local Success, Response = Fetch(BASE_URL .. `/cosmetic/{Id}`, {}):Await()
+
+	if Success and Response.Ok then
+		local Success2, Result = pcall(function()
+			return ModelSquash.Deserialize(buffer.fromstring(Response.Body))
+		end)
+
+		if Success2 then
+			if typeof(Result) == "Instance" then
+				Result.Name = Id
+				Result.Parent = self._ModelStorage
+
+				return Result
+			else
+				warn(`Returned model for cosmetic {Id} is not an Instance`)
+			end
+		else
+			warn(Result)
+		end
 	else
 		warn(Response)
 	end
