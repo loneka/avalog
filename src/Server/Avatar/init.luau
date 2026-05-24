@@ -10,6 +10,7 @@ local PlayerDataStore = require(Avalog.SourceCode.Server.PlayerDataStorage.Playe
 local Squash = require(Avalog.Parent.Squash)
 local AvatarDataSerDes = require(Avalog.SourceCode.Server.PlayerDataStorage.SerDes.AvatarData)
 local Config = require(Avalog.Config)
+local Signal = require(Avalog.Parent.Signal)
 
 local CONFIG = Config:Get()
 local RATE_LIMITS = {
@@ -19,6 +20,7 @@ local RATE_LIMITS = {
 
 local Avatar = {
 	Avatars = {},
+	DataAppliedToPlayer = Signal.new(),
 }
 
 function Avatar:HandleProfile(Player: Player, Profile)
@@ -86,6 +88,8 @@ function Avatar:ApplyData(Player: Player, Data: HumanoidDescriber.Data)
 		Avatar:Apply(Player, HumanoidDescription):Await()
 
 		HumanoidDescriberObject:Destroy()
+
+		Avatar.DataAppliedToPlayer:Fire(Player, Data)
 	end
 end
 
