@@ -93,7 +93,7 @@ function CatalogSearch.Pages(Params: SearchParams)
 	local CatalogSearchParams = CatalogSearch.Params(Params)
 
 	return Future.Try(function()
-		return AvatarEditorService:SearchCatalog(CatalogSearchParams)
+		return AvatarEditorService:SearchCatalogAsync(CatalogSearchParams)
 	end)
 end
 
