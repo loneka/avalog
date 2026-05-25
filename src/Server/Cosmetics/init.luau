@@ -90,9 +90,9 @@ function Cosmetics.ApplyCosmetic(self: typeof(Cosmetics), Player: Player, Id: st
 			elseif InjectionType == "Path" then
 				local InjectionPath = Model:GetAttribute("InjectionPath")
 				if typeof(InjectionPath) == "string" then
-					local InjectionPathArray = HttpService:JSONDecodeAsync(InjectionPath)
+					local InjectionPathArray = HttpService:JSONDecode(InjectionPath)
 					if typeof(InjectionPathArray) == "table" then
-						local Descendant = Model :: Instance
+						local Descendant = Character :: Instance
 
 						for _, PathStep in InjectionPathArray do
 							local NewDescendant = Descendant:FindFirstChild(PathStep)
