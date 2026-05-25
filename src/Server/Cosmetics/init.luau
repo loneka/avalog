@@ -2,6 +2,7 @@
 	Injects the upgraded model counterparts of Avalog Cosmetics.
 ]]
 
+local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Avalog = script.Parent.Parent.Parent
@@ -33,6 +34,15 @@ local function AssetIdsFromAvatarData(AvatarData): { string }
 
 	return AssetIds
 end
+local function IsCosmeticApplied(Character: Model, Id: string)
+	for _, Descendant in Character:GetDescendants() do
+		if Descendant:GetAttribute("CosmeticId") == Id then
+			return true
+		end
+	end
+
+	return false
+end
 
 local Cosmetics = {
 	_ModelStorage = Instance.new("Folder"),
@@ -42,7 +52,7 @@ function Cosmetics.Start(self: typeof(Cosmetics))
 	self._ModelStorage.Name = "AVALOG_COSMETICS"
 	self._ModelStorage.Parent = ReplicatedStorage
 
-	-- Handle cosmetics in player avatars
+	-- Handle cosmetics for player avatars
 	Avatar.DataAppliedToPlayer:Connect(function(Player, Data)
 		local AppliedAssetIds = AssetIdsFromAvatarData(Data)
 		local CosmeticItems = Cloud.Config.Data:Get().cosmeticItems
@@ -55,12 +65,54 @@ function Cosmetics.Start(self: typeof(Cosmetics))
 	end)
 end
 
-function Cosmetics.ApplyCosmetic(self: typeof(Cosmetics), Player: Player, Id: string)
+function Cosmetics.ApplyCosmetic(self: typeof(Cosmetics), Player: Player, Id: string): true?
 	local Character = Player.Character
 	if Character ~= nil then
+		if IsCosmeticApplied(Character, Id) then
+			print("lol")
+			return
+		end
+
 		local Model = self:GetModelAsync(Id)
 		if Model ~= nil then
-			Model.Parent = Character
+			local InjectionType = Model:GetAttribute("InjectionType")
+			if InjectionType == "Accessory" then
+				if not Model:IsA("Accessory") then
+					warn(`Cosmetic model {Id} has Accessory InjectionType but is not an accessory.`)
+					return
+				end
+
+				local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+				if Humanoid ~= nil then
+					Humanoid:AddAccessory(Model)
+					return true
+				end
+			elseif InjectionType == "Path" then
+				local InjectionPath = Model:GetAttribute("InjectionPath")
+				if typeof(InjectionPath) == "string" then
+					local InjectionPathArray = HttpService:JSONDecodeAsync(InjectionPath)
+					if typeof(InjectionPathArray) == "table" then
+						local Descendant = Model :: Instance
+
+						for _, PathStep in InjectionPathArray do
+							local NewDescendant = Descendant:FindFirstChild(PathStep)
+							if NewDescendant == nil then
+								warn(`Cosmetic {Id}'s InjectionPath could not be resolved.`)
+								return
+							else
+								Descendant = NewDescendant
+							end
+						end
+
+						Model.Parent = Descendant
+						return true
+					end
+				end
+			else
+				warn(`Cosmetic {Id} has an invalid or missing InjectionType.`)
+			end
+		else
+			warn(`Model could not be found for cosmetic {Id}.`)
 		end
 	end
 end
@@ -81,6 +133,7 @@ function Cosmetics.GetModelAsync(self: typeof(Cosmetics), Id: string): Instance?
 		if Success2 then
 			if typeof(Result) == "Instance" then
 				Result.Name = Id
+				Result:SetAttribute("CosmeticId", Id)
 				Result.Parent = self._ModelStorage
 
 				return Result:Clone()
@@ -88,7 +141,7 @@ function Cosmetics.GetModelAsync(self: typeof(Cosmetics), Id: string): Instance?
 				warn(`Returned model for cosmetic {Id} is not an Instance`)
 			end
 		else
-			warn(Result)
+			warn(`Issue during cosmetic {Id} deserialization:`, Result)
 		end
 	else
 		warn(Response)
