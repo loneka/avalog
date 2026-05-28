@@ -10,6 +10,7 @@ local ModelSquash = require(Avalog.Parent.ModelSquash)
 local Fetch = require(Avalog.Parent.Fetch)
 local Avatar = require(script.Parent.Avatar)
 local Cloud = require(script.Parent.Cloud)
+local UpgradeMeshParts = require(script.UpgradeMeshParts)
 
 local BASE_URL = "http://localhost:3000"
 
@@ -43,6 +44,17 @@ local function IsCosmeticApplied(Character: Model, Id: string)
 
 	return false
 end
+local function UpgradeDescendantMeshParts(Model: Instance)
+	local MeshParts = {}
+
+	for _, Descendant in Model:GetDescendants() do
+		if Descendant:IsA("MeshPart") then
+			table.insert(MeshParts, Descendant)
+		end
+	end
+
+	return UpgradeMeshParts(MeshParts)
+end
 
 local Cosmetics = {
 	_ModelStorage = Instance.new("Folder"),
@@ -69,7 +81,6 @@ function Cosmetics.ApplyCosmetic(self: typeof(Cosmetics), Player: Player, Id: st
 	local Character = Player.Character
 	if Character ~= nil then
 		if IsCosmeticApplied(Character, Id) then
-			print("lol")
 			return
 		end
 
@@ -132,6 +143,8 @@ function Cosmetics.GetModelAsync(self: typeof(Cosmetics), Id: string): Instance?
 
 		if Success2 then
 			if typeof(Result) == "Instance" then
+				UpgradeDescendantMeshParts(Result)
+
 				Result.Name = Id
 				Result:SetAttribute("CosmeticId", Id)
 				Result.Parent = self._ModelStorage
