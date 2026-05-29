@@ -67,11 +67,12 @@ function Cosmetics.Start(self: typeof(Cosmetics))
 	-- Handle cosmetics for player avatars
 	Avatar.DataAppliedToPlayer:Connect(function(Player, Data)
 		local AppliedAssetIds = AssetIdsFromAvatarData(Data)
-		local CosmeticItems = Cloud.Config.Data:Get().cosmeticItems
-
-		for _, Cosmetic in CosmeticItems do
-			if Cosmetic.itemType == "Asset" and table.find(AppliedAssetIds, Cosmetic.itemId) ~= nil then
-				Cosmetics:ApplyCosmetic(Player, Cosmetic.itemId)
+		local CloudConfig = Cloud.Config.Data:Get()
+		if CloudConfig and CloudConfig.cosmeticItems then
+			for _, Cosmetic in CloudConfig.cosmeticItems do
+				if Cosmetic.itemType == "Asset" and table.find(AppliedAssetIds, Cosmetic.itemId) ~= nil then
+					Cosmetics:ApplyCosmetic(Player, Cosmetic.itemId)
+				end
 			end
 		end
 	end)
