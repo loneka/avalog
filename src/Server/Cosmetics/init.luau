@@ -2,7 +2,6 @@
 	Injects the upgraded model counterparts of Avalog Cosmetics.
 ]]
 
-local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Avalog = script.Parent.Parent.Parent
@@ -12,6 +11,7 @@ local Avatar = require(script.Parent.Avatar)
 local Cloud = require(script.Parent.Cloud)
 local UpgradeMeshParts = require(script.UpgradeMeshParts)
 local PlayerOwnsAsset = require(Avalog.SourceCode.Shared.Utils.PlayerOwnsAsset)
+local ApplyCosmetic = require(Avalog.SourceCode.Shared.Utils.ApplyCosmetic)
 
 local BASE_URL = "http://localhost:3000"
 
@@ -35,15 +35,6 @@ local function AssetIdsFromAvatarData(AvatarData): { string }
 	end
 
 	return AssetIds
-end
-local function IsCosmeticApplied(Character: Model, Id: string)
-	for _, Descendant in Character:GetDescendants() do
-		if Descendant:GetAttribute("CosmeticId") == Id then
-			return true
-		end
-	end
-
-	return false
 end
 local function UpgradeDescendantMeshParts(Model: Instance)
 	local MeshParts = {}
@@ -73,63 +64,27 @@ function Cosmetics.Start(self: typeof(Cosmetics))
 			for _, Cosmetic in CloudConfig.cosmeticItems do
 				if Cosmetic.itemType == "Asset" and table.find(AppliedAssetIds, Cosmetic.itemId) ~= nil then
 					if PlayerOwnsAsset(Player, Cosmetic.itemId) then
-						Cosmetics:ApplyCosmetic(Player, Cosmetic.itemId)
+						ApplyCosmetic(Player, Cosmetic.itemId, self:GetModelAsync(Cosmetic.itemId))
 					end
 				end
 			end
 		end
 	end)
-end
 
-function Cosmetics.ApplyCosmetic(self: typeof(Cosmetics), Player: Player, Id: string): true?
-	local Character = Player.Character
-	if Character ~= nil then
-		if IsCosmeticApplied(Character, Id) then
-			return
-		end
-
-		local Model = self:GetModelAsync(Id)
-		if Model ~= nil then
-			local InjectionType = Model:GetAttribute("InjectionType")
-			if InjectionType == "Accessory" then
-				if not Model:IsA("Accessory") then
-					warn(`Cosmetic model {Id} has Accessory InjectionType but is not an accessory.`)
-					return
-				end
-
-				local Humanoid = Character:FindFirstChildOfClass("Humanoid")
-				if Humanoid ~= nil then
-					Humanoid:AddAccessory(Model)
-					return true
-				end
-			elseif InjectionType == "Path" then
-				local InjectionPath = Model:GetAttribute("InjectionPath")
-				if typeof(InjectionPath) == "string" then
-					local InjectionPathArray = HttpService:JSONDecode(InjectionPath)
-					if typeof(InjectionPathArray) == "table" then
-						local Descendant = Character :: Instance
-
-						for _, PathStep in InjectionPathArray do
-							local NewDescendant = Descendant:FindFirstChild(PathStep)
-							if NewDescendant == nil then
-								warn(`Cosmetic {Id}'s InjectionPath could not be resolved.`)
-								return
-							else
-								Descendant = NewDescendant
-							end
-						end
-
-						Model.Parent = Descendant
-						return true
+	-- Preload cosmetics
+	Cloud.Config.Data:Observe(function(_, Data)
+		if Data and Data.cosmeticItems then
+			for _, Cosmetic in Data.cosmeticItems do
+				task.spawn(function()
+					local Model = nil :: Instance?
+					while Model == nil do
+						Model = self:GetModelAsync(Cosmetic.itemId)
+						task.wait(10)
 					end
-				end
-			else
-				warn(`Cosmetic {Id} has an invalid or missing InjectionType.`)
+				end)
 			end
-		else
-			warn(`Model could not be found for cosmetic {Id}.`)
 		end
-	end
+	end)
 end
 
 function Cosmetics.GetModelAsync(self: typeof(Cosmetics), Id: string): Instance?
