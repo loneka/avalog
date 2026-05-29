@@ -11,6 +11,7 @@ local Fetch = require(Avalog.Parent.Fetch)
 local Avatar = require(script.Parent.Avatar)
 local Cloud = require(script.Parent.Cloud)
 local UpgradeMeshParts = require(script.UpgradeMeshParts)
+local PlayerOwnsAsset = require(Avalog.SourceCode.Shared.Utils.PlayerOwnsAsset)
 
 local BASE_URL = "http://localhost:3000"
 
@@ -71,7 +72,9 @@ function Cosmetics.Start(self: typeof(Cosmetics))
 		if CloudConfig and CloudConfig.cosmeticItems then
 			for _, Cosmetic in CloudConfig.cosmeticItems do
 				if Cosmetic.itemType == "Asset" and table.find(AppliedAssetIds, Cosmetic.itemId) ~= nil then
-					Cosmetics:ApplyCosmetic(Player, Cosmetic.itemId)
+					if PlayerOwnsAsset(Player, Cosmetic.itemId) then
+						Cosmetics:ApplyCosmetic(Player, Cosmetic.itemId)
+					end
 				end
 			end
 		end
