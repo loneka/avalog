@@ -12,30 +12,10 @@ local Cloud = require(script.Parent.Cloud)
 local UpgradeMeshParts = require(script.UpgradeMeshParts)
 local PlayerOwnsAsset = require(Avalog.SourceCode.Shared.Utils.PlayerOwnsAsset)
 local ApplyCosmetic = require(Avalog.SourceCode.Shared.Utils.ApplyCosmetic)
+local AssetIdsFromAvatarData = require(Avalog.SourceCode.Shared.Utils.AssetIdsFromAvatarData)
 
 local BASE_URL = "http://localhost:3000"
 
-local function AssetIdsFromAvatarData(AvatarData): { string }
-	local AssetIds = {
-		AvatarData.Face,
-	}
-
-	for _, Accessory in AvatarData.Accessories do
-		table.insert(AssetIds, Accessory.AssetId)
-	end
-	for _, AssetId in AvatarData.Clothing do
-		table.insert(AssetIds, AssetId)
-	end
-	for _, EmoteAssetIds in AvatarData.Emotes do
-		table.insert(AssetIds, EmoteAssetIds[1])
-	end
-
-	for Key, Value in AssetIds do
-		AssetIds[Key] = tostring(Value)
-	end
-
-	return AssetIds
-end
 local function UpgradeDescendantMeshParts(Model: Instance)
 	local MeshParts = {}
 
@@ -58,13 +38,17 @@ function Cosmetics.Start(self: typeof(Cosmetics))
 
 	-- Handle cosmetics for player avatars
 	Avatar.DataAppliedToPlayer:Connect(function(Player, Data)
+		if not Player.Character then
+			return
+		end
+
 		local AppliedAssetIds = AssetIdsFromAvatarData(Data)
 		local CloudConfig = Cloud.Config.Data:Get()
 		if CloudConfig and CloudConfig.cosmeticItems then
 			for _, Cosmetic in CloudConfig.cosmeticItems do
 				if Cosmetic.itemType == "Asset" and table.find(AppliedAssetIds, Cosmetic.itemId) ~= nil then
 					if PlayerOwnsAsset(Player, Cosmetic.itemId) then
-						ApplyCosmetic(Player, Cosmetic.itemId, self:GetModelAsync(Cosmetic.itemId))
+						ApplyCosmetic(Player.Character, Cosmetic.itemId, self:GetModelAsync(Cosmetic.itemId))
 					end
 				end
 			end

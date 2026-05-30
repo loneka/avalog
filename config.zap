@@ -109,7 +109,8 @@ type CloudConfig = struct {
     latestVersion: string.binary,
     featuredItems: Item[],
     pinnedItems: Item[],
-    promotedItems: PromotedItem[]
+    promotedItems: PromotedItem[],
+    cosmeticItems: Item[]
 }
 
 

@@ -33,7 +33,7 @@ local States = {
 		PrefixItems = Scope:Value({}),
 		Creators = Scope:Value({}),
 	},
-	CloudConfig = Scope:Value(Types.AvalogConfig.Fallback),
+	CloudConfig = Scope:Value(Types.AvalogConfig.Fallback) :: Types.AvalogConfig,
 	Screen = {
 		Resolution = Scope:Value(Vector2.new()),
 	},

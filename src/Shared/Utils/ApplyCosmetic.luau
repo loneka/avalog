@@ -10,12 +10,7 @@ local function IsCosmeticApplied(Character: Model, Id: string)
 	return false
 end
 
-local function ApplyCosmetic(Player: Player, Id: string, Model: Instance): true?
-	local Character = Player.Character
-	if Model == nil or Character == nil then
-		return
-	end
-
+local function ApplyCosmetic(Character: Model, Id: string, Model: Instance): true?
 	if IsCosmeticApplied(Character, Id) then
 		return
 	end

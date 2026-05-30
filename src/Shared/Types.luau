@@ -38,6 +38,7 @@ export type AvalogConfig = {
 	featuredItems: { [number]: Item },
 	pinnedItems: { [number]: Item },
 	promotedItems: { [number]: PromotedItem },
+	cosmeticItems: { [number]: Item },
 }
 
 return {
@@ -47,6 +48,7 @@ return {
 			featuredItems = {},
 			pinnedItems = {},
 			promotedItems = {},
+			cosmeticItems = {},
 		},
 	},
 }

@@ -199,6 +199,30 @@ export type AvatarItem = ({
 	}),
 	["Name"]: (string),
 })
+export type BulkPurchaseAvatarItem = ({
+	["Id"]: (string),
+	["Type"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+})
+export type AccessorySpec = ({
+	["AssetId"]: (number),
+	["AccessoryType"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+	["Order"]: ((number)?),
+	["Puffiness"]: ((number)?),
+	["IsLayered"]: ((boolean)?),
+	["Position"]: ((Vector3)?),
+	["Rotation"]: ((Vector3)?),
+	["Scale"]: ((Vector3)?),
+})
+export type EquippedEmote = ({
+	["Name"]: (string),
+	["Slot"]: (number),
+})
 export type HumanoidDescriberData = ({
 	["Accessories"]: ({ ({
 		["AssetId"]: (number),
@@ -259,60 +283,6 @@ export type HumanoidDescriberData = ({
 		["Pants"]: (number),
 	}),
 })
-export type AccessorySpec = ({
-	["AssetId"]: (number),
-	["AccessoryType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-	["Order"]: ((number)?),
-	["Puffiness"]: ((number)?),
-	["IsLayered"]: ((boolean)?),
-	["Position"]: ((Vector3)?),
-	["Rotation"]: ((Vector3)?),
-	["Scale"]: ((Vector3)?),
-})
-export type SerEnumItem = ({
-	["EnumType"]: (string),
-	["Value"]: (number),
-})
-export type Item = ({
-	["itemId"]: (string),
-	["itemType"]: ("Asset" | "Bundle"),
-	["tintColor"]: ((string)?),
-})
-export type PromotedItem = ({
-	["itemId"]: (string),
-	["itemType"]: ("Asset" | "Bundle"),
-	["tintColor"]: ((string)?),
-	["promotionId"]: (string),
-	["bid"]: (number),
-	["startTime"]: (number),
-	["endTime"]: (number),
-})
-export type BulkPurchaseAvatarItem = ({
-	["Id"]: (string),
-	["Type"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-})
-export type EquippedEmote = ({
-	["Name"]: (string),
-	["Slot"]: (number),
-})
-export type CatalogItem = ({
-	["AssetId"]: (number),
-	["Name"]: (string),
-	["Type"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-	["AssetType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-})
 export type CloudConfig = ({
 	["latestVersion"]: (string),
 	["featuredItems"]: ({ ({
@@ -334,6 +304,41 @@ export type CloudConfig = ({
 		["startTime"]: (number),
 		["endTime"]: (number),
 	}) }),
+	["cosmeticItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+	}) }),
+})
+export type SerEnumItem = ({
+	["EnumType"]: (string),
+	["Value"]: (number),
+})
+export type CatalogItem = ({
+	["AssetId"]: (number),
+	["Name"]: (string),
+	["Type"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+	["AssetType"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+})
+export type PromotedItem = ({
+	["itemId"]: (string),
+	["itemType"]: ("Asset" | "Bundle"),
+	["tintColor"]: ((string)?),
+	["promotionId"]: (string),
+	["bid"]: (number),
+	["startTime"]: (number),
+	["endTime"]: (number),
+})
+export type Item = ({
+	["itemId"]: (string),
+	["itemType"]: ("Asset" | "Bundle"),
+	["tintColor"]: ((string)?),
 })
 
 local function SendEvents()
@@ -640,6 +645,35 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 							buffer.writef32(outgoing_buff, outgoing_apos, val_8["endTime"])
 							buffer.writeu8(outgoing_buff, bool_8_pos_1, bool_8)
 						end
+						local len_23 = #ret_1["cosmeticItems"]
+						alloc(2)
+						buffer.writeu16(outgoing_buff, outgoing_apos, len_23)
+						for i_8 = 1, len_23 do
+							local bool_9 = 0
+							local bool_9_pos_1 = alloc(1)
+							local val_9 = ret_1["cosmeticItems"][i_8]
+							local len_24 = #val_9["itemId"]
+							alloc(2)
+							buffer.writeu16(outgoing_buff, outgoing_apos, len_24)
+							alloc(len_24)
+							buffer.writestring(outgoing_buff, outgoing_apos, val_9["itemId"], len_24)
+							if val_9["itemType"] == "Asset" then
+								bool_9 = bit32.bor(bool_9, 0b0000000000000001)
+							elseif val_9["itemType"] == "Bundle" then
+								local _
+							else
+								error("Invalid enumerator")
+							end
+							if val_9["tintColor"] ~= nil then
+								bool_9 = bit32.bor(bool_9, 0b0000000000000010)
+								local len_25 = #val_9["tintColor"]
+								alloc(2)
+								buffer.writeu16(outgoing_buff, outgoing_apos, len_25)
+								alloc(len_25)
+								buffer.writestring(outgoing_buff, outgoing_apos, val_9["tintColor"], len_25)
+							end
+							buffer.writeu8(outgoing_buff, bool_9_pos_1, bool_9)
+						end
 					end
 					buffer.writeu8(outgoing_buff, bool_5_pos_1, bool_5)
 					player_map[player_2] = save()
@@ -763,6 +797,11 @@ local returns = {
 				["bid"]: (number),
 				["startTime"]: (number),
 				["endTime"]: (number),
+			}) }),
+			["cosmeticItems"]: ({ ({
+				["itemId"]: (string),
+				["itemType"]: ("Asset" | "Bundle"),
+				["tintColor"]: ((string)?),
 			}) }),
 		})?))): () -> ()
 			reliable_events[4] = Callback

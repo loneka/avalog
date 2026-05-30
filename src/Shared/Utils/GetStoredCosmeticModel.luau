@@ -7,7 +7,7 @@ local function GetModelByDomain(Id: string)
 		CosmeticsStorage = ReplicatedStorage:WaitForChild("AVALOG_COSMETICS")
 	end
 	if CosmeticsStorage ~= nil then
-		return CosmeticsStorage:WaitForChild(Id)
+		return CosmeticsStorage:WaitForChild(Id):Clone()
 	end
 end
 
