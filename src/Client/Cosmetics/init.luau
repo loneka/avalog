@@ -12,20 +12,18 @@ local States = require(Avalog.SourceCode.Client.UI.States)
 local Fusion = require(Avalog.Parent.Fusion)
 local GetStoredCosmeticModel = require(Avalog.SourceCode.Shared.Utils.GetStoredCosmeticModel)
 
-local PLAYER = Players.LocalPlayer
-
 local Cosmetics = {}
 
 function Cosmetics.Start(_self: typeof(Cosmetics))
 	-- Handle cosmetics on avatar update
-	local DataUpdateListener: RBXScriptConnection? = nil
+	local UpdateListener: RBXScriptConnection? = nil
 	LocalAvatar.Updated:Connect(function()
-		if DataUpdateListener ~= nil then
-			DataUpdateListener:Disconnect()
-			DataUpdateListener = nil
+		if UpdateListener ~= nil then
+			UpdateListener:Disconnect()
+			UpdateListener = nil
 		end
 
-		DataUpdateListener = LocalAvatar.HumanoidDescriber.Updated:Connect(function()
+		UpdateListener = LocalAvatar.Humanoid.ApplyDescriptionFinished:Connect(function()
 			local Data = LocalAvatar.HumanoidDescriber:GetData()
 			local AppliedAssetIds = AssetIdsFromAvatarData(Data)
 			local CloudConfig = Fusion.peek(States.CloudConfig)

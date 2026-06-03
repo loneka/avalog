@@ -227,7 +227,7 @@ function LocalAvatar:Apply(UpdateServer: boolean?)
 	end
 
 	local Success, Result = Future.Try(function()
-		return LocalAvatar.Humanoid:ApplyDescription(LocalAvatar.HumanoidDescriber.HumanoidDescription)
+		return LocalAvatar.Humanoid:ApplyDescriptionReset(LocalAvatar.HumanoidDescriber.HumanoidDescription)
 	end):After(function()
 		if UpdateServer then
 			return LocalAvatar:UpdateServer(LocalAvatar.HumanoidDescriber:GetData())
