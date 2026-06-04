@@ -178,8 +178,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 										Visible = CONFIG.AvatarSavingAllowed,
 
 										OnActivated = function()
-											AvatarManager:UpdateServer(Fusion.peek(States.Avatar.Data))
-
 											States.Open:set(false)
 										end,
 									},

@@ -2,8 +2,6 @@
 	Handles client previews of cosmetics
 ]]
 
-local Players = game:GetService("Players")
-
 local Avalog = script.Parent.Parent.Parent
 local LocalAvatar = require(script.Parent.Avatar.LocalAvatar)
 local AssetIdsFromAvatarData = require(Avalog.SourceCode.Shared.Utils.AssetIdsFromAvatarData)
