@@ -13,6 +13,13 @@ export type CatalogItem = {
 	AssetType: Enum.AvatarAssetType?,
 	Price: number,
 	Offsale: boolean,
+	Description: string,
+	Creator: {
+		Id: number,
+		Type: string,
+		Name: string,
+		Verified: boolean,
+	},
 }
 
 local INFO_TYPE_TABLES = {
@@ -113,6 +120,13 @@ function CatalogItems:GetItem(Id: number, InfoType: Enum.InfoType): CatalogItem?
 				Type = AvatarItemType,
 				AssetType = AssetTypeFromId(Result.AssetTypeId),
 				Offsale = not Result.IsForSale,
+				Description = Result.Description,
+				Creator = {
+					Id = Result.Creator.CreatorTargetId,
+					Type = Result.Creator.CreatorType,
+					Name = Result.Creator.Name,
+					Verified = Result.Creator.HasVerifiedBadge,
+				},
 			}
 
 			RelevantTable[Id] = Item

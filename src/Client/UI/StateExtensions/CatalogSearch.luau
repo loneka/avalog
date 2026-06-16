@@ -59,6 +59,13 @@ function CatalogSearch.Search(Params: SearchParams)
 					Offsale = Entry.IsOffSale,
 					Type = Enum.AvatarItemType[Entry.ItemType],
 					AssetType = (Entry.AssetType and Enum.AvatarAssetType[Entry.AssetType]) or nil,
+					Description = Entry.Description,
+					Creator = {
+						Id = Entry.CreatorTargetId,
+						Type = Entry.CreatorType,
+						Name = Entry.CreatorName,
+						Verified = Entry.CreatorHasVerifiedBadge,
+					},
 				}
 
 				AppropriateTable[Entry.Id] = Item
