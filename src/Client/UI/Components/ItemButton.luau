@@ -36,7 +36,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 	local Id = Scope:EnsureValue(OnyxUI.Util.Fallback(Props.Id, nil))
 	local Type = OnyxUI.Util.Fallback(Props.Type, Enum.AvatarItemType.Asset)
-	local Owned = OnyxUI.Util.Fallback(Props.Owned, false)
 	local Featured = OnyxUI.Util.Fallback(Props.Featured, false)
 	local TintColor = OnyxUI.Util.Fallback(Props.TintColor, nil)
 
@@ -264,9 +263,9 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 						AspectRatio = 1,
 
 						OnActivated = function()
-							States.ItemDetails.ItemId:set(Fusion.peek(Id))
 							States.ItemDetails.ItemType:set(Fusion.peek(Type))
-							States.ItemDetails.Open:set(not Fusion.peek(States.ItemDetails.Open))
+							States.ItemDetails.ItemId:set(Fusion.peek(Id))
+							States.ItemDetails.Open:set(true)
 						end,
 					},
 				},

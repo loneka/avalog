@@ -86,8 +86,8 @@ function Cosmetics.Start(_self: typeof(Cosmetics))
 			local UnownedAssetIds = FilterAssetIdsByUnowned(CosmeticAssetIds)
 
 			if #UnownedAssetIds >= 1 then
-				States.ItemDetails.ItemId:set(UnownedAssetIds[1])
 				States.ItemDetails.ItemType:set(Enum.AvatarItemType.Asset)
+				States.ItemDetails.ItemId:set(UnownedAssetIds[1])
 				States.ItemDetails.Open:set(true)
 			end
 		end
