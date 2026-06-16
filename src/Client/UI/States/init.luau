@@ -12,6 +12,11 @@ local States = {
 		Category = Scope:Value(1),
 		SubCategory = Scope:Value(1),
 	},
+	ItemDetails = {
+		Open = Scope:Value(false) :: Fusion.Value<boolean>,
+		ItemType = Scope:Value(Enum.AvatarItemType.Asset) :: Fusion.Value<Enum.AvatarItemType>,
+		ItemId = Scope:Value(0) :: Fusion.Value<number>,
+	},
 	Avatar = {
 		Data = Scope:Value(nil),
 		DataHistory = Scope:Value({}),

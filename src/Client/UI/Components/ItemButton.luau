@@ -220,18 +220,13 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					},
 				},
 			},
-			Scope:Button {
-				Content = { "Buy" },
+			Scope:Frame {
 				AnchorPoint = Vector2.new(0.5, 1),
 				Position = UDim2.fromScale(0.5, 1),
 				Size = UDim2.fromScale(1, 0),
-				Color = Theme.Colors.Primary.Main,
 				Scale = Scope:Spring(
 					Scope:Computed(function(Use)
-						local EquippedValue = Use(Equipped)
-						local OwnedValue = Use(Owned)
-
-						if EquippedValue and not OwnedValue then
+						if Use(Equipped) then
 							return 1
 						else
 							return 0
@@ -240,17 +235,41 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 					Theme.SpringSpeed["2"],
 					Theme.SpringDampening["1.5"]
 				),
-				Selectable = Scope:Computed(function(Use)
-					return Use(Equipped) and not Use(Owned)
+				Selectable = Equipped,
+				ListEnabled = true,
+				ListFillDirection = Enum.FillDirection.Horizontal,
+				ListVerticalFlex = Enum.UIFlexAlignment.Fill,
+				ListPadding = Scope:Computed(function(Use)
+					return UDim.new(0, Use(Theme.Spacing["0.5"]))
 				end),
 
-				OnActivated = function()
-					Future.Try(function()
-						local IdValue = Fusion.peek(Id)
+				[Children] = {
+					Scope:Button {
+						Content = { "Buy" },
+						Color = Theme.Colors.Primary.Main,
+						FlexMode = Enum.UIFlexMode.Fill,
 
-						return MarketplaceService:PromptPurchase(Players.LocalPlayer, IdValue)
-					end)
-				end,
+						OnActivated = function()
+							Future.Try(function()
+								local IdValue = Fusion.peek(Id)
+
+								return MarketplaceService:PromptPurchase(Players.LocalPlayer, IdValue)
+							end)
+						end,
+					},
+					Scope:IconButton {
+						Image = "rbxassetid://13850025424",
+						Size = UDim2.fromScale(0, 1),
+						Color = Theme.Colors.Secondary.Main,
+						AspectRatio = 1,
+
+						OnActivated = function()
+							States.ItemDetails.ItemId:set(Fusion.peek(Id))
+							States.ItemDetails.ItemType:set(Fusion.peek(Type))
+							States.ItemDetails.Open:set(not Fusion.peek(States.ItemDetails.Open))
+						end,
+					},
+				},
 			},
 			Scope:Computed(function(Use)
 				if Use(Featured) then

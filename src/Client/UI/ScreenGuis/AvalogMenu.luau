@@ -1,12 +1,16 @@
 local Avalog = script.Parent.Parent.Parent.Parent.Parent
+
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
+
 local States = require(Avalog.SourceCode.Client.UI.States)
 local ServiceProvider = require(Avalog.SourceCode.Client.ServiceProvider)
 local Manifest = require(Avalog.SourceCode.Shared.Manifest)
+
 local PromoPopout = require(script.Parent.Parent.Components.PromoPopout)
 local CatalogMenu = require(script.Parent.Parent.Components.CatalogMenu)
 local AvatarViewport = require(script.Parent.Parent.Components.AvatarViewport)
+local ItemDetails = require(script.Parent.Parent.Components.ItemDetails)
 
 local Children = Fusion.Children
 
@@ -19,10 +23,9 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		CatalogMenu = CatalogMenu,
 		AvatarViewport = AvatarViewport,
 		PromoPopout = PromoPopout,
+		ItemDetails = ItemDetails,
 	})
 	local Theme = OnyxUI.Themer.Theme:now()
-
-	local AvatarManager = ServiceProvider:GetAvatarManager()
 
 	return Scope:New "ScreenGui" {
 		Name = script.Name,
@@ -73,7 +76,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				ListEnabled = true,
 				ListFillDirection = Enum.FillDirection.Horizontal,
 				ListVerticalFlex = Enum.UIFlexAlignment.Fill,
-				ListHorizontalFlex = Enum.UIFlexAlignment.Fill,
 				ListPadding = Scope:Computed(function(Use)
 					return UDim.new(0, Use(Theme.Spacing["0"]))
 				end),
@@ -82,11 +84,50 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 				[Children] = {
 					Scope:CatalogMenu {
+						FlexMode = Enum.UIFlexMode.Fill,
+
 						OnExit = function()
 							States.Open:set(false)
 						end,
 					},
-					Scope:AvatarViewport {},
+					Scope:Frame {
+						Size = Scope:Computed(function(Use)
+							return UDim2.fromOffset(Use(Theme.StrokeThickness["2"]), 0)
+						end),
+						BackgroundTransparency = 0,
+						BackgroundColor3 = Theme.Colors.Neutral.Main,
+					},
+					Scope:Frame {
+						FlexMode = Enum.UIFlexMode.Fill,
+						MaxSize = Scope:Computed(function(Use)
+							local ResolutionValue = Use(States.Screen.Resolution)
+
+							if ResolutionValue.X < 800 then
+								return Vector2.new(ResolutionValue.X / 2.5, math.huge)
+							elseif ResolutionValue.X > 1000 then
+								return Vector2.new(ResolutionValue.X / 3, math.huge)
+							else
+								return Vector2.new(16 * 24, math.huge)
+							end
+						end),
+						AutomaticSize = Enum.AutomaticSize.X,
+						ListEnabled = true,
+						ListHorizontalFlex = Enum.UIFlexAlignment.Fill,
+						ListVerticalFlex = Enum.UIFlexAlignment.Fill,
+
+						[Children] = {
+							Scope:AvatarViewport {
+								Visible = Scope:Computed(function(Use)
+									return not Use(States.ItemDetails.Open)
+								end),
+							},
+							Scope:ItemDetails {
+								Visible = States.ItemDetails.Open,
+								ItemType = States.ItemDetails.ItemType,
+								ItemId = States.ItemDetails.ItemId,
+							},
+						},
+					},
 				},
 			},
 			Scope:PromoPopout {

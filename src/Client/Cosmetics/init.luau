@@ -6,15 +6,17 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 
 local Avalog = script.Parent.Parent.Parent
+
+local EnumSerDes = require(Avalog.Parent.EnumSerDes)
+local Fusion = require(Avalog.Parent.Fusion)
+
 local LocalAvatar = require(script.Parent.Avatar.LocalAvatar)
 local AssetIdsFromAvatarData = require(Avalog.SourceCode.Shared.Utils.AssetIdsFromAvatarData)
 local ApplyCosmetic = require(Avalog.SourceCode.Shared.Utils.ApplyCosmetic)
 local States = require(Avalog.SourceCode.Client.UI.States)
-local Fusion = require(Avalog.Parent.Fusion)
 local GetStoredCosmeticModel = require(Avalog.SourceCode.Shared.Utils.GetStoredCosmeticModel)
 local PlayerOwnsAsset = require(Avalog.SourceCode.Shared.Utils.PlayerOwnsAsset)
 local Zap = require(Avalog.SourceCode.Shared.Zap.client)
-local EnumSerDes = require(Avalog.Parent.EnumSerDes)
 
 type BulkLineItem = {
 	Type: Enum.MarketplaceProductType,
@@ -48,18 +50,6 @@ local function FilterAssetIdsByUnowned(AssetIds: { string }): { string }
 	end
 
 	return UnownedAssetIds
-end
-local function AssetIdsToBulkLineItems(AssetIds: { string }): { BulkLineItem }
-	local BulkLineItems = {}
-
-	for _, AssetId in AssetIds do
-		table.insert(BulkLineItems, {
-			Type = Enum.MarketplaceProductType.AvatarAsset,
-			Id = AssetId,
-		})
-	end
-
-	return BulkLineItems
 end
 
 local Cosmetics = {
@@ -95,10 +85,10 @@ function Cosmetics.Start(_self: typeof(Cosmetics))
 			local CosmeticAssetIds = GetCosmeticAssetIdsFromAvatarData()
 			local UnownedAssetIds = FilterAssetIdsByUnowned(CosmeticAssetIds)
 
-			if #UnownedAssetIds == 1 then
-				MarketplaceService:PromptPurchase(Players.LocalPlayer, UnownedAssetIds[1])
-			elseif #UnownedAssetIds > 1 then
-				Zap.BulkPurchaseAvatarItems.Fire(EnumSerDes.SerializeTree(AssetIdsToBulkLineItems(UnownedAssetIds)))
+			if #UnownedAssetIds >= 1 then
+				States.ItemDetails.ItemId:set(UnownedAssetIds[1])
+				States.ItemDetails.ItemType:set(Enum.AvatarItemType.Asset)
+				States.ItemDetails.Open:set(true)
 			end
 		end
 	end)

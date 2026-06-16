@@ -19,13 +19,15 @@ end
 local function PlayerOwnsAsset(Player: Player, AssetId: number)
 	local Entry = GetEntry(Player)
 
-	if Entry[AssetId] ~= nil then
-		return Entry[AssetId]
-	else
-		local OwnsAsset = MarketplaceService:PlayerOwnsAssetAsync(Player, AssetId)
-		Entry[AssetId] = OwnsAsset
-		return OwnsAsset
-	end
+	return false
+
+	-- if Entry[AssetId] ~= nil then
+	-- 	return Entry[AssetId]
+	-- else
+	-- 	local OwnsAsset = MarketplaceService:PlayerOwnsAssetAsync(Player, AssetId)
+	-- 	Entry[AssetId] = OwnsAsset
+	-- 	return OwnsAsset
+	-- end
 end
 
 MarketplaceService.PromptPurchaseFinished:Connect(function(Player, AssetId, Purchased)

@@ -59,17 +59,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 	return Scope:Image(OnyxUI.Util.CombineProps(Props, {
 		Name = script.Name,
-		MaxSize = Scope:Computed(function(Use)
-			local ResolutionValue = Use(States.Screen.Resolution)
-
-			if ResolutionValue.X < 800 then
-				return Vector2.new(ResolutionValue.X / 2.5, math.huge)
-			elseif ResolutionValue.X > 1000 then
-				return Vector2.new(ResolutionValue.X / 3, math.huge)
-			else
-				return Vector2.new(16 * 24, math.huge)
-			end
-		end),
 		BackgroundTransparency = 0,
 		BackgroundColor3 = Theme.Colors.Base.Dark,
 		Image = "rbxassetid://140363116814273",
