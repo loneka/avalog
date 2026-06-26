@@ -5,14 +5,17 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Avalog = script.Parent.Parent.Parent
+
 local ModelSquash = require(Avalog.Parent.ModelSquash)
 local Fetch = require(Avalog.Parent.Fetch)
 local Avatar = require(script.Parent.Avatar)
 local Cloud = require(script.Parent.Cloud)
+
 local UpgradeMeshParts = require(script.UpgradeMeshParts)
 local PlayerOwnsAsset = require(Avalog.SourceCode.Shared.Utils.PlayerOwnsAsset)
 local ApplyCosmetic = require(Avalog.SourceCode.Shared.Utils.ApplyCosmetic)
 local AssetIdsFromAvatarData = require(Avalog.SourceCode.Shared.Utils.AssetIdsFromAvatarData)
+local PlayerIsInGroup = require(Avalog.SourceCode.Shared.Utils.PlayerIsInGroup)
 
 local BASE_URL = "http://localhost:3000"
 
@@ -47,9 +50,15 @@ function Cosmetics.Start(self: typeof(Cosmetics))
 		if CloudConfig and CloudConfig.cosmeticItems then
 			for _, Cosmetic in CloudConfig.cosmeticItems do
 				if Cosmetic.itemType == "Asset" and table.find(AppliedAssetIds, Cosmetic.itemId) ~= nil then
-					if PlayerOwnsAsset(Player, Cosmetic.itemId) then
-						ApplyCosmetic(Player.Character, Cosmetic.itemId, self:GetModelAsync(Cosmetic.itemId))
+					if not Cosmetic.groupPurchase then
+						if not PlayerOwnsAsset(Player, Cosmetic.itemId) then
+							continue
+						end
+					elseif not PlayerIsInGroup(Player, Cosmetic.groupId) then
+						continue
 					end
+
+					ApplyCosmetic(Player.Character, Cosmetic.itemId, self:GetModelAsync(Cosmetic.itemId))
 				end
 			end
 		end

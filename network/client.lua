@@ -157,25 +157,16 @@ local remotes = ReplicatedStorage:WaitForChild("ZAP")
 local reliable = remotes:WaitForChild("AVALOG_RELIABLE")
 assert(reliable:IsA("RemoteEvent"), "Expected AVALOG_RELIABLE to be a RemoteEvent")
 
-export type ItemType = ("Asset" | "Bundle")
-export type AvatarItem = ({
-	["Id"]: (number),
-	["Type"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-	["AssetType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-	["Name"]: (string),
+export type SerEnumItem = ({
+	["EnumType"]: (string),
+	["Value"]: (number),
 })
-export type BulkPurchaseAvatarItem = ({
-	["Id"]: (string),
-	["Type"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
+export type CosmeticItem = ({
+	["itemId"]: (string),
+	["itemType"]: ("Asset" | "Bundle"),
+	["tintColor"]: ((string)?),
+	["groupPurchase"]: (boolean),
+	["groupId"]: ((string)?),
 })
 export type AccessorySpec = ({
 	["AssetId"]: (number),
@@ -190,9 +181,34 @@ export type AccessorySpec = ({
 	["Rotation"]: ((Vector3)?),
 	["Scale"]: ((Vector3)?),
 })
-export type EquippedEmote = ({
-	["Name"]: (string),
-	["Slot"]: (number),
+export type CloudConfig = ({
+	["latestVersion"]: (string),
+	["featuredItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+	}) }),
+	["pinnedItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+	}) }),
+	["promotedItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+		["promotionId"]: (string),
+		["bid"]: (number),
+		["startTime"]: (number),
+		["endTime"]: (number),
+	}) }),
+	["cosmeticItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+		["groupPurchase"]: (boolean),
+		["groupId"]: ((string)?),
+	}) }),
 })
 export type HumanoidDescriberData = ({
 	["Accessories"]: ({ ({
@@ -254,40 +270,15 @@ export type HumanoidDescriberData = ({
 		["Pants"]: (number),
 	}),
 })
-export type CloudConfig = ({
-	["latestVersion"]: (string),
-	["featuredItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-	}) }),
-	["pinnedItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-	}) }),
-	["promotedItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-		["promotionId"]: (string),
-		["bid"]: (number),
-		["startTime"]: (number),
-		["endTime"]: (number),
-	}) }),
-	["cosmeticItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-	}) }),
+export type BulkPurchaseAvatarItem = ({
+	["Id"]: (string),
+	["Type"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
 })
-export type SerEnumItem = ({
-	["EnumType"]: (string),
-	["Value"]: (number),
-})
-export type CatalogItem = ({
-	["AssetId"]: (number),
-	["Name"]: (string),
+export type AvatarItem = ({
+	["Id"]: (number),
 	["Type"]: ({
 		["EnumType"]: (string),
 		["Value"]: (number),
@@ -296,6 +287,7 @@ export type CatalogItem = ({
 		["EnumType"]: (string),
 		["Value"]: (number),
 	}),
+	["Name"]: (string),
 })
 export type PromotedItem = ({
 	["itemId"]: (string),
@@ -310,6 +302,23 @@ export type Item = ({
 	["itemId"]: (string),
 	["itemType"]: ("Asset" | "Bundle"),
 	["tintColor"]: ((string)?),
+})
+export type EquippedEmote = ({
+	["Name"]: (string),
+	["Slot"]: (number),
+})
+export type ItemType = ("Asset" | "Bundle")
+export type CatalogItem = ({
+	["AssetId"]: (number),
+	["Name"]: (string),
+	["Type"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+	["AssetType"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
 })
 
 local function SendEvents()
@@ -446,6 +455,13 @@ reliable.OnClientEvent:Connect(function(buff, inst)
 					else
 						val_4["tintColor"] = nil
 					end
+					val_4["groupPurchase"] = bit32.btest(bool_5, 0b0000000000000100)
+					if bit32.btest(bool_5, 0b0000000000001000) then
+						local len_15 = buffer.readu16(incoming_buff, read(2))
+						val_4["groupId"] = buffer.readstring(incoming_buff, read(len_15), len_15)
+					else
+						val_4["groupId"] = nil
+					end
 					value["cosmeticItems"][i_4] = val_4
 				end
 			else
@@ -532,20 +548,20 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 1)
 			local bool_7 = 0
 			local bool_7_pos_1 = alloc(1)
-			local len_15 = #Value["Accessories"]
+			local len_16 = #Value["Accessories"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_15)
-			for i_5 = 1, len_15 do
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_16)
+			for i_5 = 1, len_16 do
 				local bool_6 = 0
 				local bool_6_pos_1 = alloc(1)
 				local val_5 = Value["Accessories"][i_5]
 				alloc(8)
 				buffer.writef64(outgoing_buff, outgoing_apos, val_5["AssetId"])
-				local len_16 = #val_5["AccessoryType"]["EnumType"]
+				local len_17 = #val_5["AccessoryType"]["EnumType"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_16)
-				alloc(len_16)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_5["AccessoryType"]["EnumType"], len_16)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_17)
+				alloc(len_17)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_5["AccessoryType"]["EnumType"], len_17)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, val_5["AccessoryType"]["Value"])
 				if val_5["Order"] ~= nil then
@@ -594,41 +610,41 @@ local returns = {
 				buffer.writeu8(outgoing_buff, bool_6_pos_1, bool_6)
 			end
 			local len_pos_1
-			local len_17 = 0
+			local len_18 = 0
 			for k_1, v_1 in Value["Emotes"] do
-				if len_17 == 0 then
+				if len_18 == 0 then
 					len_pos_1 = alloc(2)
 				end
-				len_17 = len_17 + 1
-				local len_18 = #k_1
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_18)
-				alloc(len_18)
-				buffer.writestring(outgoing_buff, outgoing_apos, k_1, len_18)
-				local len_19 = #v_1
+				len_18 = len_18 + 1
+				local len_19 = #k_1
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_19)
-				for i_6 = 1, len_19 do
+				alloc(len_19)
+				buffer.writestring(outgoing_buff, outgoing_apos, k_1, len_19)
+				local len_20 = #v_1
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
+				for i_6 = 1, len_20 do
 					local val_6 = v_1[i_6]
 					alloc(8)
 					buffer.writef64(outgoing_buff, outgoing_apos, val_6)
 				end
 			end
 			if len_pos_1 then
-				buffer.writeu16(outgoing_buff, len_pos_1, len_17 - 1)
+				buffer.writeu16(outgoing_buff, len_pos_1, len_18 - 1)
 			else
 				bool_7 = bit32.bor(bool_7, 0b0000000000000001)
 			end
-			local len_20 = #Value["EquippedEmotes"]
+			local len_21 = #Value["EquippedEmotes"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_20)
-			for i_7 = 1, len_20 do
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
+			for i_7 = 1, len_21 do
 				local val_7 = Value["EquippedEmotes"][i_7]
-				local len_21 = #val_7["Name"]
+				local len_22 = #val_7["Name"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_21)
-				alloc(len_21)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_7["Name"], len_21)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_22)
+				alloc(len_22)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_7["Name"], len_22)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, val_7["Slot"])
 			end
@@ -729,11 +745,11 @@ local returns = {
 			buffer.writeu8(outgoing_buff, outgoing_apos, 2)
 			local bool_8 = 0
 			local bool_8_pos_1 = alloc(1)
-			local len_22 = #Item["itemId"]
+			local len_23 = #Item["itemId"]
 			alloc(2)
-			buffer.writeu16(outgoing_buff, outgoing_apos, len_22)
-			alloc(len_22)
-			buffer.writestring(outgoing_buff, outgoing_apos, Item["itemId"], len_22)
+			buffer.writeu16(outgoing_buff, outgoing_apos, len_23)
+			alloc(len_23)
+			buffer.writestring(outgoing_buff, outgoing_apos, Item["itemId"], len_23)
 			if Item["itemType"] == "Asset" then
 				bool_8 = bit32.bor(bool_8, 0b0000000000000001)
 			elseif Item["itemType"] == "Bundle" then
@@ -743,11 +759,11 @@ local returns = {
 			end
 			if Item["tintColor"] ~= nil then
 				bool_8 = bit32.bor(bool_8, 0b0000000000000010)
-				local len_23 = #Item["tintColor"]
+				local len_24 = #Item["tintColor"]
 				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_23)
-				alloc(len_23)
-				buffer.writestring(outgoing_buff, outgoing_apos, Item["tintColor"], len_23)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_24)
+				alloc(len_24)
+				buffer.writestring(outgoing_buff, outgoing_apos, Item["tintColor"], len_24)
 			end
 			buffer.writeu8(outgoing_buff, bool_8_pos_1, bool_8)
 		end,
@@ -790,6 +806,8 @@ local returns = {
 				["itemId"]: (string),
 				["itemType"]: ("Asset" | "Bundle"),
 				["tintColor"]: ((string)?),
+				["groupPurchase"]: (boolean),
+				["groupId"]: ((string)?),
 			}) }),
 		})?))
 			function_call_id += 1
@@ -828,23 +846,23 @@ local returns = {
 		}) }))
 			alloc(1)
 			buffer.writeu8(outgoing_buff, outgoing_apos, 0)
-			local len_24 = #Value
-			assert(len_24 >= 1, "value is less than 1!")
-			assert(len_24 <= 20, "value is more than 20!")
+			local len_25 = #Value
+			assert(len_25 >= 1, "value is less than 1!")
+			assert(len_25 <= 20, "value is more than 20!")
 			alloc(1)
-			buffer.writeu8(outgoing_buff, outgoing_apos, len_24 - 1)
-			for i_8 = 1, len_24 do
+			buffer.writeu8(outgoing_buff, outgoing_apos, len_25 - 1)
+			for i_8 = 1, len_25 do
 				local val_8 = Value[i_8]
-				local len_25 = #val_8["Id"]
-				alloc(2)
-				buffer.writeu16(outgoing_buff, outgoing_apos, len_25)
-				alloc(len_25)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_8["Id"], len_25)
-				local len_26 = #val_8["Type"]["EnumType"]
+				local len_26 = #val_8["Id"]
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, len_26)
 				alloc(len_26)
-				buffer.writestring(outgoing_buff, outgoing_apos, val_8["Type"]["EnumType"], len_26)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_8["Id"], len_26)
+				local len_27 = #val_8["Type"]["EnumType"]
+				alloc(2)
+				buffer.writeu16(outgoing_buff, outgoing_apos, len_27)
+				alloc(len_27)
+				buffer.writestring(outgoing_buff, outgoing_apos, val_8["Type"]["EnumType"], len_27)
 				alloc(2)
 				buffer.writeu16(outgoing_buff, outgoing_apos, val_8["Type"]["Value"])
 			end

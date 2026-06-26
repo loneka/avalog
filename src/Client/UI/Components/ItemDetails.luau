@@ -1,3 +1,4 @@
+local GroupService = game:GetService("GroupService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 
@@ -213,16 +214,23 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 						end,
 					},
 					Scope:Button {
-						Content = { "Buy" },
+						Content = Scope:Computed(function(Use)
+							if Use(CosmeticItemInfo) and Use(CosmeticItemInfo).groupPurchase then
+								return { "Join" }
+							else
+								return { "Buy" }
+							end
+						end),
 						ContentSize = Theme.TextSize["1"],
 						SizeVariant = "ExtraLarge",
 						Color = Theme.Colors.Success.Main,
 
 						OnActivated = function()
-							if Players.LocalPlayer == nil then
-								return
+							if Fusion.peek(CosmeticItemInfo) and Fusion.peek(CosmeticItemInfo).groupPurchase then
+								GroupService:PromptJoinAsync(Fusion.peek(CosmeticItemInfo).groupId)
+							else
+								MarketplaceService:PromptPurchase(Players.LocalPlayer, Fusion.peek(ItemId))
 							end
-							MarketplaceService:PromptPurchase(Players.LocalPlayer, Fusion.peek(ItemId))
 						end,
 					},
 				},

@@ -9,7 +9,7 @@ local Sift = require(Avalog.Parent.Sift)
 local Config = require(Avalog.Config)
 
 local CONFIG = Config:Get()
-local CURATED_SHOWN = (not RunService:IsStudio()) and not (game.CreatorId == Players.LocalPlayer.UserId) -- Only show curated items when relevant
+local CURATED_SHOWN = true --(not RunService:IsStudio()) and not (game.CreatorId == Players.LocalPlayer.UserId) -- Only show curated items when relevant
 
 local function CamelToPascal(Dictionary: { [string]: any })
 	return Sift.Dictionary.map(Dictionary, function(Value, Key)

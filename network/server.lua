@@ -186,25 +186,16 @@ end
 Players.PlayerRemoving:Connect(function(player)
 	player_map[player] = nil
 end)
-export type ItemType = ("Asset" | "Bundle")
-export type AvatarItem = ({
-	["Id"]: (number),
-	["Type"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-	["AssetType"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
-	["Name"]: (string),
+export type SerEnumItem = ({
+	["EnumType"]: (string),
+	["Value"]: (number),
 })
-export type BulkPurchaseAvatarItem = ({
-	["Id"]: (string),
-	["Type"]: ({
-		["EnumType"]: (string),
-		["Value"]: (number),
-	}),
+export type CosmeticItem = ({
+	["itemId"]: (string),
+	["itemType"]: ("Asset" | "Bundle"),
+	["tintColor"]: ((string)?),
+	["groupPurchase"]: (boolean),
+	["groupId"]: ((string)?),
 })
 export type AccessorySpec = ({
 	["AssetId"]: (number),
@@ -219,9 +210,34 @@ export type AccessorySpec = ({
 	["Rotation"]: ((Vector3)?),
 	["Scale"]: ((Vector3)?),
 })
-export type EquippedEmote = ({
-	["Name"]: (string),
-	["Slot"]: (number),
+export type CloudConfig = ({
+	["latestVersion"]: (string),
+	["featuredItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+	}) }),
+	["pinnedItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+	}) }),
+	["promotedItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+		["promotionId"]: (string),
+		["bid"]: (number),
+		["startTime"]: (number),
+		["endTime"]: (number),
+	}) }),
+	["cosmeticItems"]: ({ ({
+		["itemId"]: (string),
+		["itemType"]: ("Asset" | "Bundle"),
+		["tintColor"]: ((string)?),
+		["groupPurchase"]: (boolean),
+		["groupId"]: ((string)?),
+	}) }),
 })
 export type HumanoidDescriberData = ({
 	["Accessories"]: ({ ({
@@ -283,40 +299,15 @@ export type HumanoidDescriberData = ({
 		["Pants"]: (number),
 	}),
 })
-export type CloudConfig = ({
-	["latestVersion"]: (string),
-	["featuredItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-	}) }),
-	["pinnedItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-	}) }),
-	["promotedItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-		["promotionId"]: (string),
-		["bid"]: (number),
-		["startTime"]: (number),
-		["endTime"]: (number),
-	}) }),
-	["cosmeticItems"]: ({ ({
-		["itemId"]: (string),
-		["itemType"]: ("Asset" | "Bundle"),
-		["tintColor"]: ((string)?),
-	}) }),
+export type BulkPurchaseAvatarItem = ({
+	["Id"]: (string),
+	["Type"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
 })
-export type SerEnumItem = ({
-	["EnumType"]: (string),
-	["Value"]: (number),
-})
-export type CatalogItem = ({
-	["AssetId"]: (number),
-	["Name"]: (string),
+export type AvatarItem = ({
+	["Id"]: (number),
 	["Type"]: ({
 		["EnumType"]: (string),
 		["Value"]: (number),
@@ -325,6 +316,7 @@ export type CatalogItem = ({
 		["EnumType"]: (string),
 		["Value"]: (number),
 	}),
+	["Name"]: (string),
 })
 export type PromotedItem = ({
 	["itemId"]: (string),
@@ -339,6 +331,23 @@ export type Item = ({
 	["itemId"]: (string),
 	["itemType"]: ("Asset" | "Bundle"),
 	["tintColor"]: ((string)?),
+})
+export type EquippedEmote = ({
+	["Name"]: (string),
+	["Slot"]: (number),
+})
+export type ItemType = ("Asset" | "Bundle")
+export type CatalogItem = ({
+	["AssetId"]: (number),
+	["Name"]: (string),
+	["Type"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
+	["AssetType"]: ({
+		["EnumType"]: (string),
+		["Value"]: (number),
+	}),
 })
 
 local function SendEvents()
@@ -672,6 +681,17 @@ reliable.OnServerEvent:Connect(function(player, buff, inst)
 								alloc(len_25)
 								buffer.writestring(outgoing_buff, outgoing_apos, val_9["tintColor"], len_25)
 							end
+							if val_9["groupPurchase"] then
+								bool_9 = bit32.bor(bool_9, 0b0000000000000100)
+							end
+							if val_9["groupId"] ~= nil then
+								bool_9 = bit32.bor(bool_9, 0b0000000000001000)
+								local len_26 = #val_9["groupId"]
+								alloc(2)
+								buffer.writeu16(outgoing_buff, outgoing_apos, len_26)
+								alloc(len_26)
+								buffer.writestring(outgoing_buff, outgoing_apos, val_9["groupId"], len_26)
+							end
 							buffer.writeu8(outgoing_buff, bool_9_pos_1, bool_9)
 						end
 					end
@@ -802,6 +822,8 @@ local returns = {
 				["itemId"]: (string),
 				["itemType"]: ("Asset" | "Bundle"),
 				["tintColor"]: ((string)?),
+				["groupPurchase"]: (boolean),
+				["groupId"]: ((string)?),
 			}) }),
 		})?))): () -> ()
 			reliable_events[4] = Callback

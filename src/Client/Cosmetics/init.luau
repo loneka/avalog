@@ -16,6 +16,7 @@ local ApplyCosmetic = require(Avalog.SourceCode.Shared.Utils.ApplyCosmetic)
 local States = require(Avalog.SourceCode.Client.UI.States)
 local GetStoredCosmeticModel = require(Avalog.SourceCode.Shared.Utils.GetStoredCosmeticModel)
 local PlayerOwnsAsset = require(Avalog.SourceCode.Shared.Utils.PlayerOwnsAsset)
+local PlayerIsInGroup = require(Avalog.SourceCode.Shared.Utils.PlayerIsInGroup)
 local Zap = require(Avalog.SourceCode.Shared.Zap.client)
 
 type BulkLineItem = {
@@ -23,8 +24,9 @@ type BulkLineItem = {
 	Id: string,
 }
 
-local function GetCosmeticAssetIdsFromAvatarData()
+local function GetCosmeticsFromAvatarData()
 	local CosmeticAssetIds = {}
+	local Cosmetics = {}
 
 	local Data = LocalAvatar.HumanoidDescriber:GetData()
 	local AppliedAssetIds = AssetIdsFromAvatarData(Data)
@@ -34,11 +36,12 @@ local function GetCosmeticAssetIdsFromAvatarData()
 		for _, Cosmetic in CloudConfig.cosmeticItems do
 			if Cosmetic.itemType == "Asset" and table.find(AppliedAssetIds, Cosmetic.itemId) ~= nil then
 				table.insert(CosmeticAssetIds, Cosmetic.itemId)
+				table.insert(Cosmetics, Cosmetic)
 			end
 		end
 	end
 
-	return CosmeticAssetIds
+	return CosmeticAssetIds, Cosmetics
 end
 local function FilterAssetIdsByUnowned(AssetIds: { string }): { string }
 	local UnownedAssetIds = {}
@@ -66,7 +69,7 @@ function Cosmetics.Start(_self: typeof(Cosmetics))
 		end
 
 		UpdateListener = LocalAvatar.Humanoid.ApplyDescriptionFinished:Connect(function()
-			local CosmeticAssetIds = GetCosmeticAssetIdsFromAvatarData()
+			local CosmeticAssetIds = GetCosmeticsFromAvatarData()
 
 			for _, AssetId in CosmeticAssetIds do
 				ApplyCosmetic(LocalAvatar.Character, AssetId, GetStoredCosmeticModel(AssetId))
@@ -82,12 +85,25 @@ function Cosmetics.Start(_self: typeof(Cosmetics))
 		end
 
 		if not Fusion.peek(States.Open) then
-			local CosmeticAssetIds = GetCosmeticAssetIdsFromAvatarData()
-			local UnownedAssetIds = FilterAssetIdsByUnowned(CosmeticAssetIds)
+			local CosmeticAssetIds, Cosmetics = GetCosmeticsFromAvatarData()
+			local UnownedCosmeticAssetIds = FilterAssetIdsByUnowned(CosmeticAssetIds)
+			local ShowItemDetails = false
 
-			if #UnownedAssetIds >= 1 then
+			if #UnownedCosmeticAssetIds >= 1 then
+				ShowItemDetails = true
+			end
+
+			for _, Cosmetic in Cosmetics do
+				if Cosmetic.groupPurchase and Cosmetic.groupId then
+					if not PlayerIsInGroup(Players.LocalPlayer, tonumber(Cosmetic.groupId)) then
+						ShowItemDetails = true
+					end
+				end
+			end
+
+			if ShowItemDetails then
 				States.ItemDetails.ItemType:set(Enum.AvatarItemType.Asset)
-				States.ItemDetails.ItemId:set(UnownedAssetIds[1])
+				States.ItemDetails.ItemId:set(UnownedCosmeticAssetIds[1])
 				States.ItemDetails.Open:set(true)
 			end
 		end

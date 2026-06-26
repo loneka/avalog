@@ -1,3 +1,4 @@
+local GroupService = game:GetService("GroupService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 
@@ -71,6 +72,15 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				Type = Enum.AvatarItemType.Asset,
 				AssetType = Enum.AvatarAssetType.Hat,
 			}
+		end
+	end)
+	local CosmeticItemInfo = Scope:Computed(function(Use)
+		if Use(States.CloudConfig) ~= nil then
+			for _, Item in Use(States.CloudConfig).cosmeticItems do
+				if Item.itemId == tostring(Use(Id)) then
+					return Item
+				end
+			end
 		end
 	end)
 	local Equipped = Scope:Computed(function(Use)
@@ -244,16 +254,22 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 
 				[Children] = {
 					Scope:Button {
-						Content = { "Buy" },
+						Content = Scope:Computed(function(Use)
+							if Use(CosmeticItemInfo) and Use(CosmeticItemInfo).groupPurchase then
+								return { "Join" }
+							else
+								return { "Buy" }
+							end
+						end),
 						Color = Theme.Colors.Success.Main,
 						FlexMode = Enum.UIFlexMode.Fill,
 
 						OnActivated = function()
-							Future.Try(function()
-								local IdValue = Fusion.peek(Id)
-
-								return MarketplaceService:PromptPurchase(Players.LocalPlayer, IdValue)
-							end)
+							if Fusion.peek(CosmeticItemInfo) and Fusion.peek(CosmeticItemInfo).groupPurchase then
+								GroupService:PromptJoinAsync(Fusion.peek(CosmeticItemInfo).groupId)
+							else
+								MarketplaceService:PromptPurchase(Players.LocalPlayer, Fusion.peek(Id))
+							end
 						end,
 					},
 					Scope:IconButton {

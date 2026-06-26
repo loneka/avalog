@@ -105,14 +105,20 @@ type PromotedItem = struct {
 	startTime: f32,
 	endTime: f32,
 }
+type CosmeticItem = struct {
+    itemId: string.binary,
+	itemType: ItemType,
+	tintColor: string.binary?,
+	groupPurchase: boolean,
+	groupId: string.binary?,
+}
 type CloudConfig = struct {
     latestVersion: string.binary,
     featuredItems: Item[],
     pinnedItems: Item[],
     promotedItems: PromotedItem[],
-    cosmeticItems: Item[]
+    cosmeticItems: CosmeticItem[]
 }
-
 
 event BulkPurchaseAvatarItems = {
     from: Client,
