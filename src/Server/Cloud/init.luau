@@ -14,7 +14,7 @@ local Stator = require(Avalog.Parent.Stator)
 local Types = require(Avalog.SourceCode.Shared.Types)
 local UsageRecorder = require(script.UsageRecorder)
 
-local BASE_URL = "http://localhost:3000/api/v1/avalog"
+local BASE_URL = "http://localhost:3000/"
 local UPDATE_DELAY = 30 * 60
 local FAILED_UPDATE_DELAY = 1 * 60
 local SNAPSHOT_DELAY = 15 * 60
@@ -119,12 +119,7 @@ function Cloud.IsHttpEnabled(self: typeof(Cloud))
 end
 
 function Cloud.UpdateConfig(_self: typeof(Cloud))
-	local Success, Response = Fetch(BASE_URL .. "/app-config", {
-		Headers = {
-			["Experience-Id"] = tostring(game.GameId),
-			["Place-Id"] = tostring(game.PlaceId),
-		},
-	}):Await()
+	local Success, Response = Fetch(BASE_URL .. "avalog/app-config.json"):Await()
 
 	if Success and Response.Ok then
 		local DecodeSuccess, Data = Response:Json()
@@ -146,7 +141,7 @@ end
 function Cloud.RecordUsageSnapshot(_self: typeof(Cloud))
 	local USAGE_SNAPSHOT = UsageRecorder:CompileSnapshot()
 
-	Fetch(BASE_URL .. "/usage", {
+	Fetch(BASE_URL .. "api/v1/avalog/usage", {
 		Method = "POST",
 		Body = USAGE_SNAPSHOT,
 	}):After(function(Success, Response)

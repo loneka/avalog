@@ -17,7 +17,7 @@ local ApplyCosmetic = require(Avalog.SourceCode.Shared.Utils.ApplyCosmetic)
 local AssetIdsFromAvatarData = require(Avalog.SourceCode.Shared.Utils.AssetIdsFromAvatarData)
 local PlayerIsInGroup = require(Avalog.SourceCode.Shared.Utils.PlayerIsInGroup)
 
-local BASE_URL = "http://localhost:3000"
+local BASE_URL = "http://localhost:3000/"
 
 local function UpgradeDescendantMeshParts(Model: Instance)
 	local MeshParts = {}
@@ -86,7 +86,7 @@ function Cosmetics.GetModelAsync(self: typeof(Cosmetics), Id: string): Instance?
 		return ExistingModel:Clone()
 	end
 
-	local Success, Response = Fetch(BASE_URL .. `/cosmetic/{Id}`, {}):Await()
+	local Success, Response = Fetch(BASE_URL .. `avalog/cosmetic/{Id}`, {}):Await()
 
 	if Success and Response.Ok then
 		local Success2, Result = pcall(function()
