@@ -5,6 +5,7 @@ local Avalog = script.Parent.Parent.Parent.Parent.Parent
 
 local OnyxUI = require(Avalog.Parent.OnyxUI)
 local Fusion = require(Avalog.Parent.Fusion)
+local ColorUtils = require(Avalog.Parent.ColorUtils)
 
 local CatalogItems = require(Avalog.SourceCode.Client.UI.StateExtensions.CatalogItems)
 local States = require(Avalog.SourceCode.Client.UI.States)
@@ -64,6 +65,15 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			}
 		end
 	end)
+	local CosmeticItemInfo = Scope:Computed(function(Use)
+		if Use(States.CloudConfig) ~= nil then
+			for _, Item in Use(States.CloudConfig).cosmeticItems do
+				if Item.itemId == tostring(Use(ItemId)) then
+					return Item
+				end
+			end
+		end
+	end)
 
 	return Scope:Frame(OnyxUI.Util.CombineProps(Props, {
 		Name = script.Name,
@@ -98,7 +108,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 						CornerRadius = Scope:Computed(function(Use)
 							return UDim.new(0, Use(Theme.CornerRadius["1.5"]))
 						end),
-						AspectRatio = 16 / 9,
+						AspectRatio = 2.5,
 					},
 					Scope:Frame {
 						ListEnabled = true,
@@ -138,6 +148,50 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 						ClipsDescendants = true,
 						FlexMode = Enum.UIFlexMode.Fill,
 					},
+					-- Cosmetic details card
+					Scope:Computed(function(Use)
+						if Use(CosmeticItemInfo) ~= nil then
+							return OnyxUI.Themer.Theme:is(Theme):during(function()
+								return Scope:Card {
+									BackgroundColor3 = Scope:Computed(function(Use)
+										return ColorUtils.Blend.Transparency(
+											Use(Theme.Colors.Neutral.Main),
+											Use(Theme.Colors.Primary.Main),
+											0.85
+										)
+									end),
+									GradientEnabled = true,
+									GradientColor = ColorSequence.new(Color3.new(1, 1, 1)),
+									GradientTransparency = NumberSequence.new({
+										NumberSequenceKeypoint.new(0, 0.25),
+										NumberSequenceKeypoint.new(0.5, 0),
+										NumberSequenceKeypoint.new(1, 0.25),
+									}),
+									GradientRotation = Scope:Computed(function(Use)
+										return Use(States.UnixTimestamp) / 15 % 360 - 180
+									end),
+									ListEnabled = true,
+									ListFillDirection = Enum.FillDirection.Horizontal,
+
+									[Children] = {
+										Scope:Text {
+											Text = "Wear this cosmetic across all games with Avalog.",
+											FlexMode = Enum.UIFlexMode.Fill,
+										},
+										Scope:Icon {
+											Image = "rbxassetid://93133319477541",
+											Size = Scope:Computed(function(Use)
+												return UDim2.fromOffset(
+													Use(Theme.TextSize["1.25"]),
+													Use(Theme.TextSize["1.25"])
+												)
+											end),
+										},
+									},
+								}
+							end)
+						end
+					end),
 				},
 			},
 			Scope:Frame {
