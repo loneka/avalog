@@ -162,7 +162,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 									},
 									Scope:Button {
 										Content = { "rbxassetid://13846852950", "Done" },
-										Color = Theme.Colors.Primary.Main,
+										Color = Theme.Colors.Success.Main,
 										SizeVariant = "Large",
 										Visible = CONFIG.AvatarSavingAllowed,
 

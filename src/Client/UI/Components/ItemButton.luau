@@ -245,7 +245,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				[Children] = {
 					Scope:Button {
 						Content = { "Buy" },
-						Color = Theme.Colors.Primary.Main,
+						Color = Theme.Colors.Success.Main,
 						FlexMode = Enum.UIFlexMode.Fill,
 
 						OnActivated = function()

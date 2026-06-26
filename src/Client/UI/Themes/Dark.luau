@@ -36,7 +36,7 @@ return Themer.NewTheme(Scope, {
 		},
 
 		Success = {
-			Main = Util.Colors.Green["600"],
+			Main = Util.Colors.Green["500"],
 		},
 		Error = {
 			Main = Util.Colors.Red["500"],

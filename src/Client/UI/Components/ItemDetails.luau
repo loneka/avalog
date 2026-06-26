@@ -216,7 +216,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 						Content = { "Buy" },
 						ContentSize = Theme.TextSize["1"],
 						SizeVariant = "ExtraLarge",
-						Color = Theme.Colors.Primary.Main,
+						Color = Theme.Colors.Success.Main,
 
 						OnActivated = function()
 							if Players.LocalPlayer == nil then
