@@ -1,17 +1,9 @@
 local HttpService = game:GetService("HttpService")
 
-local function IsCosmeticApplied(Character: Model, Id: string)
-	for _, Descendant in Character:GetDescendants() do
-		if Descendant:GetAttribute("CosmeticId") == Id then
-			return true
-		end
-	end
-
-	return false
-end
+local GetAppliedCosmetic = require(script.Parent.GetAppliedCosmetic)
 
 local function ApplyCosmetic(Character: Model, Id: string, Model: Instance): true?
-	if IsCosmeticApplied(Character, Id) then
+	if GetAppliedCosmetic(Character, Id) ~= nil then
 		return
 	end
 

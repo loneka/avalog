@@ -16,8 +16,9 @@ local PlayerOwnsAsset = require(Avalog.SourceCode.Shared.Utils.PlayerOwnsAsset)
 local ApplyCosmetic = require(Avalog.SourceCode.Shared.Utils.ApplyCosmetic)
 local AssetIdsFromAvatarData = require(Avalog.SourceCode.Shared.Utils.AssetIdsFromAvatarData)
 local PlayerIsInGroup = require(Avalog.SourceCode.Shared.Utils.PlayerIsInGroup)
+local GetAppliedCosmetic = require(Avalog.SourceCode.Shared.Utils.GetAppliedCosmetic)
 
-local BASE_URL = "http://localhost:3000/"
+local BASE_URL = "https://loneka.com/"
 
 local function UpgradeDescendantMeshParts(Model: Instance)
 	local MeshParts = {}
@@ -49,7 +50,7 @@ function Cosmetics.Start(self: typeof(Cosmetics))
 		local CloudConfig = Cloud.Config.Data:Get()
 		if CloudConfig and CloudConfig.cosmeticItems then
 			for _, Cosmetic in CloudConfig.cosmeticItems do
-				if Cosmetic.itemType == "Asset" and table.find(AppliedAssetIds, Cosmetic.itemId) ~= nil then
+				if table.find(AppliedAssetIds, Cosmetic.itemId) ~= nil then
 					if not Cosmetic.groupPurchase then
 						if not PlayerOwnsAsset(Player, Cosmetic.itemId) then
 							continue
@@ -59,6 +60,11 @@ function Cosmetics.Start(self: typeof(Cosmetics))
 					end
 
 					ApplyCosmetic(Player.Character, Cosmetic.itemId, self:GetModelAsync(Cosmetic.itemId))
+				else
+					local AppliedCosmeticModel = GetAppliedCosmetic(Player.Character, Cosmetic.itemId)
+					if AppliedCosmeticModel ~= nil then
+						AppliedCosmeticModel:Destroy()
+					end
 				end
 			end
 		end

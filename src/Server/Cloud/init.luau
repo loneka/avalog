@@ -14,7 +14,7 @@ local Stator = require(Avalog.Parent.Stator)
 local Types = require(Avalog.SourceCode.Shared.Types)
 local UsageRecorder = require(script.UsageRecorder)
 
-local BASE_URL = "http://localhost:3000/"
+local BASE_URL = "https://loneka.com/"
 local UPDATE_DELAY = 30 * 60
 local FAILED_UPDATE_DELAY = 1 * 60
 local SNAPSHOT_DELAY = 15 * 60
