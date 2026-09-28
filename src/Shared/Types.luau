@@ -23,7 +23,12 @@ export type AvalogUsageSnapshot = {
 export type Item = {
 	itemId: string,
 	itemType: ItemType,
+}
+
+export type CosmeticItem = Item & {
 	tintColor: string?,
+	groupPurchase: boolean?,
+	groupId: string?,
 }
 
 export type PromotedItem = Item & {

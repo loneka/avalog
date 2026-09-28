@@ -25,7 +25,6 @@ export type Props = CustomButton.Props & {
 	Type: Fusion.UsedAs<Enum.AvatarItemType>?,
 	Owned: Fusion.UsedAs<boolean>?,
 	Featured: Fusion.UsedAs<boolean>?,
-	TintColor: Fusion.UsedAs<Color3?>?,
 }
 
 return function(Scope: Fusion.Scope<any>, Props: Props)
@@ -38,7 +37,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 	local Id = Scope:EnsureValue(OnyxUI.Util.Fallback(Props.Id, nil))
 	local Type = OnyxUI.Util.Fallback(Props.Type, Enum.AvatarItemType.Asset)
 	local Featured = OnyxUI.Util.Fallback(Props.Featured, false)
-	local TintColor = OnyxUI.Util.Fallback(Props.TintColor, nil)
 
 	local ItemInfo = Scope:Value(nil)
 	local function UpdateItemInfo()
@@ -106,6 +104,11 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 			return table.find(BundleIdsValue, IdValue) ~= nil
 		end
 	end)
+	local TintColor = Scope:Computed(function(Use)
+		if (Use(CosmeticItemInfo) or {}).tintColor then
+			return Color3.fromHex(Use(CosmeticItemInfo).tintColor)
+		end
+	end)
 
 	local EquippedValueState = Scope:Value(Fusion.peek(Equipped))
 	Scope:Observer(Equipped):onChange(function()
@@ -119,13 +122,11 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 		StrokeColor = Theme.Colors.BaseContent.Main,
 		ListEnabled = false,
 		Color = Scope:Computed(function(Use)
-			local TintColorValue = Use(TintColor)
-			local DefaultColorValue = Use(Theme.Colors.Neutral.Main)
-
-			if TintColorValue ~= nil then
-				return ColorUtils.Blend.Transparency(DefaultColorValue, TintColorValue, 0.85)
+			local DefaultColor = Use(Theme.Colors.Neutral.Main)
+			if Use(TintColor) ~= nil then
+				return ColorUtils.Blend.Transparency(DefaultColor, Use(TintColor), 0.85)
 			else
-				return DefaultColorValue
+				return DefaultColor
 			end
 		end),
 		GradientEnabled = Scope:Computed(function(Use)

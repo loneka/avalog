@@ -53,7 +53,6 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 				for _, Item in PinnedItems do
 					Item.Id = tonumber(Item.itemId)
 					Item.ItemType = Item.itemType
-					Item.TintColor = Item.tintColor
 				end
 
 				return Sift.Array.merge(

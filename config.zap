@@ -94,12 +94,10 @@ type HumanoidDescriberData = struct {
 type Item = struct {
 	itemId: string.binary,
 	itemType: ItemType,
-	tintColor: string.binary?,
 }
 type PromotedItem = struct {
     itemId: string.binary,
 	itemType: ItemType,
-	tintColor: string.binary?,
 	promotionId: string.binary,
 	bid: f32,
 	startTime: f32,
