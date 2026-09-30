@@ -19,8 +19,6 @@ end
 local function PlayerOwnsAsset(Player: Player, AssetId: number)
 	local Entry = GetEntry(Player)
 
-	-- return false
-
 	if Entry[AssetId] ~= nil then
 		return Entry[AssetId]
 	else

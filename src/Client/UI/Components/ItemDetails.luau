@@ -130,9 +130,9 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 							Scope:Text {
 								Text = Scope:Computed(function(Use)
 									if Use(SafeItemInfo).Creator.Verified then
-										return Use(SafeItemInfo).Creator.Name
+										return `By {Use(SafeItemInfo).Creator.Name} {utf8.char(0xE000)}`
 									else
-										return `{Use(SafeItemInfo).Creator.Name} {utf8.char(0xE000)}`
+										return `By {Use(SafeItemInfo).Creator.Name}`
 									end
 								end),
 								TextSize = Theme.TextSize["1.125"],

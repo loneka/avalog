@@ -282,7 +282,7 @@ return function(Scope: Fusion.Scope<any>, Props: Props)
 						OnActivated = function()
 							States.ItemDetails.ItemType:set(Fusion.peek(Type))
 							States.ItemDetails.ItemId:set(Fusion.peek(Id))
-							States.ItemDetails.Open:set(true)
+							States.ItemDetails.Open:set(not Fusion.peek(States.ItemDetails.Open))
 						end,
 					},
 				},
