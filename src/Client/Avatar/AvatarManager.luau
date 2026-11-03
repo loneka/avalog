@@ -22,7 +22,7 @@ export type AvatarManager = {
 	UpdateScale: (AvatarManager, Property: string, Value: number) -> (),
 	SetColor: (AvatarManager, Color: Color3) -> (),
 
-	GetUnownedItems: (AvatarManager) -> (),
+	GetUnownedItems: (AvatarManager) -> { any },
 	ToggleCatalogItem: (AvatarManager, CatalogItem: CatalogItem) -> (),
 	Reset: () -> AvatarManager,
 	Apply: () -> AvatarManager,
@@ -37,7 +37,7 @@ export type AvatarManager = {
 	Redo: (AvatarManager) -> (),
 	Undo: (AvatarManager) -> (),
 	SaveAvatar: (AvatarManager) -> (),
-	PromptCheckout: (AvatarManager, Items: any) -> (),
+	PromptCheckout: (AvatarManager, Items: any) -> boolean,
 }
 
 return {}

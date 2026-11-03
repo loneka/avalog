@@ -2,6 +2,8 @@ local SOURCE = script.Parent.SourceCode
 local PACKAGES = script.Parent.Parent
 local CLIENT = SOURCE.Client
 
+local Players = game:GetService("Players")
+
 local States = require(SOURCE.Client.UI.States)
 local Fusion = require(PACKAGES.Fusion)
 local Bootloader = require(PACKAGES.Bootloader)
@@ -19,6 +21,10 @@ local function GetModules()
 	end
 
 	return Modules
+end
+
+local function IsLocked(): boolean
+	return Players.LocalPlayer:GetAttribute("AvalogCustomizationLocked") == true
 end
 
 --[=[
@@ -46,6 +52,12 @@ function AvalogClient:Start()
 
 	AvalogClient._Bootloader:Initialize()
 	AvalogClient._Bootloader:Start()
+
+	Players.LocalPlayer:GetAttributeChangedSignal("AvalogCustomizationLocked"):Connect(function()
+		if IsLocked() then
+			States.Open:set(false)
+		end
+	end)
 end
 
 --[=[
@@ -58,19 +70,28 @@ function AvalogClient:Configure(NewConfig: Config.Config)
 end
 
 --[=[
-	Toggles whether or not Avalog is open.
+	Toggles whether or not Avalog is open. Avalog can't be opened while customization is locked.
 ]=]
 function AvalogClient:ToggleOpen()
-	States.Open:set(not Fusion.peek(States.Open))
+	States.Open:set(not Fusion.peek(States.Open) and not IsLocked())
 end
 
 --[=[
-	Sets whether or not Avalog is open.
+	Sets whether or not Avalog is open. Avalog can't be opened while customization is locked.
 
 	@param Open boolean
 ]=]
 function AvalogClient:SetOpen(Open: boolean)
-	States.Open:set(Open)
+	States.Open:set(Open and not IsLocked())
+end
+
+--[=[
+	Prompts the player to purchase the items they are wearing but don't own.
+
+	@return boolean -- Whether or not a prompt was shown.
+]=]
+function AvalogClient:PromptPurchaseOutfit(): boolean
+	return LocalAvatar:PromptCheckout(LocalAvatar:GetUnownedItems())
 end
 
 return AvalogClient

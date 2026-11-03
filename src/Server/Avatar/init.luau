@@ -131,7 +131,7 @@ function Avatar:Start()
 	end)
 
 	Zap.UpdateAvatar.SetCallback(function(Player, Data): ()
-		if not CONFIG.AvatarSavingAllowed then
+		if not CONFIG.AvatarSavingAllowed or Player:GetAttribute("AvalogCustomizationLocked") then
 			return
 		end
 

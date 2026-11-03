@@ -48,4 +48,14 @@ function AvalogServer:Configure(NewConfig: Config.Config)
 	AvalogServer.Config:Update(NewConfig)
 end
 
+--[=[
+	Sets whether or not a player is prevented from changing their avatar.
+
+	@param Player Player
+	@param Locked boolean
+]=]
+function AvalogServer:SetCustomizationLocked(Player: Player, Locked: boolean)
+	Player:SetAttribute("AvalogCustomizationLocked", if Locked then true else nil)
+end
+
 return AvalogServer
