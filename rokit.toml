@@ -5,3 +5,4 @@
 
 [tools]
 lune = "lune-org/lune@0.10.2"
+luau-lsp = "JohnnyMorganz/luau-lsp@1.70.1"
