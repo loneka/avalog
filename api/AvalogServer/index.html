@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.1">
 <title data-rh="true">AvalogServer | Avalog</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://loneka.com/avalog/api/AvalogServer"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="AvalogServer | Avalog"><meta data-rh="true" name="description" content="The server-side module of Avalog."><meta data-rh="true" property="og:description" content="The server-side module of Avalog."><link data-rh="true" rel="icon" href="/avalog/svg/LogoGlyph.svg"><link data-rh="true" rel="canonical" href="https://loneka.com/avalog/api/AvalogServer"><link data-rh="true" rel="alternate" href="https://loneka.com/avalog/api/AvalogServer" hreflang="en"><link data-rh="true" rel="alternate" href="https://loneka.com/avalog/api/AvalogServer" hreflang="x-default"><link rel="stylesheet" href="/avalog/assets/css/styles.3ae1eb5b.css">
-<script src="/avalog/assets/js/runtime~main.22c63aa5.js" defer="defer"></script>
-<script src="/avalog/assets/js/main.dad16bbb.js" defer="defer"></script>
+<script src="/avalog/assets/js/runtime~main.7e125356.js" defer="defer"></script>
+<script src="/avalog/assets/js/main.2a1da368.js" defer="defer"></script>
 </head>
 <body>
 <svg style="display: none;"><defs>
@@ -17,6 +17,8 @@
 <p>Starts Avalog on the server.</p>
 </div><div class="divider_rE5g"></div><h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="Configure"><code style="text-decoration:none">Configure</code><a href="#Configure" class="hash-link" aria-label="Direct link to Configure" title="Direct link to Configure" translate="no">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/loneka/avalog/blob/master/src/API/Server.luau#L47"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>AvalogServer<!-- -->:</code><code class="green_DgR4">Configure</code><code>(</code><code>NewConfig<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/avalog/api/Config#Config">Config</a></code><code>) → </code><code>(</code><code>)</code></div><div>
 <p>Configures Avalog with the given config.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="SetCustomizationLocked"><code style="text-decoration:none">SetCustomizationLocked</code><a href="#SetCustomizationLocked" class="hash-link" aria-label="Direct link to SetCustomizationLocked" title="Direct link to SetCustomizationLocked" translate="no">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/loneka/avalog/blob/master/src/API/Server.luau#L57"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>AvalogServer<!-- -->:</code><code class="green_DgR4">SetCustomizationLocked</code><code>(</code><div class="inset_uKQm"><div><code>Player<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Player" target="_blank" rel="noopener noreferrer">Player<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>,</code></div><div><code>Locked<!-- -->: </code><code class="blue_P4bS">boolean</code></div></div><code>) → </code><code>(</code><code>)</code></div><div>
+<p>Sets whether or not a player is prevented from changing their avatar.</p>
 </div></div></article></div><details><summary>Show raw api</summary><pre style="max-width:100%;white-space:pre-wrap">{
     &quot;functions&quot;: [
         {
@@ -46,6 +48,28 @@
                 &quot;line&quot;: 47,
                 &quot;path&quot;: &quot;src/API/Server.luau&quot;
             }
+        },
+        {
+            &quot;name&quot;: &quot;SetCustomizationLocked&quot;,
+            &quot;desc&quot;: &quot;Sets whether or not a player is prevented from changing their avatar.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;Player&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Player&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Locked&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;boolean&quot;
+                }
+            ],
+            &quot;returns&quot;: [],
+            &quot;function_type&quot;: &quot;method&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 57,
+                &quot;path&quot;: &quot;src/API/Server.luau&quot;
+            }
         }
     ],
     &quot;properties&quot;: [],
@@ -56,6 +80,6 @@
         &quot;line&quot;: 25,
         &quot;path&quot;: &quot;src/API/Server.luau&quot;
     }
-}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#Configure" class="table-of-contents__link toc-highlight">:Configure</a></li><li><a href="#Start" class="table-of-contents__link toc-highlight">:Start</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="theme-layout-footer footer"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Loneka</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://loneka.com" target="_blank" rel="noopener noreferrer" class="footer__link-item">Home<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 Avafe. Built with Moonwave and Docusaurus</div></div></div></footer></div>
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#Configure" class="table-of-contents__link toc-highlight">:Configure</a></li><li><a href="#SetCustomizationLocked" class="table-of-contents__link toc-highlight">:SetCustomizationLocked</a></li><li><a href="#Start" class="table-of-contents__link toc-highlight">:Start</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="theme-layout-footer footer"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Loneka</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://loneka.com" target="_blank" rel="noopener noreferrer" class="footer__link-item">Home<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 Avafe. Built with Moonwave and Docusaurus</div></div></div></footer></div>
 </body>
 </html>
